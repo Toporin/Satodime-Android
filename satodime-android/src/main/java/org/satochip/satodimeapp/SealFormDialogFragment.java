@@ -30,6 +30,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;
+import org.satochip.satodimeapp.BuildConfig;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
@@ -52,6 +53,7 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 public class SealFormDialogFragment extends DialogFragment {
     
+    private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SEAL_FORM_FRAGMENT";
     public static final int RESULT_OK=1;
     public static final int RESULT_CANCELLED=0;
@@ -102,11 +104,11 @@ public class SealFormDialogFragment extends DialogFragment {
         etEntropyIn.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //Log.d(TAG, "SealKeyslotActivity: beforeTextChanged: " + s); 
+                //if(DEBUG) Log.d(TAG, "SealKeyslotActivity: beforeTextChanged: " + s); 
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //Log.d(TAG, "SealKeyslotActivity: onTextChanged: " + s); 
+                //if(DEBUG) Log.d(TAG, "SealKeyslotActivity: onTextChanged: " + s); 
             }
             @Override
             public void afterTextChanged(Editable s) {
@@ -146,7 +148,7 @@ public class SealFormDialogFragment extends DialogFragment {
             
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                Log.d(TAG, "SealKeyslotActivity: spinnerCoin onNothingSelected: "); 
+                if(DEBUG) Log.d(TAG, "SealKeyslotActivity: spinnerCoin onNothingSelected: "); 
             }
         });
         
@@ -155,18 +157,18 @@ public class SealFormDialogFragment extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) { 
                 String asset= array_asset_full[position];
-                Log.d(TAG, "SealKeyslotActivity: setOnItemSelectedListener: " + asset); 
+                if(DEBUG) Log.d(TAG, "SealKeyslotActivity: setOnItemSelectedListener: " + asset); 
                 // update fields accordingly
                 // show/hide contract field
                 if (TOKENSET.contains(asset) || NFTSET.contains(asset)){
-                    Log.d(TAG, "SealKeyslotActivity: SHOW CONTRACT in thread: "); 
+                    if(DEBUG) Log.d(TAG, "SealKeyslotActivity: SHOW CONTRACT in thread: "); 
                     llContract.setVisibility(View.VISIBLE);
                 } else {
                     llContract.setVisibility(View.GONE);
                 }
                 // show/hide tokenid field
                 if (NFTSET.contains(asset)){
-                    Log.d(TAG, "SealKeyslotActivity: SHOW TOKENID in thread: "); 
+                    if(DEBUG) Log.d(TAG, "SealKeyslotActivity: SHOW TOKENID in thread: "); 
                     llTokenid.setVisibility(View.VISIBLE);
                 } else {
                     llTokenid.setVisibility(View.GONE);
@@ -175,7 +177,7 @@ public class SealFormDialogFragment extends DialogFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                Log.d(TAG, "SealKeyslotActivity: onNothingSelected: "); 
+                if(DEBUG) Log.d(TAG, "SealKeyslotActivity: onNothingSelected: "); 
             }
         });
         
@@ -187,7 +189,7 @@ public class SealFormDialogFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        SealFormDialogFragment.this.getDialog().cancel();
-                       Log.d(TAG, "onCreateDialog - builder.setNegativeButton - onClick");
+                       if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setNegativeButton - onClick");
                        listener.onDialogNegativeClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_CANCELLED);
                    }
                 })
@@ -207,17 +209,17 @@ public class SealFormDialogFragment extends DialogFragment {
                         @Override
                         public void onClick(View view) {
                 
-                            Log.d(TAG, "onCreateDialog - builder.setPositiveButton - onClick");
+                            if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setPositiveButton - onClick");
                             
                             try{
                                 // check that all required data is provided & sanitize inputs
                                 String asset= spinnerAsset.getSelectedItem().toString();
                                 int assetInt= (int) MAP_CODE_BY_ASSET.get(asset);
-                                Log.d(TAG, "SEAL asset: "+ asset);
+                                if(DEBUG) Log.d(TAG, "SEAL asset: "+ asset);
                                 String coin= spinnerCoin.getSelectedItem().toString();
-                                Log.d(TAG, "SEAL coin: "+ coin);
+                                if(DEBUG) Log.d(TAG, "SEAL coin: "+ coin);
                                 boolean isTestnet= cbTestnet.isChecked();
-                                Log.d(TAG, "SEAL isTestnet: "+ isTestnet);
+                                if(DEBUG) Log.d(TAG, "SEAL isTestnet: "+ isTestnet);
                                 int slip44Int= (int) MAP_SLIP44_BY_SYMBOL.get(coin);
                                 if (isTestnet){
                                     slip44Int= slip44Int & 0x7FFFFFFF; // set msb to 0
@@ -232,7 +234,7 @@ public class SealFormDialogFragment extends DialogFragment {
                                 String contract= etContract.getText().toString();
                                 byte[] contractByte;
                                 if (isToken || isNFT){
-                                    Log.d(TAG, "SEAL contract (before): "+ contract);
+                                    if(DEBUG) Log.d(TAG, "SEAL contract (before): "+ contract);
                                     String regex = "^(0x)?[0-9a-fA-F]{40}$";
                                     if(!contract.matches(regex)){
                                         throw new Exception(getResources().getString(R.string.exception_contract_format));
@@ -253,7 +255,7 @@ public class SealFormDialogFragment extends DialogFragment {
                                 contractByteTLV[0]=(byte)0;
                                 contractByteTLV[1]=(byte)(contractByte.length);
                                 System.arraycopy(contractByte, 0, contractByteTLV, 2, contractByte.length);
-                                Log.d(TAG, "SEAL contract (after)   : "+ Hex.toHexString(contractByte));
+                                if(DEBUG) Log.d(TAG, "SEAL contract (after)   : "+ Hex.toHexString(contractByte));
                                 // check tokenid: tokenid byte array should be [size(2b) | tokenid | 0-padding to 34b]
                                 String tokenid= etTokenid.getText().toString();
                                 byte[] tokenidByte;
@@ -274,8 +276,8 @@ public class SealFormDialogFragment extends DialogFragment {
                                 tokenidByteTLV[0]=(byte)0;
                                 tokenidByteTLV[1]=(byte)(tokenidByte.length);
                                 System.arraycopy(tokenidByte, 0, tokenidByteTLV, 2, tokenidByte.length);
-                                Log.d(TAG, "SEAL tokenid (before): "+ tokenid);
-                                Log.d(TAG, "SEAL tokenid (after)   : "+ Hex.toHexString(tokenidByte));
+                                if(DEBUG) Log.d(TAG, "SEAL tokenid (before): "+ tokenid);
+                                if(DEBUG) Log.d(TAG, "SEAL tokenid (after)   : "+ Hex.toHexString(tokenidByte));
                                 // return data to activity
                                 Intent resultIntent= new Intent();
                                 //resultIntent.putExtra("keyNbr", keyNbr); //TODO: remove?
@@ -288,7 +290,7 @@ public class SealFormDialogFragment extends DialogFragment {
                                 listener.onDialogPositiveClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
                                 dialog.dismiss();
                             } catch (Exception e) {
-                                Log.e(TAG, e.getMessage());
+                                if(DEBUG) Log.e(TAG, e.getMessage());
                                 tvNotif.setText(getResources().getString(R.string.error) + e.getMessage());
                                 tvNotif.setVisibility(View.VISIBLE);
                             } 
@@ -331,7 +333,7 @@ public class SealFormDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         // Verify that the host activity implements the callback interface
-        Log.d(TAG, "onAttach");
+        if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the SealFormDialogListener so we can send events to the host
             listener = (SealFormDialogListener) context;

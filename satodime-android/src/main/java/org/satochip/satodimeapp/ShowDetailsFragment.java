@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.satochip.satodimeapp.R;
+import org.satochip.satodimeapp.BuildConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 public class ShowDetailsFragment extends DialogFragment {
     
+    private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_SHOW_DETAILS";
     // private static final int COLOR_AUTH_OK_BACKGROUND= 0xff90EE90; //0xff9cff57; //0xff64dd17; // 
     // private static final int COLOR_AUTH_KO_BACKGROUND=  0xffff867c; //0xffef5350; //
@@ -73,9 +75,9 @@ public class ShowDetailsFragment extends DialogFragment {
         keyInfo = (HashMap<String,Object>) getArguments().getSerializable("keyInfo");
         
         int keyNbr= (int) keyInfo.get("keyNbr");
-        Log.d(TAG, "ShowDetailsActivity: keyNbr:" + keyNbr); 
+        if(DEBUG) Log.d(TAG, "ShowDetailsActivity: keyNbr:" + keyNbr); 
         int keyState= (int) keyInfo.get("keyState");
-        Log.d(TAG, "ShowDetailsActivity: keyState:" + keyState); 
+        if(DEBUG) Log.d(TAG, "ShowDetailsActivity: keyState:" + keyState); 
 
         // set background
         LinearLayout llMain= (LinearLayout) view.findViewById(R.id.group_details_main);
@@ -89,7 +91,7 @@ public class ShowDetailsFragment extends DialogFragment {
         // pubkeyHex
         String pubkeyHex= (String) keyInfo.get("pubkeyHex");
         if (pubkeyHex== null){pubkeyHex= "(unknown pubkey)"; }
-        Log.d(TAG, "ShowDetailsActivity: pubkeyHex:" + pubkeyHex);
+        if(DEBUG) Log.d(TAG, "ShowDetailsActivity: pubkeyHex:" + pubkeyHex);
         TextView tvKeyslotPubkey= (TextView) view.findViewById(R.id.value_details_keyslot_pubkley);
         tvKeyslotPubkey.setText(pubkeyHex);
         // keyAsset
@@ -120,7 +122,7 @@ public class ShowDetailsFragment extends DialogFragment {
         imButtonAddressCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "BUTTON COPY CLICKED!");
+                if(DEBUG) Log.d(TAG, "BUTTON COPY CLICKED!");
                 myClipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                 myClip = ClipData.newPlainText("address", coinAddress);
                 myClipboard.setPrimaryClip(myClip);
@@ -133,7 +135,7 @@ public class ShowDetailsFragment extends DialogFragment {
         imButtonAddressQr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "BUTTON QR CLICKED!");
+                if(DEBUG) Log.d(TAG, "BUTTON QR CLICKED!");
                 //
                 QRCodeWriter writer = new QRCodeWriter();
                 try {
@@ -160,7 +162,7 @@ public class ShowDetailsFragment extends DialogFragment {
         imButtonAddressBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "BUTTON BROWSE CLICKED!");
+                if(DEBUG) Log.d(TAG, "BUTTON BROWSE CLICKED!");
                 try{
                     String url= coinAddressWeburl;
                     if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -170,7 +172,7 @@ public class ShowDetailsFragment extends DialogFragment {
                     intent.setData(Uri.parse(url));
                     startActivity(intent);
                 } catch (Exception e) {
-                    Log.e(TAG, "Exception while starting action_view intent: " + e);
+                    if(DEBUG) Log.e(TAG, "Exception while starting action_view intent: " + e);
                     e.printStackTrace();
                 }
             }
@@ -248,7 +250,7 @@ public class ShowDetailsFragment extends DialogFragment {
             buttonShowhide.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "BUTTON SHOWHIDE CLICKED!");
+                    if(DEBUG) Log.d(TAG, "BUTTON SHOWHIDE CLICKED!");
                     buttonShowhideShow= !buttonShowhideShow;
                     if (buttonShowhideShow){
                         llPrivInfoShowhide.setVisibility(View.VISIBLE);
@@ -279,7 +281,7 @@ public class ShowDetailsFragment extends DialogFragment {
             imButtonPrivkeyCopy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "BUTTON PRIVKEY COPY CLICKED!");
+                    if(DEBUG) Log.d(TAG, "BUTTON PRIVKEY COPY CLICKED!");
                     myClipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                     myClip = ClipData.newPlainText("privkey", privkeyHex);
                     myClipboard.setPrimaryClip(myClip);
@@ -292,7 +294,7 @@ public class ShowDetailsFragment extends DialogFragment {
             imButtonPrivkeyQr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "BUTTON PRIVKEY QR CLICKED!");
+                    if(DEBUG) Log.d(TAG, "BUTTON PRIVKEY QR CLICKED!");
                     QRCodeWriter writer = new QRCodeWriter();
                     try {
                         BitMatrix bitMatrix = writer.encode(privkeyHex, BarcodeFormat.QR_CODE, 512, 512);
@@ -318,7 +320,7 @@ public class ShowDetailsFragment extends DialogFragment {
             imButtonWifCopy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "BUTTON WIF COPY CLICKED!");
+                    if(DEBUG) Log.d(TAG, "BUTTON WIF COPY CLICKED!");
                     myClipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                     myClip = ClipData.newPlainText("WIF", privkeyWif);
                     myClipboard.setPrimaryClip(myClip);
@@ -331,7 +333,7 @@ public class ShowDetailsFragment extends DialogFragment {
             imButtonWifQr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG, "BUTTON WIF QR CLICKED!");
+                    if(DEBUG) Log.d(TAG, "BUTTON WIF QR CLICKED!");
                     QRCodeWriter writer = new QRCodeWriter();
                     try {
                         BitMatrix bitMatrix = writer.encode(privkeyWif, BarcodeFormat.QR_CODE, 512, 512);
@@ -361,7 +363,7 @@ public class ShowDetailsFragment extends DialogFragment {
                 // Add action buttons
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       Log.d(TAG, "ShowAuthDetailsFragment: builder.setPositiveButton - onClick");
+                       if(DEBUG) Log.d(TAG, "ShowAuthDetailsFragment: builder.setPositiveButton - onClick");
                        // do something else?
                        dismiss();
                    }

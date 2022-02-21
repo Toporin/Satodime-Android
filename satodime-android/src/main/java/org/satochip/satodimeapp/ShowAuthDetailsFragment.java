@@ -17,6 +17,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import org.satochip.satodimeapp.R;
+import org.satochip.satodimeapp.BuildConfig;
 
 import java.nio.ByteBuffer;
 
@@ -26,6 +27,7 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 public class ShowAuthDetailsFragment extends DialogFragment {
     
+    private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_AUTH_DETAILS";
     private static final int COLOR_AUTH_OK_BACKGROUND= 0xff90EE90; //0xff9cff57; //0xff64dd17; // 0xff90EE90 (lightgreen)
     private static final int COLOR_AUTH_KO_BACKGROUND=  0xffff867c; //0xffef5350; //
@@ -99,7 +101,7 @@ public class ShowAuthDetailsFragment extends DialogFragment {
                 // Add action buttons
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       Log.d(TAG, "ShowAuthDetailsFragment: builder.setPositiveButton - onClick");
+                       if(DEBUG) Log.d(TAG, "ShowAuthDetailsFragment: builder.setPositiveButton - onClick");
                        // do something else?
                        dismiss();
                    }

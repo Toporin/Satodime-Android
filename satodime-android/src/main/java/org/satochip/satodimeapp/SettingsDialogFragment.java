@@ -28,12 +28,14 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;
+import org.satochip.satodimeapp.BuildConfig;
 
 import java.util.Locale;
 import java.util.Arrays;
 
 public class SettingsDialogFragment extends DialogFragment {
     
+    private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_SETTINGS";
     public static final int RESULT_OK=1;
     public static final int RESULT_CANCELLED=0;
@@ -47,7 +49,7 @@ public class SettingsDialogFragment extends DialogFragment {
     
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d(TAG, "SettingsDialogFragment: onCreateDialog"); 
+        if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onCreateDialog"); 
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
@@ -61,13 +63,13 @@ public class SettingsDialogFragment extends DialogFragment {
         switchDarkMode= (Switch) view.findViewById(R.id.switch_dark_mode);
         
         // get current language from config and set language spinner to it
-        Log.d(TAG, "SettingsDialogFragment: get current language"); 
+        if(DEBUG) Log.d(TAG, "SettingsDialogFragment: get current language"); 
         SharedPreferences prefs = getActivity().getSharedPreferences("satodime", Context.MODE_PRIVATE);
         String appLanguage = prefs.getString("appLanguage", Locale.getDefault().getLanguage());
         String language= convertLocaleToLanguageString(appLanguage);
         ArrayAdapter adapter= (ArrayAdapter) spinnerLanguage.getAdapter();
         spinnerLanguage.setSelection(adapter.getPosition(language));
-        Log.d(TAG, "SettingsDialogFragment: get current language: " + language); 
+        if(DEBUG) Log.d(TAG, "SettingsDialogFragment: get current language: " + language); 
         
         // get current fiat from config and set language spinner to it
         String appFiatFull = prefs.getString("appFiatFull", "(none)");
@@ -85,16 +87,16 @@ public class SettingsDialogFragment extends DialogFragment {
         spinnerLanguage.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + position + " " + id); 
+                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + position + " " + id); 
                 String language= array_language[position];
-                Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + language); 
+                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + language); 
                 // update fields accordingly
                 // TODO
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                Log.d(TAG, "SettingsDialogFragment: onNothingSelected: "); 
+                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: "); 
             }
         }); */
         
@@ -106,7 +108,7 @@ public class SettingsDialogFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        SettingsDialogFragment.this.getDialog().cancel();
-                       Log.d(TAG, "onCreateDialog - builder.setNegativeButton - onClick");
+                       if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setNegativeButton - onClick");
                        listener.onDialogNegativeClick(SettingsDialogFragment.this, REQUEST_CODE, RESULT_CANCELLED);
                    }
                 })
@@ -126,14 +128,14 @@ public class SettingsDialogFragment extends DialogFragment {
                         @Override
                         public void onClick(View view) {
                 
-                            Log.d(TAG, "onCreateDialog - builder.setPositiveButton - onClick");
+                            if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setPositiveButton - onClick");
                             
                             try{
                                 // check that all required data is provided
                                 String selected_language= spinnerLanguage.getSelectedItem().toString();
                                 String selected_fiat= spinnerFiat.getSelectedItem().toString();
-                                Log.d(TAG, "onCreateDialog - selected_language: " + selected_language);
-                                Log.d(TAG, "onCreateDialog - selected_fiat: " + selected_fiat);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - selected_language: " + selected_language);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - selected_fiat: " + selected_fiat);
                                 
                                 // update locale in configuration
                                 String appLanguage= convertLangageToLocaleString(selected_language);
@@ -142,22 +144,22 @@ public class SettingsDialogFragment extends DialogFragment {
                                 Configuration config = getResources().getConfiguration();
                                 config.locale = locale;
                                 getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-                                Log.d(TAG, "onCreateDialog - updated in config: " + appLanguage);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - updated in config: " + appLanguage);
                                 // update preferences
                                 //prefs = getActivity().getSharedPreferences("satodime", Context.MODE_PRIVATE);
                                 prefs.edit().putString("appLanguage", appLanguage).apply();
-                                Log.d(TAG, "onCreateDialog - saved in preferences: " + appLanguage);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences: " + appLanguage);
                                 
                                 // update fiat in preferences
                                 String appFiat= selected_fiat.split(" ")[0];
                                 prefs.edit().putString("appFiat", appFiat).apply();
                                 prefs.edit().putString("appFiatFull", selected_fiat).apply();
-                                Log.d(TAG, "onCreateDialog - saved in preferences: " + appFiat);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences: " + appFiat);
                                 
                                 // update dark mode in preferences
                                 boolean darkModeEnabled=  switchDarkMode.isChecked();
                                 prefs.edit().putBoolean("appDarkModeEnabled", darkModeEnabled).apply();
-                                Log.d(TAG, "onCreateDialog - saved in preferences dark mode enabled: " + darkModeEnabled);
+                                if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences dark mode enabled: " + darkModeEnabled);
                                 
                                 Intent resultIntent= new Intent();
                                 resultIntent.putExtra("appFiat", appFiat);
@@ -167,7 +169,7 @@ public class SettingsDialogFragment extends DialogFragment {
                                 listener.onDialogPositiveClick(SettingsDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
                                 dialog.dismiss();
                             } catch (Exception e) {
-                                Log.e(TAG, e.getMessage());
+                                if(DEBUG) Log.e(TAG, e.getMessage());
                                 // TODO remove
                             } 
                             
@@ -209,7 +211,7 @@ public class SettingsDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         // Verify that the host activity implements the callback interface
-        Log.d(TAG, "onAttach");
+        if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the SettingsDialogListener so we can send events to the host
             listener = (SettingsDialogListener) context;

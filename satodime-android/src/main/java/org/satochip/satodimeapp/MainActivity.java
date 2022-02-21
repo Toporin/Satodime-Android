@@ -70,7 +70,8 @@ import java.net.URL;
  
 public class MainActivity extends AppCompatActivity 
                                                 implements SealFormDialogFragment.SealFormDialogListener, SettingsDialogFragment.SettingsDialogListener {
-
+    
+    private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME";
     private static final int REQUEST_CODE_SEAL_KEYSLOT_FORM= 666; 
     private static final int COLOR_GREEN= 0xff90EE90; //0xffb2ff59; // #0xff90EE90
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "LIFECYCLE ONCREATE");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONCREATE");
         
         Activity myactivity= this;
         Context mycontext= this;
@@ -169,14 +170,14 @@ public class MainActivity extends AppCompatActivity
         // ARRAY_KEYSLOT_STATES= getResources().getStringArray(R.array.array_keyslot_states); 
         // ACTIONS_FROM_STATE= getResources().getStringArray(R.array.array_actions_from_state); //{"Seal key!", "Unseal key!", "Reset key!"};
         
-        Log.d(TAG, "Starting SatoDime Application: OnCreate");
+        if(DEBUG) Log.d(TAG, "Starting SatoDime Application: OnCreate");
         setContentView(R.layout.activity_main);
         // settings button
         buttonSettings= (Button) findViewById(R.id.button_settings);
         buttonSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "BUTTON SETTINGS CLICKED!");
+                if(DEBUG) Log.d(TAG, "BUTTON SETTINGS CLICKED!");
                 DialogFragment fragment = new SettingsDialogFragment();
                 fragment.show(getSupportFragmentManager(), "SettingsDialogFragment");
             }
@@ -185,13 +186,13 @@ public class MainActivity extends AppCompatActivity
         // NFC
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         cardManager = new NFCCardManager();
-        Log.d(TAG, "Created cardManager object");
+        if(DEBUG) Log.d(TAG, "Created cardManager object");
         cardManager.setCardListener(new CardListener() {
             @Override
             public void onConnected(CardChannel cardChannel) {
                 try {
                     // Applet-specific code
-                    Log.d(TAG, "onConnected!");
+                    if(DEBUG) Log.d(TAG, "onConnected!");
                     isConnected= true;
                     isLayoutReady= false; 
                   
@@ -206,16 +207,16 @@ public class MainActivity extends AppCompatActivity
                   
                     // satodime object
                     cmdSet = new SatochipCommandSet(cardChannel);
-                    if (BuildConfig.DEBUG) {
-                        cmdSet.setLoggerLevel("info"); } 
+                    if (DEBUG) {
+                        cmdSet.setLoggerLevel("info"); 
+                        Log.d(TAG, "Created a SatochipCommandSet object");} 
                     else{
                         cmdSet.setLoggerLevel("warning");}
                     parser= cmdSet.getParser();
-                    Log.d(TAG, "Created a SatochipCommandSet object");
 
                     // First thing to do is selecting the applet on the card.
                     APDUResponse rapdu= cmdSet.cardSelect("satodime");
-                    Log.d(TAG, "Applet selected:" + rapdu.toHexString());
+                    if(DEBUG) Log.d(TAG, "Applet selected:" + rapdu.toHexString());
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast toast = Toast.makeText(getApplicationContext(), R.string.card_connected, Toast.LENGTH_SHORT);
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                     // get card status
                     APDUResponse rapdu2= cmdSet.cardGetStatus();
                     ApplicationStatus cardStatus = cmdSet.getApplicationStatus();
-                    Log.d(TAG, "Card status:" + cardStatus.toString());
+                    if(DEBUG) Log.d(TAG, "Card status:" + cardStatus.toString());
                   
                     // check if setup done
                     if (!cardStatus.isSetupDone()){
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity
                                             .setMessage(R.string.accept_transfer_warning)
                                             .setPositiveButton(R.string.accept_transfer_confirmation, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) { 
-                                                    Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "YES  has been clicked!");
+                                                    if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "YES  has been clicked!");
                                                     SecureRandom random = new SecureRandom();
                                                     byte pin_tries0= (byte)5;
                                                     byte[] pin0= new byte[8];
@@ -250,14 +251,14 @@ public class MainActivity extends AppCompatActivity
                                                         // save unlockSecret in SharedPreferences
                                                         authentikey= cmdSet.getAuthentikey();
                                                         authentikeyHex= parser.toHexString(authentikey);
-                                                        Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
+                                                        if(DEBUG) Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
                                                         byte[] unlockSecret= cmdSet.getSatodimeUnlockSecret();
                                                         String unlockSecretHex= parser.toHexString(unlockSecret);
                                                         prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
                                                         Toast toast = Toast.makeText(getApplicationContext(), R.string.transfer_success, Toast.LENGTH_SHORT);
                                                         toast.show();
                                                     }else{
-                                                        Log.e(TAG, "Error: setupDone: " + rapduSetup.toHexString());
+                                                        if(DEBUG) Log.e(TAG, "Error: setupDone: " + rapduSetup.toHexString());
                                                         Toast toast = Toast.makeText(getApplicationContext(), R.string.transfer_fail, Toast.LENGTH_SHORT);
                                                         toast.show();
                                                     }
@@ -265,7 +266,7 @@ public class MainActivity extends AppCompatActivity
                                             })
                                             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) { 
-                                                    Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
+                                                    if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
                                                     Toast toast = Toast.makeText(getApplicationContext(), R.string.transfer_rejected, Toast.LENGTH_SHORT);
                                                     toast.show();
                                                 }
@@ -279,11 +280,11 @@ public class MainActivity extends AppCompatActivity
                     // get authentikey
                     authentikey= cmdSet.getAuthentikey();
                     authentikeyHex= parser.toHexString(authentikey);
-                    Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
+                    if(DEBUG) Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
                   
                     // check if unlock_secret is available for the authentikey
                     if (prefs.contains(authentikeyHex)){
-                        Log.d(TAG, "DEBUGUNLOCK recovered: START");
+                        if(DEBUG) Log.d(TAG, "DEBUGUNLOCK recovered: START");
                         String unlockSecretHex= prefs.getString(authentikeyHex, null);
                         byte[] unlockSecret= parser.fromHexString(unlockSecretHex);
                         cmdSet.setSatodimeUnlockSecret(unlockSecret);
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity
                   
                     // get satodime status
                     satodimeStatus= cmdSet.getSatodimeStatus();
-                    Log.d(TAG, "Satodime status:" + satodimeStatus.toString());
+                    if(DEBUG) Log.d(TAG, "Satodime status:" + satodimeStatus.toString());
                     keysState= satodimeStatus.getKeysState();
                     nbKeyslot= satodimeStatus.getMaxNumKeys();
                   
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity
                                             .setMessage(msg)
                                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) { 
-                                                    Log.d(TAG, "PENDING REQUEST DIALOG " + "YES  has been clicked!");
+                                                    if(DEBUG) Log.d(TAG, "PENDING REQUEST DIALOG " + "YES  has been clicked!");
                                                     switch (pendingAction) {
                                                         case PENDING_ACTION_RESET:  
                                                                 sendResetKeyslotApduToCard();
@@ -332,7 +333,7 @@ public class MainActivity extends AppCompatActivity
                                              })
                                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) { 
-                                                    Log.d(TAG, "PENDING REQUEST DIALOG " + "NO  has been clicked!");
+                                                    if(DEBUG) Log.d(TAG, "PENDING REQUEST DIALOG " + "NO  has been clicked!");
                                                     pendingAction= PENDING_ACTION_NONE;
                                                     Toast toast = Toast.makeText(getApplicationContext(), R.string.request_rejected, Toast.LENGTH_SHORT);
                                                     toast.show();
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity
                     buttonSettings.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(TAG, "BUTTON SETTINGS CLICKED!");
+                            if(DEBUG) Log.d(TAG, "BUTTON SETTINGS CLICKED!");
                             DialogFragment fragment = new SettingsDialogFragment();
                             fragment.show(getSupportFragmentManager(), "SettingsDialogFragment");
                         }
@@ -369,7 +370,7 @@ public class MainActivity extends AppCompatActivity
                     // check card authenticity
                     String[] authResults= cmdSet.cardVerifyAuthenticity();
                     for (int index=0; index<authResults.length; index++){
-                        Log.d(TAG, "DEBUGAUTH : " + authResults[index]);
+                        if(DEBUG) Log.d(TAG, "DEBUGAUTH : " + authResults[index]);
                     }
                     // update status
                     TextView tvStatus= (TextView) findViewById(R.id.value_card_status);
@@ -391,7 +392,7 @@ public class MainActivity extends AppCompatActivity
                     buttonAuth.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(TAG, "BUTTON DETAILS CLICKED!");
+                            if(DEBUG) Log.d(TAG, "BUTTON DETAILS CLICKED!");
                             //using fragment
                             Bundle bundle = new Bundle();
                             bundle.putStringArray("authResults",authResults);
@@ -422,7 +423,7 @@ public class MainActivity extends AppCompatActivity
                     buttonTransfer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(TAG, "BUTTON TRANSFER CLICKED!");
+                            if(DEBUG) Log.d(TAG, "BUTTON TRANSFER CLICKED!");
                             keyslotAuthentikeyHex= authentikeyHex;
                             
                             new AlertDialog.Builder(MainActivity.this)
@@ -430,13 +431,13 @@ public class MainActivity extends AppCompatActivity
                                 .setMessage(R.string.warning_initiate_transfer)
                                 .setPositiveButton(R.string.transfer, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) { 
-                                        Log.d(TAG, "TRANSFER DIALOG " + "YES  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "TRANSFER DIALOG " + "YES  has been clicked!");
                                         sendTransferApduToCard();
                                     }
                                  })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) { 
-                                        Log.d(TAG, "TRANSFER DIALOG " + "NO  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "TRANSFER DIALOG " + "NO  has been clicked!");
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -479,7 +480,7 @@ public class MainActivity extends AppCompatActivity
 
                     keyslotsLayout= (LinearLayout) findViewById(R.id.group_keyslots);
                     LayoutParams params;
-                    Log.d(TAG, "LAYOUT START!");
+                    if(DEBUG) Log.d(TAG, "LAYOUT START!");
                     for (int k=0; k<nbKeyslot; k++){
                         final int kfinal= k;
                         
@@ -487,7 +488,7 @@ public class MainActivity extends AppCompatActivity
                         HashMap<String, Object> keyInfo= keyInfoList.get(k);
                         int keyState= (int) keyInfo.get("keyState");
                         
-                        Log.d(TAG, "LAYOUT Keyslot " + k + " START!");
+                        if(DEBUG) Log.d(TAG, "LAYOUT Keyslot " + k + " START!");
                         // Keyslot container
                         LinearLayout keyslotLayout= new LinearLayout(mycontext);
                         keyslotLayout.setOrientation(LinearLayout.VERTICAL);
@@ -624,13 +625,13 @@ public class MainActivity extends AppCompatActivity
                         buttonAction.setOnClickListener(new View.OnClickListener() {
                           @Override
                           public void onClick(View view) {
-                            Log.d(TAG, "BUTTON ACTION CLICKED!");                
+                            if(DEBUG) Log.d(TAG, "BUTTON ACTION CLICKED!");                
                             keyslotAuthentikeyHex= authentikeyHex;
                             keyslotNbr= ((Integer) view.getTag()).intValue();
                             int keyslotState= (int) keyInfoList.get(keyslotNbr).get("keyState");
                             
                             if (keyslotState==0){ // uninitialized => seal
-                                Log.d(TAG, "BUTTON ACTION CLICKED => SEALING KEYSLOT!");
+                                if(DEBUG) Log.d(TAG, "BUTTON ACTION CLICKED => SEALING KEYSLOT!");
                                 // open as fragment
                                 showSealFormDialog();
                             } else if (keyslotState==1){ // sealed => unseal
@@ -641,14 +642,14 @@ public class MainActivity extends AppCompatActivity
                                     // The dialog is automatically dismissed when a dialog button is clicked.
                                     .setPositiveButton(R.string.unseal_confirm, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) { 
-                                            Log.d(TAG, "UNSEAL DIALOG " + "YES  has been clicked!");
+                                            if(DEBUG) Log.d(TAG, "UNSEAL DIALOG " + "YES  has been clicked!");
                                             sendUnsealKeyslotApduToCard();
                                         }
                                      })
                                     // A null listener allows the button to dismiss the dialog and take no further action.
                                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) { 
-                                            Log.d(TAG, "UNSEAL DIALOG " + "NO  has been clicked!");
+                                            if(DEBUG) Log.d(TAG, "UNSEAL DIALOG " + "NO  has been clicked!");
                                             Toast toast = Toast.makeText(getApplicationContext(), R.string.unseal_cancel, Toast.LENGTH_SHORT);
                                             toast.show();
                                         }
@@ -662,13 +663,13 @@ public class MainActivity extends AppCompatActivity
                                     .setMessage(R.string.reset_warning)
                                     .setPositiveButton(R.string.reset_confirm, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) { 
-                                            Log.d(TAG, "RESET DIALOG " + "YES  has been clicked!");
+                                            if(DEBUG) Log.d(TAG, "RESET DIALOG " + "YES  has been clicked!");
                                             sendResetKeyslotApduToCard();
                                         }
                                      })
                                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) { 
-                                            Log.d(TAG, "RESET DIALOG " + "NO  has been clicked!");
+                                            if(DEBUG) Log.d(TAG, "RESET DIALOG " + "NO  has been clicked!");
                                             Toast toast = Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
                                             toast.show();
                                         }
@@ -683,7 +684,7 @@ public class MainActivity extends AppCompatActivity
                         buttonsLayout.addView(buttonAction);
                         
                         // details button
-                        Log.d(TAG, "LAYOUT Keyslot " + k + "add details button!");
+                        if(DEBUG) Log.d(TAG, "LAYOUT Keyslot " + k + "add details button!");
                         Button buttonDetails= new Button(mycontext);
                         buttonDetails.setText(R.string.button_more_details);
                         buttonDetails.setTag("buttonDetails_"+k);
@@ -698,7 +699,7 @@ public class MainActivity extends AppCompatActivity
                         buttonDetails.setOnClickListener(new View.OnClickListener() {
                           @Override
                           public void onClick(View view) {
-                            Log.d(TAG, "BUTTON SHOWDETAILS CLICKED!");
+                            if(DEBUG) Log.d(TAG, "BUTTON SHOWDETAILS CLICKED!");
                             // recover keyslotNbr
                             String tag= (String) view.getTag();
                             int keyslotNbr=Integer.parseInt(tag.replaceAll("[\\D]", "")); // only keep digits then parse
@@ -724,12 +725,12 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
 
-                        Log.d(TAG, "LAYOUT Keyslot " + k + " FINISHED!");
+                        if(DEBUG) Log.d(TAG, "LAYOUT Keyslot " + k + " FINISHED!");
                     }// end for loop
                     isLayoutReady= true;  
                     
                 } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                    if(DEBUG) Log.e(TAG, e.getMessage());
                     e.printStackTrace();
                 }
 
@@ -737,7 +738,7 @@ public class MainActivity extends AppCompatActivity
             
             @Override
             public void onDisconnected() {
-                Log.d(TAG, "Card disconnected");
+                if(DEBUG) Log.d(TAG, "Card disconnected");
                 isConnected= false;
                 isReconnectionFlag[0]= true; // detect future reconnection
                 //Button buttonTransfer= (Button) findViewById(R.id.button_transfer);
@@ -770,7 +771,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "LIFECYCLE ONRESUME");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESUME");
         if (nfcAdapter != null) {
           nfcAdapter.enableReaderMode(this, this.cardManager, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
         }
@@ -779,7 +780,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "LIFECYCLE ONPAUSE");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONPAUSE");
         if (nfcAdapter != null) {
             nfcAdapter.disableReaderMode(this);
         }
@@ -789,28 +790,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "LIFECYCLE ONSTOP ");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONSTOP ");
     }
     
     //DEBUG
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "LIFECYCLE ONSTART ");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONSTART ");
     }
     
     //DEBUG
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.d(TAG, "LIFECYCLE ONRESTART ");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESTART ");
     }
     
     // DEBUG
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "LIFECYCLE ONDESTROY ");
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONDESTROY ");
     }
     
     // FRAGMENTS
@@ -827,7 +828,7 @@ public class MainActivity extends AppCompatActivity
     public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent) {
         // TODO check resultCode
         // User touched the dialog's positive button
-        Log.d(TAG, "showSealFormDialog onDialogPositiveClick");
+        if(DEBUG) Log.d(TAG, "showSealFormDialog onDialogPositiveClick");
         
         switch (requestCode){
             case 1: // sealDialog
@@ -858,7 +859,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode) {
         // User touched the dialog's negative button
-        Log.d(TAG, "onDialogNegativeClick: ABCD");
+        if(DEBUG) Log.d(TAG, "onDialogNegativeClick: ABCD");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -871,11 +872,11 @@ public class MainActivity extends AppCompatActivity
     // Actions from fragments
     // send seal keyslot APDU to card
     public boolean sendSealKeyslotApduToCard(){
-        Log.d(TAG, "DEBUGSEAL: A SEAL ACTION HAS BEEN REQUESTED!");
-        Log.d(TAG, "DEBUGSEAL: sealKeyslotSlip44= " + parser.toHexString(sealKeyslotSlip44));
+        if(DEBUG) Log.d(TAG, "DEBUGSEAL: A SEAL ACTION HAS BEEN REQUESTED!");
+        if(DEBUG) Log.d(TAG, "DEBUGSEAL: sealKeyslotSlip44= " + parser.toHexString(sealKeyslotSlip44));
         
         // send seal command to card
-        Log.d(TAG, "SEAL SENDING APDU TO CARD");
+        if(DEBUG) Log.d(TAG, "SEAL SENDING APDU TO CARD");
         try{
             
             if (!isConnected){
@@ -917,7 +918,7 @@ public class MainActivity extends AppCompatActivity
             });
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to seal keyslot"+ e);
+            if(DEBUG) Log.e(TAG, "Failed to seal keyslot"+ e);
             e.printStackTrace();
             // if seal failed, will attempt again at next card connection
             pendingAction= PENDING_ACTION_SEAL;
@@ -936,7 +937,7 @@ public class MainActivity extends AppCompatActivity
     public boolean sendUnsealKeyslotApduToCard(){
         
         // send seal command to card
-        Log.d(TAG, "UNSEAL SENDING APDU TO CARD");
+        if(DEBUG) Log.d(TAG, "UNSEAL SENDING APDU TO CARD");
         try{
             
             if (!isConnected){
@@ -959,7 +960,7 @@ public class MainActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(TAG, "Update BUTTON SEALED => UNSEALED");
+                        if(DEBUG) Log.d(TAG, "Update BUTTON SEALED => UNSEALED");
                         Toast toast = Toast.makeText(getApplicationContext(), R.string.unseal_success, Toast.LENGTH_SHORT);
                         toast.show();
                         // update action button
@@ -978,7 +979,7 @@ public class MainActivity extends AppCompatActivity
                 throw new Exception("RAPDU error: "+ Integer.toHexString(rapduUnseal.getSw()));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unseal keyslot: " + e);
+            if(DEBUG) Log.e(TAG, "Failed to unseal keyslot: " + e);
             e.printStackTrace();
             // if seal failed, will attempt again at next card connection
             pendingAction= PENDING_ACTION_UNSEAL;
@@ -998,7 +999,7 @@ public class MainActivity extends AppCompatActivity
     public boolean sendResetKeyslotApduToCard(){
         
         // send seal command to card
-        Log.d(TAG, "RESET SENDING APDU TO CARD");
+        if(DEBUG) Log.d(TAG, "RESET SENDING APDU TO CARD");
         try{
             
             if (!isConnected){
@@ -1031,7 +1032,7 @@ public class MainActivity extends AppCompatActivity
                 throw new Exception("RAPDU error: "+ Integer.toHexString(rapduReset.getSw()));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to reset keyslot! " + e);
+            if(DEBUG) Log.e(TAG, "Failed to reset keyslot! " + e);
             e.printStackTrace();
             pendingAction= PENDING_ACTION_RESET;
             runOnUiThread(new Runnable() {
@@ -1049,7 +1050,7 @@ public class MainActivity extends AppCompatActivity
     //send transfer card APDU command to card
     public boolean sendTransferApduToCard(){
         // send seal command to card
-        Log.d(TAG, "TRANSFER SENDING APDU TO CARD");
+        if(DEBUG) Log.d(TAG, "TRANSFER SENDING APDU TO CARD");
         try{
             
             if (!isConnected){
@@ -1086,7 +1087,7 @@ public class MainActivity extends AppCompatActivity
                 throw new Exception("RAPDU error: "+ Integer.toHexString(rapduTransfer.getSw()));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to transfer card ownership! " + e);
+            if(DEBUG) Log.e(TAG, "Failed to transfer card ownership! " + e);
             e.printStackTrace();
             pendingAction= PENDING_ACTION_TRANSFER;
             runOnUiThread(new Runnable() {
@@ -1103,7 +1104,7 @@ public class MainActivity extends AppCompatActivity
     
     // send satodimeGetKeyslotStatus() command and gather keyInfo  
     public void updateKeyslotInfoAfterSeal(int keyslotNbr){
-        Log.d(TAG, "updateKeyslotInfoAfterSeal: keyslotNbr= " + keyslotNbr);
+        if(DEBUG) Log.d(TAG, "updateKeyslotInfoAfterSeal: keyslotNbr= " + keyslotNbr);
         
         if (!isConnected){
             return;
@@ -1121,11 +1122,11 @@ public class MainActivity extends AppCompatActivity
         keyInfo.put("keyNbr", keyslotNbr);
         
         // get keyslots status
-        Log.d(TAG, "Keyslot " +  keyslotNbr + " get status...");
+        if(DEBUG) Log.d(TAG, "Keyslot " +  keyslotNbr + " get status...");
         APDUResponse rapduKeyslotStatus= cmdSet.satodimeGetKeyslotStatus(keyslotNbr);
-        Log.d(TAG, "Keyslot " + keyslotNbr + " status received!");
+        if(DEBUG) Log.d(TAG, "Keyslot " + keyslotNbr + " status received!");
         SatodimeKeyslotStatus keyslotStatus= new SatodimeKeyslotStatus(rapduKeyslotStatus);
-        Log.d(TAG, "Keyslot " + keyslotNbr + " status:" + keyslotStatus.toString());
+        if(DEBUG) Log.d(TAG, "Keyslot " + keyslotNbr + " status:" + keyslotStatus.toString());
         keyInfo.put("keyType", (int)keyslotStatus.getKeyType());
         // asset type (coin/token/nft)
         int keyAsset=  (int)keyslotStatus.getKeyAsset();
@@ -1163,11 +1164,11 @@ public class MainActivity extends AppCompatActivity
         keyInfo.put("keyDataHex", parser.toHexString(keyslotStatus.getKeyData()) );
 
         // get pubkey
-        Log.d(TAG, "Keyslot " + keyslotNbr + " get pubkey...");
+        if(DEBUG) Log.d(TAG, "Keyslot " + keyslotNbr + " get pubkey...");
         APDUResponse rapduPubkey= cmdSet.satodimeGetPubkey(keyslotNbr);
         byte[] pubkeyBytes= parser.parseSatodimeGetPubkey(rapduPubkey);
         String pubkeyHex= parser.toHexString(pubkeyBytes);
-        Log.d(TAG, "Keyslot " + keyslotNbr + " pubkey: " + pubkeyHex);
+        if(DEBUG) Log.d(TAG, "Keyslot " + keyslotNbr + " pubkey: " + pubkeyHex);
         keyInfo.put("pubkeyBytes", pubkeyBytes);
         keyInfo.put("pubkeyHex", pubkeyHex);
 
@@ -1177,13 +1178,13 @@ public class MainActivity extends AppCompatActivity
         String coinDisplayName= coin.display_name;
         keyInfo.put("coinSymbol", coinSymbol);
         keyInfo.put("coinDisplayName", coinDisplayName);
-        Log.d(TAG, "coinSymbol: " + coinSymbol); 
-        Log.d(TAG, "coinDisplayName: " + coinDisplayName); 
+        if(DEBUG) Log.d(TAG, "coinSymbol: " + coinSymbol); 
+        if(DEBUG) Log.d(TAG, "coinDisplayName: " + coinDisplayName); 
         
         // get address
         String coinAddress= coin.pubToAddress(pubkeyBytes);
         keyInfo.put("coinAddress", coinAddress);
-        Log.d(TAG, "coinAddress: " + coinAddress); 
+        if(DEBUG) Log.d(TAG, "coinAddress: " + coinAddress); 
         String coinAddressWeburl= coin.getAddressWeburl(coinAddress);
         keyInfo.put("coinAddressWeburl", coinAddressWeburl);
         
@@ -1192,7 +1193,7 @@ public class MainActivity extends AppCompatActivity
         keyInfoList.get(keyslotNbr).putAll(keyInfo); 
         
         /* network requests in thread */
-        Log.d(TAG, "BEFORE THREAD"); 
+        if(DEBUG) Log.d(TAG, "BEFORE THREAD"); 
         
         // get balance
         // using threading for network operations...
@@ -1276,7 +1277,7 @@ public class MainActivity extends AppCompatActivity
                         
                         // The layout is not always ready 
                         while (!isLayoutReady){
-                            Log.d(TAG, "WAITING LAYOUT for keyslot " + keyslotNbr); 
+                            if(DEBUG) Log.d(TAG, "WAITING LAYOUT for keyslot " + keyslotNbr); 
                             Thread.sleep(500);
                         }
                         TextView tvBalanceValue= (TextView)  keyslotsLayout.findViewWithTag("tvBalanceValue_"+keyslotNbr);
@@ -1284,28 +1285,28 @@ public class MainActivity extends AppCompatActivity
                         tvBalanceValue.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.d(TAG, "UPDATING LAYOUT for keyslot " + keyslotNbr); 
+                                if(DEBUG) Log.d(TAG, "UPDATING LAYOUT for keyslot " + keyslotNbr); 
                                 tvBalanceValue.setText(coinBalanceTxtFinal);
                                 tvTokenBalanceValue.setText(tokenBalanceTxtFinal);
-                                Log.d(TAG, "UPDATED LAYOUT for keyslot " + keyslotNbr); 
+                                if(DEBUG) Log.d(TAG, "UPDATED LAYOUT for keyslot " + keyslotNbr); 
                             }
                         });
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to update UI: " + e);
+                        if(DEBUG) Log.e(TAG, "Failed to update UI: " + e);
                         e.printStackTrace();
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to update keyInfo in thread: " + e);
+                    if(DEBUG) Log.e(TAG, "Failed to update keyInfo in thread: " + e);
                     e.printStackTrace();
                 }
             }
         }).start();
         
-        Log.d(TAG, "AFTER THREAD"); 
+        if(DEBUG) Log.d(TAG, "AFTER THREAD"); 
         
         // NFT thread 
         if (isNFT){
-            Log.d(TAG, "BEFORE NFT THREAD"); 
+            if(DEBUG) Log.d(TAG, "BEFORE NFT THREAD"); 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1323,7 +1324,7 @@ public class MainActivity extends AppCompatActivity
                             keyInfoNft.put("nftDescription", nftInfo.get("nftDescription"));
                             keyInfoNft.put("nftImageUrl", nftInfo.get("nftImageUrl"));
                         } catch (Exception e){
-                            Log.e(TAG, "Failed to fetch nftInfoMap in thread: " + e);
+                            if(DEBUG) Log.e(TAG, "Failed to fetch nftInfoMap in thread: " + e);
                         } 
                         
                         // get data from network
@@ -1337,7 +1338,7 @@ public class MainActivity extends AppCompatActivity
                             Bitmap nftBitmap = BitmapFactory.decodeStream(input);
                             keyInfoNft.put("nftBitmap", nftBitmap);
                         } catch (Exception e){
-                            Log.e(TAG, "Failed to fetch nft bitmap in thread: " + e);
+                            if(DEBUG) Log.e(TAG, "Failed to fetch nft bitmap in thread: " + e);
                         } 
                         
                         // add keyInfo to keyInfoList
@@ -1345,12 +1346,12 @@ public class MainActivity extends AppCompatActivity
                         keyInfoList.get(keyslotNbr).putAll(keyInfoNft); 
                         
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to update keyInfo in thread: " + e);
+                        if(DEBUG) Log.e(TAG, "Failed to update keyInfo in thread: " + e);
                         e.printStackTrace();
                     }
                 }
             }).start();
-            Log.d(TAG, "AFTER NFT THREAD"); 
+            if(DEBUG) Log.d(TAG, "AFTER NFT THREAD"); 
         }
         
         return;
@@ -1359,7 +1360,7 @@ public class MainActivity extends AppCompatActivity
     // send satodimeGetKeyslotStatus() command and gather keyInfo  
     // After 'unseal' command, private key info becomes available
     public void updateKeyslotInfoAfterUnseal(int keyslotNbr){
-        Log.d(TAG, "updateKeyslotInfoAfterUnseal: keyslotNbr= " + keyslotNbr);
+        if(DEBUG) Log.d(TAG, "updateKeyslotInfoAfterUnseal: keyslotNbr= " + keyslotNbr);
         
         if (!isConnected){
             return;
@@ -1388,7 +1389,7 @@ public class MainActivity extends AppCompatActivity
         BaseCoin coin= getCoin(keySlip44Int, isTestnet, APIKEYS);
         
         // get private key
-        Log.d(TAG, "Privkey recovery: START");
+        if(DEBUG) Log.d(TAG, "Privkey recovery: START");
         try{
             APDUResponse rapduPrivkey= cmdSet.satodimeGetPrivkey(keyslotNbr);
             if (rapduPrivkey.isOK()){
@@ -1412,8 +1413,7 @@ public class MainActivity extends AppCompatActivity
                 throw new Exception("RAPDU error: "+ Integer.toHexString(rapduPrivkey.getSw()));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to recover privkey!");
-            Log.e(TAG, "Exception e: " + e);
+            if(DEBUG) Log.e(TAG, "Exception: unable to recover privkey: " + e);
             String privkey_fail= getResources().getString(R.string.privkey_fail);
             keyInfo.put("privkeyHex",privkey_fail);
             keyInfo.put("privkeyWif", privkey_fail);
@@ -1427,14 +1427,14 @@ public class MainActivity extends AppCompatActivity
     } // end 
     
     public void updateKeyslotInfoAfterReset(int keyslotNbr){
-        Log.d(TAG, "updateKeyslotInfoAfterReset: keyslotNbr= " + keyslotNbr);
+        if(DEBUG) Log.d(TAG, "updateKeyslotInfoAfterReset: keyslotNbr= " + keyslotNbr);
         
         if (!isConnected){
             return;
         }
         
         satodimeStatus= cmdSet.getSatodimeStatus();
-        Log.d(TAG, "Satodime status:" + satodimeStatus.toString());
+        if(DEBUG) Log.d(TAG, "Satodime status:" + satodimeStatus.toString());
         keysState= satodimeStatus.getKeysState();
         int keyState= keysState[keyslotNbr];
         
@@ -1567,8 +1567,8 @@ public class MainActivity extends AppCompatActivity
                                 .setMessage(R.string.reset_ownership_warning)
                                 .setPositiveButton(R.string.reset_ownership_confirmation, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) { 
-                                        Log.d(TAG, "RESET OWNERSHIP DIALOG " + "YES  has been clicked!");
-                                        Log.d(TAG, "DEBUGUNLOCK setupDone: START");
+                                        if(DEBUG) Log.d(TAG, "RESET OWNERSHIP DIALOG " + "YES  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "DEBUGUNLOCK setupDone: START");
                                         
                                         // remove unlockSecretHex from SharedPreferences
                                         prefs.edit().remove(authentikeyHex).apply();
@@ -1582,7 +1582,7 @@ public class MainActivity extends AppCompatActivity
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) { 
-                                        Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
                                         Toast toast = Toast.makeText(getApplicationContext(), R.string.reset_ownership_rejected, Toast.LENGTH_SHORT);
                                         toast.show();
                                     }
@@ -1615,7 +1615,7 @@ public class MainActivity extends AppCompatActivity
                 coin= new UnsupportedCoin(isTestnet, apikeys);
                 break;
         }
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             coin.setLoggerLevel("info"); } 
         else{
             coin.setLoggerLevel("warning"); }
