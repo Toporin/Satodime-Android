@@ -16,4 +16,17 @@ Satodime-Android uses two external libraries:
 
 You can build these jar files  using the instructions provided in their github repo and then put these files in ```./satodime-android/libs``` folder.
 
+## APIs
 
+The [Javacryptotools library](https://github.com/Toporin/Javacryptotools) uses API from the following explorer services:
+* [Blockstream](https://blockstream.com/)
+* Sochain](https://sochain.com/)
+* Fullstack](https://fullstack.cash/)
+* Etherscan](https://etherscan.io/)
+* Rarible](https://rarible.com/)
+* Opensea](https://opensea.io/)
+* Coingecko](https://www.coingecko.com/)
+
+These APIs are used to get info such as balances, NFT name, description and image preview.
+
+Remark: some explorer APIs require an API key to work correctly. API keys are provided through ```./satodime-android/src/main/res/values/apikeys.xml ``` (see ```apikeys-sample.xml``` for sample).
