@@ -1,0 +1,11 @@
+<resources>
+
+    <string-array name="array_fiat" translatable="false">
+        <item>(none)</item>
+        <item>usd - Dollars</item>
+        <item>eur - Euro</item>
+        <item>btc - Bitcoin</item>
+        <item>eth - Ethereum</item>
+    </string-array>
+
+</resources>

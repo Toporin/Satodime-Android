@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this is a comment -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:orientation="vertical" >
+   
+    <!-- CARD INFO -->
+    <LinearLayout 
+        android:id="@+id/group_card_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+       
+        <TextView android:id="@+id/text_card_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/card_info"/>
+        
+        <!-- card presence -->
+        <LinearLayout
+            android:id="@+id/group_card_connected"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_card_connected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_connected_text"/>
+
+            <TextView android:id="@+id/value_card_connected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_connected_value" />
+          
+        </LinearLayout>
+        
+        <!-- card authenticity -->
+        <LinearLayout
+            android:id="@+id/group_card_status"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_card_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_status_text" />
+
+            <TextView android:id="@+id/value_card_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_status_value" />
+          
+        </LinearLayout>
+        
+        <!-- ownership -->
+        <LinearLayout
+            android:id="@+id/group_card_owner"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_card_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_ownership_text" />
+
+            <TextView android:id="@+id/value_card_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_ownership_value" />
+          
+        </LinearLayout>
+
+        <!-- card buttons -->
+        <LinearLayout
+            android:id="@+id/group_button_card_status"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_settings"
+                android:id="@+id/button_settings"
+                android:enabled="true" />
+            
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_details"
+                android:id="@+id/button_auth"
+                android:enabled="false" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_transfer"
+                android:id="@+id/button_transfer" 
+                android:enabled="false" />
+          
+        </LinearLayout>
+       
+    </LinearLayout>
+   
+    <View style="@style/Divider"/>
+
+    <!-- KEYSLOTS (these are added dynamically) -->
+    <LinearLayout 
+        android:id="@+id/group_keyslots"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+    </LinearLayout>
+   
+   
+</LinearLayout>

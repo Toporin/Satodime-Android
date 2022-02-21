@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this is a comment -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    >
+    
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/group_details_main"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+   
+    <!-- KEYSLOT INFO -->
+    <LinearLayout 
+        android:id="@+id/group_details_keyslot_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        >
+       
+        <TextView android:id="@+id/text_details_keyslot_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/keyslot_info" />
+
+        <LinearLayout
+            android:id="@+id/group_details_keyslot_status"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_keyslot_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/keyslot_status" />
+
+            <TextView android:id="@+id/value_details_keyslot_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/keyslot_status_value" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_keyslot_asset_type"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_keyslot_asset_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/asset_type" />
+
+            <TextView android:id="@+id/value_details_keyslot_asset_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Coin/Token/NFT/..." />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_keyslot_pubkey"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_keyslot_pubkey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pubkey" />
+
+            <TextView android:id="@+id/value_details_keyslot_pubkley"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0x" />
+        </LinearLayout>
+        
+        <View style="@style/Divider"/>
+        
+    </LinearLayout>
+   
+    <!-- COIN info -->
+    <LinearLayout 
+        android:id="@+id/group_details_coin_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+       
+        <TextView android:id="@+id/text_details_coin_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/coin_info" />
+
+        <LinearLayout
+            android:id="@+id/group_details_coin_blockchain"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_coin_blockchain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/blockchain" />
+
+            <TextView android:id="@+id/value_details_coin_blockchain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BTC/ETH/..." />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_coin_addresss_info"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            
+            <LinearLayout
+            android:id="@+id/group_details_coin_addresss"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+               <TextView android:id="@+id/text_details_coin_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address" />
+                    
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/outline_content_copy_black_18"
+                    android:id="@+id/imbutton_address_copy" />
+                
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/outline_qr_code_2_black_18"
+                    android:id="@+id/imbutton_address_qr" />
+                
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/outline_open_in_new_black_18"
+                    android:id="@+id/imbutton_address_browse" />
+                
+            </LinearLayout>
+            
+            <ImageView
+                android:id="@+id/imview_address_qr" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="qr-code"
+                android:visibility="gone"
+                />
+            
+            <TextView android:id="@+id/value_details_coin_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(coin address value)" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_coin_balance"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_coin_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/balance" />
+
+            <TextView android:id="@+id/value_details_coin_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(unknown balance)" />
+        </LinearLayout>
+        
+        <View style="@style/Divider"/>
+        
+    </LinearLayout>
+   
+    <!-- TOKEN info (optional)-->
+    <LinearLayout 
+        android:id="@+id/group_details_token_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+       
+        <TextView android:id="@+id/text_details_token_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/token_info" />
+
+        <LinearLayout
+            android:id="@+id/group_details_token_contract"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_token_contract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/token" />
+
+            <TextView android:id="@+id/value_details_token_contract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0x..." />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_token_balance"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_token_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/token_balance" />
+
+            <TextView android:id="@+id/value_details_token_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(unknown token balance)"/>
+        </LinearLayout>
+        
+        <View style="@style/Divider"/>
+        
+    </LinearLayout>
+    
+    <!-- NFT info (optional)-->
+    <LinearLayout 
+        android:id="@+id/group_details_nft_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+       
+        <TextView android:id="@+id/text_details_nft_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/nft_info" />
+
+        <LinearLayout
+            android:id="@+id/group_details_nft_contract"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_nft_contract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft" />
+
+            <TextView android:id="@+id/value_details_nft_contract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_nft_balance"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/text_details_nft_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_balance" />
+
+            <TextView android:id="@+id/value_details_nft_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_balance_value"/>
+        </LinearLayout>
+        
+        <LinearLayout 
+        android:id="@+id/group_details_nft_tokenid"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+            
+            <TextView android:id="@+id/text_details_nft_tokenid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_tokenid" />
+            
+            <TextView android:id="@+id/value_details_nft_tokenid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_tokenid_value" />
+            
+        </LinearLayout>
+        
+        <!-- NFT data shown only if balance>0 -->
+        <LinearLayout
+            android:id="@+id/group_details_nft_name"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/text_details_nft_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_name" />
+
+            <TextView android:id="@+id/value_details_nft_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_name_value"/>
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/group_details_nft_description"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/text_details_nft_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_description" />
+
+            <TextView android:id="@+id/value_details_nft_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nft_description_value"/>
+        </LinearLayout>
+        
+        <ImageView
+                android:id="@+id/imview_nft_image" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="nft"
+                android:visibility="gone"  />
+        
+        <View style="@style/Divider"/>
+        
+    </LinearLayout>
+
+    <!-- PRIVATE info (optional)-->
+    <LinearLayout 
+        android:id="@+id/group_details_private_info"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+       
+        <TextView android:id="@+id/text_details_private_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/private_info" />
+        
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_show"
+                android:id="@+id/button_showhide_info" />
+        
+         <LinearLayout
+            android:id="@+id/group_details_private_showhide_info"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+            
+            <!-- privkey -->
+            <LinearLayout
+                android:id="@+id/group_details_private_key"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <LinearLayout
+                    android:id="@+id/group_details_private_key2"
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/text_details_private_key"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/privkey" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/outline_content_copy_black_18"
+                        android:id="@+id/imbutton_privkey_copy" />
+                    
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/outline_qr_code_2_black_18"
+                        android:id="@+id/imbutton_privkey_qr" />
+                    
+                </LinearLayout>
+            
+                <ImageView
+                    android:id="@+id/imview_privkey_qr" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="qr-code"
+                    android:visibility="gone"
+                    />
+
+                <TextView android:id="@+id/value_details_private_key"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(privkey hex)" />
+                    
+            </LinearLayout>
+            
+            <!-- wif -->
+            <LinearLayout
+                android:id="@+id/group_details_private_wif"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <LinearLayout
+                    android:id="@+id/group_details_private_wif2"
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/text_details_private_wif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/wif" />
+                    
+                    <ImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/outline_content_copy_black_18"
+                            android:id="@+id/imbutton_wif_copy" />
+                        
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/outline_qr_code_2_black_18"
+                        android:id="@+id/imbutton_wif_qr" />
+                </LinearLayout>
+                
+                <ImageView
+                    android:id="@+id/imview_wif_qr" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="qr-code"
+                    android:visibility="gone"
+                    />
+                
+                <TextView android:id="@+id/value_details_private_wif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(privkey wif)" />
+            </LinearLayout>
+            
+            <!-- entropy -->
+            <LinearLayout
+                android:id="@+id/group_details_private_entropy"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/text_details_private_entropy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/entropy" />
+
+                <TextView android:id="@+id/value_details_private_entropy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(Entropy in hex)" />
+            </LinearLayout>
+            
+            <TextView android:id="@+id/text_details_private_entropy_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(Note: ...)" />
+                
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this is a comment -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+    <!-- COIN TYPE -->
+    <TextView android:id="@+id/text_coin_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_blockchain" />
+    
+    <Spinner
+        android:id="@+id/spinner_coin_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/array_coin" 
+        />
+        
+    <!-- ASSET TYPE -->
+    <TextView android:id="@+id/text_asset_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_asset" />
+        
+    <Spinner
+        android:id="@+id/spinner_asset_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:entries="@array/array_asset_limited" 
+        />
+    
+    <!-- testnet -->
+    <LinearLayout
+        android:id="@+id/group_testnet"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        
+        <TextView android:id="@+id/text_use_testnet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/use_testnet" />
+        
+        <CheckBox android:id="@+id/checkbox_use_testnet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "/>
+    </LinearLayout>
+    
+    <!-- CONTRACT -->
+    <LinearLayout
+        android:id="@+id/group_contract"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+            
+        <TextView android:id="@+id/text_contract_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_contract" />
+        
+        <EditText
+            android:id="@+id/edittext_contract"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:hint="contract address"
+            android:digits="0123456789ABCDEFabcdefx"
+            android:inputType="textCapCharacters"
+            />
+    </LinearLayout>
+    
+    <!-- TOKENID -->
+    <LinearLayout
+            android:id="@+id/group_tokenid"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            >
+            
+        <TextView android:id="@+id/text_tokenid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_tokenid" />
+        
+        <EditText
+             android:id="@+id/edittext_tokenid"
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:hint="tokenID"
+             android:digits="0123456789"
+             android:inputType="number"
+            />
+    </LinearLayout>
+    
+    <!-- ENTROPY -->
+    <TextView android:id="@+id/text_entropy_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_entropy" />
+        
+    <EditText
+         android:id="@+id/edittext_entropy_input"
+         android:layout_height="wrap_content"
+         android:layout_width="match_parent"
+         android:hint="entropy data"
+         android:inputType="text"/>
+    
+    <TextView android:id="@+id/text_entropy_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/entropy_output" />
+    
+    <TextView android:id="@+id/value_entropy_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/entropy_output_value" />
+    
+    <!-- NOTIFICATIONS -->
+    <TextView android:id="@+id/text_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(error msg)" 
+        android:textColor="#FFFF0000"
+        android:visibility="gone"
+    />
+    
+    <!-- BUTTONS -->
+    <!-- Disabled with fragments & AlertDialog: buttons are added  -->
+    <LinearLayout
+            android:id="@+id/group_buttons_seal_keyslot"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+            
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:id="@+id/button_seal_cancel" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_seal_keyslot"
+                android:enabled="true"
+                android:id="@+id/button_seal_keyslot" />
+          
+        </LinearLayout>
+        
+</LinearLayout>

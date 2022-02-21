@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this is a comment -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:orientation="vertical" >
+   
+    <!-- DARK MODE -->
+    <LinearLayout 
+        android:id="@+id/group_dark_mode"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+       
+        <TextView android:id="@+id/text_dark_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/enable_dark_mode" />
+        
+        <Switch android:id="@+id/switch_dark_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:showText="true"
+        />
+        
+    </LinearLayout>
+   
+    <View style="@style/Divider"/>
+
+    <!-- LANGUAGE  -->
+    <LinearLayout 
+        android:id="@+id/group_language"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+       
+        <TextView android:id="@+id/text_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_language" />
+        
+        <Spinner
+            android:id="@+id/spinner_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:entries="@array/array_language" 
+        />
+        
+    </LinearLayout>
+    
+    <View style="@style/Divider"/>
+   
+   <!-- FIAT  -->
+    <LinearLayout 
+        android:id="@+id/group_fiat"
+        android:orientation="vertical" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+       
+        <TextView android:id="@+id/text_fiat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_fiat" />
+        
+        <Spinner
+            android:id="@+id/spinner_fiat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:entries="@array/array_fiat" 
+        />
+        
+    </LinearLayout>
+   
+</LinearLayout>
