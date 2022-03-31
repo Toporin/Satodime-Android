@@ -2,8 +2,6 @@ package org.satochip.satodimeapp;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.support.v4.app.Fragment; 
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
@@ -13,25 +11,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.SharedPreferences;
-import android.view.View;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.text.TextWatcher;
-import android.text.Editable;
 
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch ;
-import android.widget.Toast;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
-import org.satochip.satodimeapp.R;
-import org.satochip.satodimeapp.BuildConfig;
+import androidx.fragment.app.DialogFragment;
 
 import java.util.Locale;
-import java.util.Arrays;
 
 public class SettingsDialogFragment extends DialogFragment {
     
@@ -43,7 +33,6 @@ public class SettingsDialogFragment extends DialogFragment {
         
     private Spinner spinnerLanguage;
     private Spinner spinnerFiat;
-    private Switch switchDarkMode;
     
     // based on https://developer.android.com/guide/topics/ui/dialogs
     
@@ -60,7 +49,6 @@ public class SettingsDialogFragment extends DialogFragment {
         // widgets
         spinnerLanguage= (Spinner) view.findViewById(R.id.spinner_language);
         spinnerFiat= (Spinner) view.findViewById(R.id.spinner_fiat);
-        switchDarkMode= (Switch) view.findViewById(R.id.switch_dark_mode);
         
         // get current language from config and set language spinner to it
         if(DEBUG) Log.d(TAG, "SettingsDialogFragment: get current language"); 
@@ -75,16 +63,12 @@ public class SettingsDialogFragment extends DialogFragment {
         String appFiatFull = prefs.getString("appFiatFull", "(none)");
         ArrayAdapter adapterFiat= (ArrayAdapter) spinnerFiat.getAdapter();
         spinnerFiat.setSelection(adapterFiat.getPosition(appFiatFull));
-        
-        // get current dark mode and set swith to it
-        boolean appDarkModeEnabled = prefs.getBoolean("appDarkModeEnabled", false);
-        switchDarkMode.setChecked(appDarkModeEnabled);
+
         
         // Do something on language or Fiat selection?
-        // Do something on dark mode switch?
         // language 
-/*         final String[] array_language = getResources().getStringArray(R.array.array_language);
-        spinnerLanguage.setOnItemSelectedListener(new OnItemSelectedListener() {
+        final String[] array_language = getResources().getStringArray(R.array.array_language);
+        spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + position + " " + id); 
@@ -98,7 +82,7 @@ public class SettingsDialogFragment extends DialogFragment {
             public void onNothingSelected(AdapterView<?> parentView) {
                 if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: "); 
             }
-        }); */
+        });
         
         // build dialog
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
@@ -155,17 +139,12 @@ public class SettingsDialogFragment extends DialogFragment {
                                 prefs.edit().putString("appFiat", appFiat).apply();
                                 prefs.edit().putString("appFiatFull", selected_fiat).apply();
                                 if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences: " + appFiat);
-                                
-                                // update dark mode in preferences
-                                boolean darkModeEnabled=  switchDarkMode.isChecked();
-                                prefs.edit().putBoolean("appDarkModeEnabled", darkModeEnabled).apply();
-                                if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences dark mode enabled: " + darkModeEnabled);
+
                                 
                                 Intent resultIntent= new Intent();
                                 resultIntent.putExtra("appFiat", appFiat);
                                 resultIntent.putExtra("appFiatFull", appFiatFull);
                                 resultIntent.putExtra("appLanguage", appLanguage);
-                                resultIntent.putExtra("appDarkModeEnabled", appDarkModeEnabled);
                                 listener.onDialogPositiveClick(SettingsDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
                                 dialog.dismiss();
                             } catch (Exception e) {

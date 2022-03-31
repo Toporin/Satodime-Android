@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:background="@color/night_color"
+    android:layout_margin="20dp"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/segoe_ui_bold"
+        android:text="@string/public_key"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+
+    <TextView
+        android:id="@+id/key_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/segoe_ui"
+        android:text=""
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+
+    <LinearLayout
+        android:id="@+id/copyBtn"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:background="@drawable/gold_store_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@drawable/ic_copy"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            app:tint="@color/gold_and_white_icon" />
+
+        <TextView
+            android:layout_marginStart="10dp"
+            android:text="@string/copy"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/segoe_ui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>

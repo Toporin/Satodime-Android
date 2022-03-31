@@ -357,7 +357,7 @@
         android:orientation="vertical" 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
        
         <TextView android:id="@+id/text_details_private_info"
             android:layout_width="wrap_content"
@@ -376,7 +376,7 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
             
             <!-- privkey -->
             <LinearLayout

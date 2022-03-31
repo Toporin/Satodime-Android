@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="RED">#FFFF0000</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="white">#000000</color>
+    <color name="black">#ffffff</color>
+    <color name="primarytext">#434343</color>
+    <color name="secondarytext">#a3a3a3</color>
+    <color name="gold_color">#B38653</color>
+    <color name="green">#16AF00</color>
+    <color name="gold_light">#E6CF91</color>
+    <color name="grey">#707070</color>
+    <color name="gold_and_white_icon">#ffffff</color>
+    <color name="gold_and_black_icon">#000000</color>
+    <color name="pure_white">#ffffff</color>
+    <color name="night_color">#5B5B5B</color>
+    <color name="pure_black">#000000</color>
+    <color name="onboarding_white_grey">#BFB5B5</color>
+    <color name="onboarding_gold_black">#5B5B5B</color>
+    <color name="dialog_gold_grey">#5B5B5B</color>
+    <color name="dialog_red_grey">#5B5B5B</color>
+    <color name="dialog_green_grey">#5B5B5B</color>
+    <color name="side_nav_header">#C4BFBF</color>
+    <color name="spinner_night_and_day">#707070</color>
+</resources>

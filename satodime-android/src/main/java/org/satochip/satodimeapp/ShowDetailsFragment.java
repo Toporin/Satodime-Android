@@ -3,8 +3,6 @@ package org.satochip.satodimeapp;
 import android.os.Bundle;
 import android.util.Log;
 import android.net.Uri;
-import android.support.v4.app.Fragment; 
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
@@ -19,20 +17,13 @@ import android.graphics.Color;
 import android.graphics.Bitmap;
 
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import org.satochip.satodimeapp.R;
-import org.satochip.satodimeapp.BuildConfig;
-
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.BarcodeFormat;
@@ -40,7 +31,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import static org.satochip.client.Constants.*;
-import static org.satochip.javacryptotools.coins.Constants.*;
+
+import androidx.fragment.app.DialogFragment;
 
 
 public class ShowDetailsFragment extends DialogFragment {

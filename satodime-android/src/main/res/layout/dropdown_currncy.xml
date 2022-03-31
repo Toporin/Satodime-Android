@@ -1,0 +1,9 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/tv_dropdown"
+    android:layout_height="wrap_content"
+    android:fontFamily="@font/segoe_ui"
+    android:padding="10dp"
+    android:text="textview"
+    android:textColor="@color/black"
+    android:textSize="16sp"/>

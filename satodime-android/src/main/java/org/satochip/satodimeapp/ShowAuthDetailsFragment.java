@@ -2,27 +2,17 @@ package org.satochip.satodimeapp;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.support.v4.app.Fragment; 
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.view.View;
 import android.app.AlertDialog;
 
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import org.satochip.satodimeapp.R;
-import org.satochip.satodimeapp.BuildConfig;
-
-import java.nio.ByteBuffer;
-
-import static org.satochip.client.Constants.*;
-import static org.satochip.javacryptotools.coins.Constants.*;
+import androidx.fragment.app.DialogFragment;
 
 
 public class ShowAuthDetailsFragment extends DialogFragment {

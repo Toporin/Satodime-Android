@@ -128,7 +128,7 @@
         android:layout_height="wrap_content"
         android:text="(error msg)" 
         android:textColor="#FFFF0000"
-        android:visibility="gone"
+        android:visibility="visible"
     />
     
     <!-- BUTTONS -->

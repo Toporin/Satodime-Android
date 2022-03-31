@@ -2,8 +2,7 @@ package org.satochip.satodimeapp;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.support.v4.app.Fragment; 
-import android.support.v4.app.DialogFragment;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
@@ -11,44 +10,32 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.View;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.text.TextWatcher;
 import android.text.Editable;
 
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
-import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-
-import org.satochip.satodimeapp.R;
-import org.satochip.satodimeapp.BuildConfig;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 import static org.satochip.client.Constants.*;
 import static org.satochip.javacryptotools.coins.Constants.*;
+
+import androidx.fragment.app.DialogFragment;
 
 
 public class SealFormDialogFragment extends DialogFragment {
@@ -82,7 +69,7 @@ public class SealFormDialogFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View view= inflater.inflate(R.layout.activity_seal_keyslot, null);
+        View view= inflater.inflate(R.layout.dialog_uninitialized, null);
         
         //
         entropyUser= new byte[32];
