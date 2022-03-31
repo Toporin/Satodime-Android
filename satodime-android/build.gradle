@@ -6,8 +6,8 @@ android {
         applicationId "org.satochip.satodimeapp"
         minSdkVersion 27
         targetSdkVersion 32
-        versionCode 5
-        versionName "0.3"
+        versionCode 100 // take versionName, padd each part with 0 to 2 ciphers then remove dots
+        versionName "0.1.0" // also update in main/res/values/strings.xml
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

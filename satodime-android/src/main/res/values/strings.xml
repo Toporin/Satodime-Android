@@ -1,7 +1,8 @@
 <resources>
 
     <string name="app_name">Satodime</string>
-
+    <string name="app_version" translatable="false">Version 0.1.0</string>
+    
     <string-array name="array_menu">
         <!--        <item>Spin &amp; Win</item>-->
         <item>Home</item>
@@ -211,7 +212,6 @@
     <!-- setting fragment -->
     <string name="settings_title">Settings</string>
     <string name="settings_confirm">Apply settings</string>
-    <string name="app_version">Version 0.3</string>
     <string name="share_txt">Share app</string>
     <string name="share_app_cptn">Share data</string>
     <string name="card_not_connected">Card Not Connected</string>

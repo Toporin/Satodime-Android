@@ -199,7 +199,6 @@
     <!-- setting fragment -->
     <string name="settings_title">Paramètres</string>
     <string name="settings_confirm">Appliquer</string>
-    <string name="app_version">Version 0.3</string>
     <string name="share_txt">Share app</string>
     <string name="share_app_cptn">Share data</string>
     <string name="card_not_connected">Carte non connectée</string>
