@@ -644,7 +644,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/segoe_ui_bold"
-                            android:text="NFT: "
+                            android:text="Contract: "
                             android:textColor="@color/black" />
 
                         <TextView
@@ -659,30 +659,6 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/group_details_nft_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/segoe_ui_bold"
-                            android:text="Name: "
-                            android:textColor="@color/black" />
-
-                        <TextView
-                            android:id="@+id/value_details_nft_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/segoe_ui"
-                            android:text=""
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp">
@@ -691,7 +667,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/segoe_ui_bold"
-                            android:text="NFT token ID: "
+                            android:text="Token ID: "
                             android:textColor="@color/black" />
 
                         <TextView
@@ -714,7 +690,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/segoe_ui_bold"
-                            android:text="NFT Balance: "
+                            android:text="Balance: "
                             android:textColor="@color/black" />
 
                         <TextView
@@ -754,7 +730,31 @@
                         android:orientation="vertical"
                         android:padding="10dp"
                         android:visibility="gone">
+                        
+                        <LinearLayout
+                            android:id="@+id/group_details_nft_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp">
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/segoe_ui_bold"
+                                android:text="Name: "
+                                android:textColor="@color/black" />
 
+                            <TextView
+                                android:id="@+id/value_details_nft_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:fontFamily="@font/segoe_ui"
+                                android:text=""
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+                        
                         <LinearLayout
                             android:id="@+id/group_details_nft_description"
                             android:layout_width="match_parent"
@@ -764,7 +764,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/segoe_ui"
-                                android:text="NFT Balance: "
+                                android:text="Description: "
                                 android:textColor="@color/black" />
 
                             <TextView
