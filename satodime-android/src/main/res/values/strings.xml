@@ -41,7 +41,7 @@
     <!-- main layout -->
     <string name="card_info">Card info :</string>
     <string name="card_info_text">Card info</string>
-    <string name="card_connected_text">Card connected </string>
+    <string name="card_connected_text">Card connected</string>
     <string name="card_connected_value">(no card detected)</string>
     <string name="card_status_text">Card status</string>
     <string name="card_status_value">(no card detected)</string>
@@ -67,7 +67,6 @@
         <item>Unseal key!</item>
         <item>Reset key!</item>
     </string-array>
-    <string name="card_connected">Connection status</string>
     <string name="accept_transfer_question">Accept ownership?</string>
     <string name="accept_transfer_warning">
             A transfer of ownership has been initiated by the previous owner. 
@@ -119,7 +118,8 @@
     <string name="reset_confirm">Reset</string>
     <string name="reset_cancel">Keyslot reset cancelled!</string>
     <string name="button_more_details">More details</string>
-    <string name="card_disconnected">Card disconnected!</string>
+    <string name="card_disconnected">Card disconnected</string>
+    <string name="card_connected">Card connected</string>
     <string name="seal_cancel">Seal keyslot action cancelled!</string>
     <string name="seal_success">Keyslot sealed successfully!</string>
     <string name="seal_fail">Failed to seal keyslot, will try again at next card connection</string>
@@ -142,7 +142,12 @@
                 \n\nClick on \'Reset\' to continue, or \'Cancel\' to abort</string>
     <string name="reset_ownership_confirmation">Reset</string>
     <string name="reset_ownership_rejected">Ownership reset rejected!</string>
-
+    
+    <!-- side menu -->
+    <string name="share_with_friends">Share with your friends</string>
+    <string name="share_details">Satodime: the secure bearer crypto card! Exchange cryptos physically, easily and securely: https://play.google.com/store/apps/details?id=</string>
+    <string name="faq_link">https://satochip.io/faq/</string>
+    
     <!-- seal keyslot layout -->
     <string name="select_blockchain">Select blockchain:</string>
     <string name="select_asset">"Select asset type: "</string>

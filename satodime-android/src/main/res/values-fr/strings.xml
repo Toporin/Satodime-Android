@@ -51,7 +51,6 @@
         <item>Desceller le slot</item>
         <item>Réinitialiser le slot</item>
     </string-array>    
-    <string name="card_connected">Statut de connexion</string>
     <string name="accept_transfer_question">Accepter le transfert de carte?</string>
     <string name="accept_transfer_warning">
             Un transfert de propriété a été initié par le précédent propriétaire de la carte.
@@ -106,7 +105,8 @@
     <string name="reset_confirm">Réinitialiser</string>
     <string name="reset_cancel">Réinitialisation de la clé annulée!</string>
     <string name="button_more_details">Plus de détails</string>
-    <string name="card_disconnected">Carte déconnectée!</string>
+    <string name="card_disconnected">Carte déconnectée</string>
+    <string name="card_connected">Card connectée</string>
     <string name="seal_cancel">Le scellage de la clé a été annulé!</string>
     <string name="seal_success">Clé scellée avec succès!</string>
     <string name="seal_fail">Impossible de sceller la clé, nouvelle tentative prévue à la prochaine connection</string>
@@ -129,6 +129,11 @@
                 \n\nAppuyez sur \'Réinitialiser\' pour continuer, ou sur \'Annuler\'</string>
     <string name="reset_ownership_confirmation">Réinitialiser</string>
     <string name="reset_ownership_rejected">Réinitialisation du statut de propriété rejetée!</string>
+    
+    <!-- side menu -->
+    <string name="share_with_friends">Partagez avec vos amis</string>
+    <string name="share_details">Satodime: la carte au porteur pour vos cryptos! Stockez et échangez vos crypto-monnaies physiquement en toute sécurité: https://play.google.com/store/apps/details?id=</string>
+    <string name="faq_link">https://satochip.io/faq/?lang=fr</string>
     
     <!-- seal keyslot layout -->
     <string name="select_blockchain">"Selectionnez la blockchain: "</string> 

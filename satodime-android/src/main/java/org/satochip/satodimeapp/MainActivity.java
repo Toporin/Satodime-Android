@@ -284,13 +284,7 @@ public class MainActivity extends AppCompatActivity
                             cardNotConnectedLayout.setVisibility(View.GONE);
                             progressBar.setVisibility(View.VISIBLE);
                             connLogo.setImageResource(R.drawable.ic_card_connected);
-
-
-                            if (appLanguage.equals("fr")) {
-                                connText.setText("Carte connectée");
-                            } else {
-                                connText.setText("Card connected");
-                            }
+                            connText.setText(getString(R.string.card_connected));
                         }
                     });
 
@@ -1110,12 +1104,7 @@ public class MainActivity extends AppCompatActivity
                         Toast toast= Toast.makeText(getApplicationContext(), R.string.card_disconnected, Toast.LENGTH_SHORT);
                         toast.show();
                         connLogo.setImageResource(R.drawable.ic_card_not_connected);
-
-                        if (appLanguage.equals("fr")) {
-                            connText.setText("Carte non connectée");
-                        } else {
-                            connText.setText("Card Not Connected");
-                        }
+                        connText.setText(getString(R.string.card_disconnected));
 
                         // disable card-specific buttons
                         //buttonTransfer.setEnabled(false);
@@ -1207,7 +1196,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-
+        if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESUME");
+                
         lst_menu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         NavigationAdapter adapter= new NavigationAdapter(this);
         lst_menu.setHasFixedSize(true);
@@ -1219,7 +1209,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             headerImg.setImageResource(R.drawable.splash_screen_golden_logo);
         }
-        if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESUME");
+
         if (nfcAdapter != null) {
             nfcAdapter.enableReaderMode(this, this.cardManager, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
         }
@@ -1228,19 +1218,15 @@ public class MainActivity extends AppCompatActivity
             isLanguageChanged=false;
             recreate();
         }
-
-        appLanguage= prefs.getString("appLanguage", Locale.getDefault().getLanguage());
-        if (appLanguage.equals("fr")) {
-            noCardMainText.setText("Carte non connectée");
-        } else {
-            noCardMainText.setText("Card Not Connected");
-        }
+        
+        noCardMainText.setText(getString(R.string.card_disconnected));
 
         appFiat= prefs.getString("appFiat", "(none)");
         if (!appFiat.equals("(none)")) {
             useFiat= true;
         }
     }
+    
     @Override
     public void recreate() {
         Log.d("testActivityREs", "happended");
@@ -2641,26 +2627,14 @@ public class MainActivity extends AppCompatActivity
                         Log.d("testLangu", appLanguage);
                         Intent sendIntent= new Intent();
                         sendIntent.setAction(Intent.ACTION_SEND);
-                        if (appLanguage.equals("fr")) {
-                            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Partagez avec vos amis");
-                            sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                    "Parce que vos amis méritent de savoir à quel point le monde de la crypto-monnaie est génial avec une carte Satodime ! https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID);
-                        } else {
-                            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Share with friends");
-                            sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                    "Because your friends deserve to know how great the crypto-currency world is with a Satodime card! https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID);
-                        }
+                        sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_with_friends)); 
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_details) + BuildConfig.APPLICATION_ID);       
                         sendIntent.setType("text/plain");
                         homeActivity.startActivity(sendIntent);
                     } else if (menuTittle.equalsIgnoreCase("FAQ")) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
-                        Intent browserIntent= null;
-                        if (appLanguage.equals("fr")) {
-                            browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse("https://satochip.io/faq/?lang=fr"));
-                        } else {
-                            browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse("https://satochip.io/faq/"));
-                        }
+                        Intent browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.faq_link)));
                         homeActivity.startActivity(browserIntent);
                     }
 
