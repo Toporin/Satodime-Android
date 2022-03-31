@@ -897,8 +897,8 @@ public class MainActivity extends AppCompatActivity
                                 }
                                 else {
                                     String blockChain= (String) keyInfoList.get(2).get("coinDisplayName");
-                                    Log.d("testNetICon",blockChain);
                                     if (blockChain != null) {
+                                        Log.d("testNetICon", blockChain);
                                         switch (blockChain) {
                                             case "Bitcoin":
                                             case "Bitcoin Testnet":{
@@ -1932,8 +1932,10 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     // token/nft
-                    double tokenBalance;
-                    String tokenBalanceTxt;
+                    double tokenBalance=-1;
+                    String tokenBalanceTxt= getResources().getString(R.string.token_balance_wait); // temporary value
+                    keyInfo2.put("tokenBalance", tokenBalance);
+                    keyInfo2.put("tokenBalanceTxt", tokenBalanceTxt);
                     if (isToken || isNFT) {
                         try {
                             long balanceLong= coin.getTokenBalance(coinAddress, keyContractHex);

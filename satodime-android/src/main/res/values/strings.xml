@@ -132,6 +132,7 @@
     <string name="not_applicable">(N/A)</string>
     <string name="coin_balance_fail">(failed to fetch coin balance)</string>
     <string name="token_balance_fail">(failed to fetch token balance)</string>
+    <string name="token_balance_wait">(balance unavailable, please try again)</string>
     <string name="reset_ownership_question">Reset ownership?</string>
     <string name="reset_ownership_warning">
                 Warning:

@@ -119,6 +119,7 @@
     <string name="not_applicable">(N/A)</string>
     <string name="coin_balance_fail">(échec de la récupération du solde)</string>
     <string name="token_balance_fail">(échec de la récupération du solde)</string>
+    <string name="token_balance_wait">(balance indisponible, veuillez réessayer)</string>
     <string name="reset_ownership_question">Réinitialiser le statut de propriété?</string>
     <string name="reset_ownership_warning">
                 Attention:
