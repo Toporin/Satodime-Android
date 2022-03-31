@@ -136,24 +136,26 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (DEBUG) Log.d(TAG, "BUTTON QR CLICKED!");
-                //
-                QRCodeWriter writer = new QRCodeWriter();
-                try {
-                    //TODO: change coinAddress?
-                    BitMatrix bitMatrix = writer.encode(coinAddress, BarcodeFormat.QR_CODE, 512, 512);
-                    int width = bitMatrix.getWidth();
-                    int height = bitMatrix.getHeight();
-                    Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-                    for (int x = 0; x < width; x++) {
-                        for (int y = 0; y < height; y++) {
-                            bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                if (imviewAddress.getVisibility() == View.GONE){
+                    try {
+                        QRCodeWriter writer = new QRCodeWriter();
+                        //TODO: change coinAddress?
+                        BitMatrix bitMatrix = writer.encode(coinAddress, BarcodeFormat.QR_CODE, 512, 512);
+                        int width = bitMatrix.getWidth();
+                        int height = bitMatrix.getHeight();
+                        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                        for (int x = 0; x < width; x++) {
+                            for (int y = 0; y < height; y++) {
+                                bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                            }
                         }
+                        imviewAddress.setImageBitmap(bmp);
+                        imviewAddress.setVisibility(View.VISIBLE);
+                    } catch (WriterException e) {
+                        e.printStackTrace();
                     }
-                    imviewAddress.setImageBitmap(bmp);
-                    imviewAddress.setVisibility(View.VISIBLE);
-
-                } catch (WriterException e) {
-                    e.printStackTrace();
+                } else {
+                    imviewAddress.setVisibility(View.GONE);
                 }
             }
         });
@@ -275,9 +277,9 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
             TextView tvEntropyHex = (TextView) findViewById(R.id.value_details_private_entropy);
             tvEntropyHex.setText(entropyHex);
 
-//             buttons privkey
+            // buttons privkey
             // COPY
-            ImageButton imButtonPrivkeyCopy = (ImageButton) findViewById(R.id.imbutton_privkey_copy);
+            ImageView imButtonPrivkeyCopy = (ImageView) findViewById(R.id.imbutton_privkey_copy);
             imButtonPrivkeyCopy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -290,33 +292,37 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
             });
             // QR
             imviewPrivkey = (ImageView) findViewById(R.id.imview_privkey_qr);
-            ImageButton imButtonPrivkeyQr = (ImageButton) findViewById(R.id.imbutton_privkey_qr);
+            ImageView imButtonPrivkeyQr = (ImageView) findViewById(R.id.imbutton_privkey_qr);
             imButtonPrivkeyQr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (DEBUG) Log.d(TAG, "BUTTON PRIVKEY QR CLICKED!");
-                    QRCodeWriter writer = new QRCodeWriter();
-                    try {
-                        BitMatrix bitMatrix = writer.encode(privkeyHex, BarcodeFormat.QR_CODE, 512, 512);
-                        int width = bitMatrix.getWidth();
-                        int height = bitMatrix.getHeight();
-                        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-                        for (int x = 0; x < width; x++) {
-                            for (int y = 0; y < height; y++) {
-                                bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    if (imviewPrivkey.getVisibility() == View.GONE){
+                        try {
+                            QRCodeWriter writer = new QRCodeWriter();
+                            BitMatrix bitMatrix = writer.encode(privkeyHex, BarcodeFormat.QR_CODE, 512, 512);
+                            int width = bitMatrix.getWidth();
+                            int height = bitMatrix.getHeight();
+                            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                            for (int x = 0; x < width; x++) {
+                                for (int y = 0; y < height; y++) {
+                                    bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                                }
                             }
-                        }
-                        imviewPrivkey.setImageBitmap(bmp);
-                        imviewPrivkey.setVisibility(View.VISIBLE);
-                    } catch (WriterException e) {
-                        e.printStackTrace();
+                            imviewPrivkey.setImageBitmap(bmp);
+                            imviewPrivkey.setVisibility(View.VISIBLE);
+                        } catch (WriterException e) {
+                            e.printStackTrace();
+                        }  
+                    } else {
+                        imviewPrivkey.setVisibility(View.GONE);
                     }
                 }
             });
 
-//             buttons WIF
-//             COPY
-            ImageButton imButtonWifCopy = (ImageButton) findViewById(R.id.imbutton_wif_copy);
+            // buttons WIF
+            // COPY
+            ImageView imButtonWifCopy = (ImageView) findViewById(R.id.imbutton_wif_copy);
             imButtonWifCopy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -327,28 +333,32 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), R.string.wif_copied_toast, Toast.LENGTH_SHORT).show();
                 }
             });
-//             QR
+            // QR
             imviewWif = (ImageView) findViewById(R.id.imview_wif_qr);
-            ImageButton imButtonWifQr = (ImageButton) findViewById(R.id.imbutton_wif_qr);
+            ImageView imButtonWifQr = (ImageView) findViewById(R.id.imbutton_wif_qr);
             imButtonWifQr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (DEBUG) Log.d(TAG, "BUTTON WIF QR CLICKED!");
-                    QRCodeWriter writer = new QRCodeWriter();
-                    try {
-                        BitMatrix bitMatrix = writer.encode(privkeyWif, BarcodeFormat.QR_CODE, 512, 512);
-                        int width = bitMatrix.getWidth();
-                        int height = bitMatrix.getHeight();
-                        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-                        for (int x = 0; x < width; x++) {
-                            for (int y = 0; y < height; y++) {
-                                bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    if (imviewWif.getVisibility() == View.GONE){
+                        try {
+                            QRCodeWriter writer = new QRCodeWriter();
+                            BitMatrix bitMatrix = writer.encode(privkeyWif, BarcodeFormat.QR_CODE, 512, 512);
+                            int width = bitMatrix.getWidth();
+                            int height = bitMatrix.getHeight();
+                            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                            for (int x = 0; x < width; x++) {
+                                for (int y = 0; y < height; y++) {
+                                    bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                                }
                             }
+                            imviewWif.setImageBitmap(bmp);
+                            imviewWif.setVisibility(View.VISIBLE);
+                        } catch (WriterException e) {
+                            e.printStackTrace();
                         }
-                        imviewWif.setImageBitmap(bmp);
-                        imviewWif.setVisibility(View.VISIBLE);
-                    } catch (WriterException e) {
-                        e.printStackTrace();
+                    } else {
+                        imviewWif.setVisibility(View.GONE);
                     }
                 }
             });
