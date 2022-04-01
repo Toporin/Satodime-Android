@@ -85,6 +85,8 @@
     <string name="request_pending_title">Request pending</string>
     <string name="request_rejected">Pending request rejected!</string>
     <string name="card_connected_value_ok">Card connected</string>
+    <string name="card_connected_value_ko">Card disconnected</string>
+    <string name="card_connected_value_no">No card connected</string>
     <string name="card_status_value_ok">Device authenticated successfully</string>
     <string name="card_status_value_ko">Error: could not authenticate the issuer of this card!</string>
     <string name="card_ownership_value_ok">You are the card owner</string>

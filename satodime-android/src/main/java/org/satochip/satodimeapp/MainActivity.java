@@ -63,6 +63,7 @@ import org.satochip.satodimeapp.model.Card;
 import org.satochip.satodimeapp.ui.activity.CardInfoActivity;
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
+import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 
 import static org.satochip.javacryptotools.coins.Constants.*;
 
@@ -141,7 +142,8 @@ public class MainActivity extends AppCompatActivity
     private boolean isOwner= false;
     private static final int MAX_OWNERSHIP_ERROR= 5;
     private int ownership_error_counter= 0;
-
+    private String[] authResults= null;
+    
     // settings button 
     private Button buttonSettings= null;
 
@@ -457,7 +459,7 @@ public class MainActivity extends AppCompatActivity
                     });
 
                     // check card authenticity
-                    String[] authResults= cmdSet.cardVerifyAuthenticity();
+                    authResults= cmdSet.cardVerifyAuthenticity();
                     for (int index= 0; index < authResults.length; index++) {
                         if(DEBUG) Log.d(TAG, "DEBUGAUTH : " + authResults[index]);
                     }
@@ -2577,8 +2579,18 @@ public class MainActivity extends AppCompatActivity
                         setFilter(navigationHolder, i);
                     } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_card_info))) {
                         selectedItem= menu_title[i];
-                        homeActivity.startActivity(new Intent(homeActivity, CardInfoActivity.class));
                         setFilter(navigationHolder, i);
+                        //homeActivity.startActivity(new Intent(homeActivity, CardInfoActivity.class));
+                        
+                        //TODO: fragment instead of activity!
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArray("authResults", authResults);
+                        bundle.putBoolean("isOwner", isOwner);
+                        bundle.putBoolean("isConnected", isConnected);
+                        DialogFragment fragment = new CardInfoFragment();
+                        fragment.setArguments(bundle);
+                        fragment.show(getSupportFragmentManager(), "CardInfoFragment");
+                        
                     } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_transfer_card))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
@@ -2624,7 +2636,6 @@ public class MainActivity extends AppCompatActivity
                         Log.d("menuNameaa", menu_title[i]);
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
-                        Log.d("testLangu", appLanguage);
                         Intent sendIntent= new Intent();
                         sendIntent.setAction(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_with_friends)); 

@@ -38,7 +38,7 @@
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
-
+    <!-- card connected layout -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -275,6 +275,8 @@
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
+        
+        <!-- card not connected layout -->
         <LinearLayout
             android:id="@+id/not_connected_card_layout"
             android:layout_width="match_parent"
