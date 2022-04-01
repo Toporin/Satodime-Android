@@ -2580,9 +2580,8 @@ public class MainActivity extends AppCompatActivity
                     } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_card_info))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
+                        //fragment instead of activity!
                         //homeActivity.startActivity(new Intent(homeActivity, CardInfoActivity.class));
-                        
-                        //TODO: fragment instead of activity!
                         Bundle bundle = new Bundle();
                         bundle.putStringArray("authResults", authResults);
                         bundle.putBoolean("isOwner", isOwner);
@@ -2591,117 +2590,6 @@ public class MainActivity extends AppCompatActivity
                         fragment.setArguments(bundle);
                         fragment.show(getSupportFragmentManager(), "CardInfoFragment");
                         
-/*                         // TODO AlertDialog 
-                        final AlertDialog.Builder builder= new AlertDialog.Builder(homeActivity, R.style.CustomAlertDialog);
-                        ViewGroup viewGroup= v.findViewById(android.R.id.content);
-                        View dialogView= LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_card_info, viewGroup, false);
-
-                        // update card info
-                        TextView tvConnected = (TextView) dialogView.findViewById(R.id.value_card_connected);
-                        ImageView ivConnected= (ImageView) dialogView.findViewById(R.id.iv_card_connected);
-                        TextView tvOwner = (TextView) dialogView.findViewById(R.id.value_card_owner);
-                        ImageView ivOwner= (ImageView) dialogView.findViewById(R.id.iv_card_owner);
-                        TextView tvAuth = (TextView) dialogView.findViewById(R.id.value_card_auth);
-                        ImageView ivAuth= (ImageView) dialogView.findViewById(R.id.iv_card_auth);
-                        if (authResults == null){
-                            tvConnected.setText(R.string.card_connected_value_no);
-                            ivConnected.setImageResource(R.drawable.cancel);
-                            tvOwner.setText(R.string.card_connected_value_no);
-                            ivOwner.setImageResource(R.drawable.cancel);
-                            tvAuth.setText(R.string.card_connected_value_no);
-                            ivAuth.setImageResource(R.drawable.cancel);
-                        } else {
-                            // connection status
-                            if (isConnected){
-                                tvConnected.setText(R.string.card_connected_value_ok);
-                                ivConnected.setImageResource(R.drawable.ic_success);
-                            } else {
-                                tvConnected.setText(R.string.card_connected_value_ko);
-                                ivConnected.setImageResource(R.drawable.cancel);
-                            }
-                            // ownership status
-                            if (isOwner){
-                                tvOwner.setText(R.string.card_ownership_value_ok);
-                                ivOwner.setImageResource(R.drawable.ic_success);
-                            } else {
-                                tvOwner.setText(R.string.card_ownership_value_ko);
-                                ivOwner.setImageResource(R.drawable.cancel);
-                            }
-                            // authenticity status
-                            if (authResults[0].equals("OK")) {
-                                tvAuth.setText(R.string.card_status_value_ok);
-                                ivAuth.setImageResource(R.drawable.ic_success);
-                            } else {
-                                tvAuth.setText(R.string.card_status_value_ko);
-                                ivAuth.setImageResource(R.drawable.cancel);
-                            }
-                        }
-                        
-                        // TODO button certificate chain
-                        LinearLayout showCertificateBtn= dialogView.findViewById(R.id.show_certificate_btn);
-                        showCertificateBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //final AlertDialog.Builder builder = new AlertDialog.Builder(CardInfoFragment.this, R.style.CustomAlertDialog);
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
-                                ViewGroup viewGroup = v.findViewById(android.R.id.content);
-                                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_certificate_details, viewGroup, false);
-                                builder.setView(view);
-
-                                String authRes = "";
-                                String authCa = "";
-                                String authSubca = "";
-                                String authDevice = "";
-                                String authError = "";
-                                String authStatus = "";
-
-                                LinearLayout llGroupDetails;
-                                TextView tvAuthStatus;
-                                TextView tvCa;
-                                TextView tvSubca;
-                                TextView tvDevice;
-
-                                if (authResults != null){
-                                    authRes= authResults[0];
-                                    authCa= authResults[1];
-                                    authSubca= authResults[2];
-                                    authDevice= authResults[3];
-                                    authError= authResults[4];
-                                    authStatus="";
-                                }
-
-                                tvAuthStatus= (TextView) view.findViewById(R.id.text_auth_status);
-                                llGroupDetails= (LinearLayout) view.findViewById(R.id.group_auth_details);
-                                if (authRes.equals("OK")){
-                                    authStatus= getResources().getString(R.string.auth_success);
-                                    authStatus+="\n\n";
-                                } else {
-                                    authStatus= getResources().getString(R.string.auth_fail);
-                                    authStatus+="\n\n" + getResources().getString(R.string.reason) + authError + "\n\n";
-                                }
-                                tvAuthStatus.setText(authStatus);
-
-                                tvCa= (TextView) view.findViewById(R.id.text_ca);
-                                authCa= "======== Root CA certificate: ======== \r\n" + authCa;
-                                tvCa.setText(authCa);
-
-                                tvSubca= (TextView) view.findViewById(R.id.text_subca);
-                                authSubca= "======== Sub CA certificate: ======== \r\n" + authSubca;
-                                tvSubca.setText(authSubca);
-
-                                tvDevice= (TextView) view.findViewById(R.id.text_device);
-                                authDevice= "======== Device certificate: ======== \r\n" + authDevice;
-                                tvDevice.setText(authDevice);
-
-                                final AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
-                            }
-                        });
-                        
-                        // show 
-                        builder.setView(dialogView);
-                        final AlertDialog alertDialog= builder.create();
-                        alertDialog.show(); */
                     } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_transfer_card))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);

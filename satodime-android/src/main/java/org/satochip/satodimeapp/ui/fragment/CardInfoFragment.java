@@ -8,25 +8,19 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+// import android.content.DialogInterface;
+// import android.content.Intent;
 import android.app.AlertDialog;
-import android.text.TextWatcher;
-import android.text.Editable;
+// import android.text.TextWatcher;
+// import android.text.Editable;
 
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.EditText;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
+//import android.widget.Button;
 
 import androidx.fragment.app.DialogFragment;
-//import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 
 import org.satochip.satodimeapp.MainActivity;
@@ -50,7 +44,6 @@ public class CardInfoFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        //View view= inflater.inflate(R.layout.activity_card_info, null);
         View view= inflater.inflate(R.layout.dialog_card_info, null);
         
         // get values passed in bundle
@@ -68,15 +61,9 @@ public class CardInfoFragment extends DialogFragment {
         TextView tvAuth = (TextView) view.findViewById(R.id.value_card_auth);
         ImageView ivAuth= (ImageView) view.findViewById(R.id.iv_card_auth);
         if (authResults == null){
-            //llConnected.setBackgroundResource(R.drawable.card_info_item_background_not_connected);
             tvConnected.setText(R.string.card_connected_value_no);
-            //ivConnected.setImageResource(R.drawable.cancel);
-            //llOwner.setBackgroundResource(R.drawable.card_info_item_background_not_connected);
             tvOwner.setText(R.string.card_connected_value_no);
-            //ivOwner.setImageResource(R.drawable.cancel);
-            //llAuth.setBackgroundResource(R.drawable.card_info_item_background_not_connected);
             tvAuth.setText(R.string.card_connected_value_no);
-            //ivAuth.setImageResource(R.drawable.cancel);
         } else {
             // connection status
             if (isConnected){
@@ -85,7 +72,6 @@ public class CardInfoFragment extends DialogFragment {
                 ivConnected.setImageResource(R.drawable.ic_success);
             } else {
                 tvConnected.setText(R.string.card_connected_value_ko);
-                //ivConnected.setImageResource(R.drawable.cancel);
             }
             // ownership status
             if (isOwner){
@@ -94,7 +80,6 @@ public class CardInfoFragment extends DialogFragment {
                 ivOwner.setImageResource(R.drawable.ic_success);
             } else {
                 tvOwner.setText(R.string.card_ownership_value_ko);
-                //ivOwner.setImageResource(R.drawable.cancel);
             }
             // authenticity status
             if (authResults[0].equals("OK")) {
@@ -103,16 +88,13 @@ public class CardInfoFragment extends DialogFragment {
                 ivAuth.setImageResource(R.drawable.ic_success);
             } else {
                 tvAuth.setText(R.string.card_status_value_ko);
-                //ivAuth.setImageResource(R.drawable.cancel);
             }
         }
         
         LinearLayout showCertificateBtn= (LinearLayout) view.findViewById(R.id.show_certificate_btn);
-        //showCertificateBtn= (LinearLayout) view.findViewById(R.id.show_certificate_btn);
         showCertificateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //final AlertDialog.Builder builder = new AlertDialog.Builder(CardInfoFragment.this, R.style.CustomAlertDialog);
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
                 ViewGroup viewGroup = v.findViewById(android.R.id.content);
                 View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_certificate_details, viewGroup, false);
@@ -188,67 +170,5 @@ public class CardInfoFragment extends DialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
     }     */
-
-    /* private void clickListners() {
-        showCertificateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //final AlertDialog.Builder builder = new AlertDialog.Builder(CardInfoFragment.this, R.style.CustomAlertDialog);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
-                ViewGroup viewGroup = v.findViewById(android.R.id.content);
-                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_certificate_details, viewGroup, false);
-                builder.setView(view);
-
-                String authRes = "";
-                String authCa = "";
-                String authSubca = "";
-                String authDevice = "";
-                String authError = "";
-                String authStatus = "";
-
-                LinearLayout llGroupDetails;
-                TextView tvAuthStatus;
-                TextView tvCa;
-                TextView tvSubca;
-                TextView tvDevice;
-
-                if (authResults != null){
-                    authRes= authResults[0];
-                    authCa= authResults[1];
-                    authSubca= authResults[2];
-                    authDevice= authResults[3];
-                    authError= authResults[4];
-                    authStatus="";
-                }
-
-                tvAuthStatus= (TextView) view.findViewById(R.id.text_auth_status);
-                llGroupDetails= (LinearLayout) view.findViewById(R.id.group_auth_details);
-                if (authRes.equals("OK")){
-                    authStatus= getResources().getString(R.string.auth_success);
-                    authStatus+="\n\n";
-                } else {
-                    authStatus= getResources().getString(R.string.auth_fail);
-                    authStatus+="\n\n" + getResources().getString(R.string.reason) + authError + "\n\n";
-                }
-                tvAuthStatus.setText(authStatus);
-
-                tvCa= (TextView) view.findViewById(R.id.text_ca);
-                authCa= "======== Root CA certificate: ======== \r\n" + authCa;
-                tvCa.setText(authCa);
-
-                tvSubca= (TextView) view.findViewById(R.id.text_subca);
-                authSubca= "======== Sub CA certificate: ======== \r\n" + authSubca;
-                tvSubca.setText(authSubca);
-
-                tvDevice= (TextView) view.findViewById(R.id.text_device);
-                authDevice= "======== Device certificate: ======== \r\n" + authDevice;
-                tvDevice.setText(authDevice);
-
-                final AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-            }
-        });
-        
-    } */
 
 }

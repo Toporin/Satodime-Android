@@ -48,6 +48,9 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+        DEPRECATED use CardInfoFragment instead
+*/
 public class CardInfoActivity extends AppCompatActivity {
 
     private CardView toolBar;
