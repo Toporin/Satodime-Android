@@ -28,6 +28,7 @@ import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 
 import java.util.List;
 
+/* Currently unused? */
 public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHolder> {
 
     List<Card> notesList;
