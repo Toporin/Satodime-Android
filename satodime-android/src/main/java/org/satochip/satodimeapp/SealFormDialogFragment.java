@@ -24,6 +24,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
+import org.satochip.satodimeapp.R;	
+import org.satochip.satodimeapp.BuildConfig;	
+
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -49,6 +52,7 @@ public class SealFormDialogFragment extends DialogFragment {
     byte[] entropyUser;
     SHA256Digest sha256;
     
+    private AlertDialog dialog;
     private Spinner spinnerAsset;
     private Spinner spinnerCoin;
     private CheckBox cbTestnet;
@@ -69,7 +73,8 @@ public class SealFormDialogFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View view= inflater.inflate(R.layout.dialog_uninitialized, null);
+        //View view= inflater.inflate(R.layout.dialog_uninitialized, null);
+        View view= inflater.inflate(R.layout.activity_seal_keyslot, null);
         
         //
         entropyUser= new byte[32];
@@ -86,7 +91,10 @@ public class SealFormDialogFragment extends DialogFragment {
         etEntropyIn= (EditText) view.findViewById(R.id.edittext_entropy_input);
         tvNotif= (TextView) view.findViewById(R.id.text_notification); 
         tvEntropyOut= (TextView) view.findViewById(R.id.value_entropy_output); 
-               
+        
+        TextView transferBtn= (TextView) view.findViewById(R.id.transfer_btn);
+        TextView cancelBtn= (TextView) view.findViewById(R.id.cancel_btn);
+        
         // update entropyOut when entropyIn changes
         etEntropyIn.addTextChangedListener(new TextWatcher() {
             @Override
@@ -168,8 +176,128 @@ public class SealFormDialogFragment extends DialogFragment {
             }
         });
         
+        // button cancel
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //dialog.dismiss();
+                listener.onDialogNegativeClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_CANCELLED);
+                getDialog().dismiss();
+            }
+        });
+        
+        // button seal
+        transferBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setPositiveButton - onClick");
+
+                try {
+                    // check that all required data is provided & sanitize inputs
+                    String asset= spinnerAsset.getSelectedItem().toString();
+                    int assetInt= (int) MAP_CODE_BY_ASSET.get(asset);
+                    if(DEBUG) Log.d(TAG, "SEAL asset: " + asset);
+                    String coin= spinnerCoin.getSelectedItem().toString();
+                    if(DEBUG) Log.d(TAG, "SEAL coin: " + coin);
+                    boolean isTestnet= cbTestnet.isChecked();
+                    if(DEBUG) Log.d(TAG, "SEAL isTestnet: " + isTestnet);
+                    int slip44Int= (int) MAP_SLIP44_BY_SYMBOL.get(coin);
+                    if (isTestnet) {
+                        slip44Int= slip44Int & 0x7FFFFFFF; // set msb to 0
+                    }
+                    ByteBuffer bb= ByteBuffer.allocate(4);
+                    bb.putInt(slip44Int); // big endian
+                    byte[] slip44= bb.array();
+                    // isToken or isNFT?
+                    boolean isToken= TOKENSET.contains(asset);
+                    boolean isNFT= NFTSET.contains(asset);
+                    // check contract: contract byte array should be [size(2b) | contract | 0-padding to 34b]
+                    String contract= etContract.getText().toString();
+                    byte[] contractByte;
+                    if (isToken || isNFT) {
+                        if(DEBUG) Log.d(TAG, "SEAL contract (before): " + contract);
+                        String regex= "^(0x)?[0-9a-fA-F]{40}$";
+                        if (!contract.matches(regex)) {
+                            throw new Exception(getResources().getString(R.string.exception_contract_format));
+                        }
+                        contract= contract.replaceFirst("^0x", ""); // remove "0x" if present
+                        try {
+                            contractByte= Hex.decode(contract);
+                        } catch (Exception e) {
+                            throw new Exception(getResources().getString(R.string.exception_contract_format_hex));
+                        }
+                        if (contractByte.length > 32) {
+                            throw new Exception(getResources().getString(R.string.exception_contract_too_long));
+                        }
+                    } else {
+                        contractByte= new byte[0]; // ignore contract value
+                    }
+                    byte[] contractByteTLV= new byte[34];
+                    contractByteTLV[0]= (byte) 0;
+                    contractByteTLV[1]= (byte) (contractByte.length);
+                    System.arraycopy(contractByte, 0, contractByteTLV, 2, contractByte.length);
+                    if(DEBUG)
+                        Log.d(TAG, "SEAL contract (after)   : " + Hex.toHexString(contractByte));
+                    // check tokenid: tokenid byte array should be [size(2b) | tokenid | 0-padding to 34b]
+                    String tokenid= etTokenid.getText().toString();
+                    byte[] tokenidByte;
+                    if (isNFT) {
+                        BigInteger tokenidBig= new BigInteger(tokenid); // tokenid is decimal-formated
+                        String tokenidHexString= tokenidBig.toString(16); // convert to hex string
+                        if (tokenidHexString.length() % 2== 1) {
+                            tokenidHexString= "0" + tokenidHexString; // must have an even number of chars
+                        }
+                        tokenidByte= Hex.decode(tokenidHexString); // convert to bytes
+                        if (tokenidByte.length > 32) {
+                            throw new Exception(getResources().getString(R.string.exception_tokenid_too_long));
+                        }
+                    } else {
+                        tokenidByte= new byte[0]; // ignore tokenID
+                    }
+                    byte[] tokenidByteTLV= new byte[34];
+                    tokenidByteTLV[0]= (byte) 0;
+                    tokenidByteTLV[1]= (byte) (tokenidByte.length);
+                    System.arraycopy(tokenidByte, 0, tokenidByteTLV, 2, tokenidByte.length);
+                    if(DEBUG) Log.d(TAG, "SEAL tokenid (before): " + tokenid);
+                    if(DEBUG) Log.d(TAG, "SEAL tokenid (after)   : " + Hex.toHexString(tokenidByte));
+
+                    // return data to activity
+                    Intent resultIntent= new Intent();
+                    //resultIntent.putExtra("keyNbr", keyNbr); //TODO: remove?
+                    resultIntent.putExtra("entropyUser", entropyUser);
+                    resultIntent.putExtra("asset", asset);
+                    resultIntent.putExtra("assetInt", assetInt);
+                    resultIntent.putExtra("slip44", slip44);
+                    resultIntent.putExtra("contractByteTLV", contractByteTLV);
+                    resultIntent.putExtra("tokenidByteTLV", tokenidByteTLV);
+                    listener.onDialogPositiveClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
+                    //dialog.dismiss();
+                    getDialog().dismiss();
+                    
+/*                     sealKeyslotAsset= assetInt;
+                    sealKeyslotSlip44= slip44;
+                    sealKeyslotContractByteTLV= contractByteTLV;
+                    sealKeyslotTokenidByteTLV= tokenidByteTLV;
+                    sealKeyslotEntropyUser= entropyUser;
+                    // send to card
+                    // in case of failure, seal is postposed to next card connected
+                    sendSealKeyslotApduToCard();
+                    alertDialog.dismiss(); */
+                } catch (Exception e) {
+                    if(DEBUG) Log.e(TAG, e.getMessage());
+                    tvNotif.setText(getResources().getString(R.string.error) + e.getMessage());
+                    tvNotif.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        
         // build dialog
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog)
+                .setView(view)
+                .create();
+                
+/*         // build dialog
+        dialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.seal_keyslot_title) 
                 // Add action buttons
@@ -181,11 +309,10 @@ public class SealFormDialogFragment extends DialogFragment {
                    }
                 })
                 .setPositiveButton(R.string.seal_keyslot_confirm, null)
-                .create();
+                .create(); */
                 
-                // https://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+             // https://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
+/*         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             
                 @Override
                 public void onShow(DialogInterface dialogInterface) {
@@ -285,7 +412,7 @@ public class SealFormDialogFragment extends DialogFragment {
                         }
                     });
                 }
-            });
+            }); */
         
         //return builder.create();
         return dialog;

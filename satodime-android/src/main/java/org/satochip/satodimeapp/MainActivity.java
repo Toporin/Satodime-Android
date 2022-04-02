@@ -1283,7 +1283,13 @@ public class MainActivity extends AppCompatActivity
 
     // FRAGMENTS
     public void showSealFormDialog() {
-        final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
+        
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
+        DialogFragment dialog = new SealFormDialogFragment();
+        dialog.show(getSupportFragmentManager(), "SealFormDialogFragment");
+        if(DEBUG) Log.d(TAG, "In showSealFormDialog END");
+       /*  final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
         ViewGroup viewGroup= findViewById(android.R.id.content);
         View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_uninitialized, viewGroup, false);
 
@@ -1505,7 +1511,7 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        alertDialog.show();
+        alertDialog.show(); */
     }
 
     // The dialog fragment receives a reference to this Activity through the
@@ -1597,7 +1603,7 @@ public class MainActivity extends AppCompatActivity
             updateKeyslotInfoAfterSeal(keyslotNbr);
             updateLayoutAfterKeyslotChange(keyslotNbr);
 
-            // toast?
+            // toast
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
