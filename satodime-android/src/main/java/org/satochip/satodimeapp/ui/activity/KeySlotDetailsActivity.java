@@ -219,12 +219,13 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
             llGroupNft.setVisibility(View.VISIBLE);
 
             // nft data only shown if balance >0
-            double tokenBalance = (double) keyInfo.get("tokenBalance");
+            //double tokenBalance = (double) keyInfo.get("tokenBalance");
             //if (tokenBalance>0){
-            if (tokenBalance >= 0) { // DEBUG: only show if balance strictly >0
+            //if (tokenBalance >= 0) { // DEBUG: only show if balance strictly >0
+            if (true){ // temp fix
                 String nftName = (String) keyInfo.get("nftName");
                 LinearLayout llGroupNftName = (LinearLayout) findViewById(R.id.group_details_nft_name);
-                if (!nftName.equals("")) {
+                if (nftName!=null && !nftName.equals("")) {
                     TextView tvNftName = (TextView) findViewById(R.id.value_details_nft_name);
                     tvNftName.setText(nftName);
                     llGroupNftName.setVisibility(View.VISIBLE);
@@ -232,7 +233,7 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
 
                 String nftDescription = (String) keyInfo.get("nftDescription");
                 LinearLayout llGroupNftDescription = (LinearLayout) findViewById(R.id.group_details_nft_description);
-                if (!nftDescription.equals("")) {
+                if (nftDescription!=null && !nftDescription.equals("")) {
                     TextView tvNftDescription = (TextView) findViewById(R.id.value_details_nft_description);
                     tvNftDescription.setText(nftDescription);
                     llGroupNftDescription.setVisibility(View.VISIBLE);
