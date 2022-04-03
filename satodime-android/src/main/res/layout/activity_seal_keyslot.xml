@@ -28,7 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="20dp"
-                    android:src="@drawable/ic_hourglass"
+                    android:src="@drawable/ic_coin_empty"
                     app:tint="@color/dialog_gold_grey" />
             </androidx.cardview.widget.CardView>
 

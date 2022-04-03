@@ -274,7 +274,7 @@
 
     <string name="select_currency">Select currency</string>
     <string name="settings">Settings</string>
-    <string name="use_test_net">Use test net</string>
+    <string name="use_test_net">Use testnet</string>
     <string name="enter_entropy_data">Enter entropy data:</string>
     <string name="entropy_data">Entropy data</string>
     <string name="_64_hex_entropy_data">64 hex entropy data</string>
