@@ -181,8 +181,16 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
         });
 
         // token/NFT
-        boolean isToken = (boolean) keyInfo.get("isToken");
-        boolean isNFT = (boolean) keyInfo.get("isNFT");
+        // boolean isToken = (boolean) keyInfo.get("isToken");
+        // boolean isNFT = (boolean) keyInfo.get("isNFT");
+        boolean isToken = false; 
+        boolean isNFT = false; 
+        try{ //temp fix
+            isToken = (boolean) keyInfo.get("isToken");
+            isNFT = (boolean) keyInfo.get("isNFT");
+        } catch (Exception e){
+            if(DEBUG) Log.e(TAG, "Exception while fetching isToken and isNFT: " + e);
+        }
         if (isToken) {
             String keyContractHex = (String) keyInfo.get("keyContractHex");
             TextView tvTokenContract = (TextView) findViewById(R.id.value_details_token_contract);
