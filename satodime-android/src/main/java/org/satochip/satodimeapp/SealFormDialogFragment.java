@@ -31,9 +31,12 @@ import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import static org.satochip.client.Constants.*;
 import static org.satochip.javacryptotools.coins.Constants.*;
@@ -90,7 +93,6 @@ public class SealFormDialogFragment extends DialogFragment {
         etEntropyIn= (EditText) view.findViewById(R.id.edittext_entropy_input);
         tvNotif= (TextView) view.findViewById(R.id.text_notification); 
         tvEntropyOut= (TextView) view.findViewById(R.id.value_entropy_output); 
-        
         TextView transferBtn= (TextView) view.findViewById(R.id.transfer_btn);
         TextView cancelBtn= (TextView) view.findViewById(R.id.cancel_btn);
         
@@ -157,6 +159,7 @@ public class SealFormDialogFragment extends DialogFragment {
                 if (TOKENSET.contains(asset) || NFTSET.contains(asset)){
                     if(DEBUG) Log.d(TAG, "SealKeyslotActivity: SHOW CONTRACT in thread: "); 
                     llContract.setVisibility(View.VISIBLE);
+                    // TODO: set input type and allowed chars according to coin type
                 } else {
                     llContract.setVisibility(View.GONE);
                 }
@@ -212,53 +215,32 @@ public class SealFormDialogFragment extends DialogFragment {
                     boolean isNFT= NFTSET.contains(asset);
                     // check contract: contract byte array should be [size(2b) | contract | 0-padding to 34b]
                     String contract= etContract.getText().toString();
-                    byte[] contractByte;
+                    byte[] contractBytes;
                     if (isToken || isNFT) {
-                        if(DEBUG) Log.d(TAG, "SEAL contract (before): " + contract);
-                        String regex= "^(0x)?[0-9a-fA-F]{40}$";
-                        if (!contract.matches(regex)) {
-                            throw new Exception(getResources().getString(R.string.exception_contract_format));
-                        }
-                        contract= contract.replaceFirst("^0x", ""); // remove "0x" if present
-                        try {
-                            contractByte= Hex.decode(contract);
-                        } catch (Exception e) {
-                            throw new Exception(getResources().getString(R.string.exception_contract_format_hex));
-                        }
-                        if (contractByte.length > 32) {
-                            throw new Exception(getResources().getString(R.string.exception_contract_too_long));
-                        }
+                        contractBytes= checkContractFieldToBytes(contract, coin);
                     } else {
-                        contractByte= new byte[0]; // ignore contract value
+                        contractBytes= new byte[0]; // ignore contract value
                     }
                     byte[] contractByteTLV= new byte[34];
                     contractByteTLV[0]= (byte) 0;
-                    contractByteTLV[1]= (byte) (contractByte.length);
-                    System.arraycopy(contractByte, 0, contractByteTLV, 2, contractByte.length);
+                    contractByteTLV[1]= (byte) (contractBytes.length);
+                    System.arraycopy(contractBytes, 0, contractByteTLV, 2, contractBytes.length);
                     if(DEBUG)
-                        Log.d(TAG, "SEAL contract (after)   : " + Hex.toHexString(contractByte));
+                        Log.d(TAG, "SEAL contract (after)   : " + Hex.toHexString(contractBytes));
                     // check tokenid: tokenid byte array should be [size(2b) | tokenid | 0-padding to 34b]
                     String tokenid= etTokenid.getText().toString();
-                    byte[] tokenidByte;
+                    byte[] tokenidBytes;
                     if (isNFT) {
-                        BigInteger tokenidBig= new BigInteger(tokenid); // tokenid is decimal-formated
-                        String tokenidHexString= tokenidBig.toString(16); // convert to hex string
-                        if (tokenidHexString.length() % 2== 1) {
-                            tokenidHexString= "0" + tokenidHexString; // must have an even number of chars
-                        }
-                        tokenidByte= Hex.decode(tokenidHexString); // convert to bytes
-                        if (tokenidByte.length > 32) {
-                            throw new Exception(getResources().getString(R.string.exception_tokenid_too_long));
-                        }
+                       tokenidBytes= checkTokenidFieldToBytes(tokenid);
                     } else {
-                        tokenidByte= new byte[0]; // ignore tokenID
+                        tokenidBytes= new byte[0]; // ignore tokenID
                     }
                     byte[] tokenidByteTLV= new byte[34];
                     tokenidByteTLV[0]= (byte) 0;
-                    tokenidByteTLV[1]= (byte) (tokenidByte.length);
-                    System.arraycopy(tokenidByte, 0, tokenidByteTLV, 2, tokenidByte.length);
+                    tokenidByteTLV[1]= (byte) (tokenidBytes.length);
+                    System.arraycopy(tokenidBytes, 0, tokenidByteTLV, 2, tokenidBytes.length);
                     if(DEBUG) Log.d(TAG, "SEAL tokenid (before): " + tokenid);
-                    if(DEBUG) Log.d(TAG, "SEAL tokenid (after)   : " + Hex.toHexString(tokenidByte));
+                    if(DEBUG) Log.d(TAG, "SEAL tokenid (after)   : " + Hex.toHexString(tokenidBytes));
 
                     // return data to activity
                     Intent resultIntent= new Intent();
@@ -328,6 +310,98 @@ public class SealFormDialogFragment extends DialogFragment {
         }
     }
 
+    public byte[] checkContractFieldToBytes(String contract, String coin) throws Exception{
+        
+        if (DEBUG) Log.d(TAG, "SEAL contract (before): " + contract);
+        
+        if (contract.equals("")) return new byte[0];
+        
+        byte[] contractBytes= null;
+        List<String> hexCoinList = Arrays.asList("ETH", "ETC", "BSC");
+        if (hexCoinList.contains(coin)){
+            // hex value
+            if (!contract.matches("^(0x)?[0-9a-fA-F]{40}$")) {
+                throw new Exception(getResources().getString(R.string.exception_contract_format));
+            }
+            contract= contract.replaceFirst("^0x", ""); // remove "0x" if present
+            try {
+                contractBytes= Hex.decode(contract);
+            } catch (Exception e) {
+                throw new Exception(getResources().getString(R.string.exception_contract_format_hex));
+            }
+            if (contractBytes.length > 20) {
+                throw new Exception(getResources().getString(R.string.exception_contract_too_long));
+            }
+            return contractBytes;
+        } 
+        else if (coin.equals("XCP")){
+            // https://counterparty.io/docs/protocol_specification/
+            String asset= contract;
+            String subasset="";
+            // contract cannot start, end with '.' or contains consecutive dots 
+            //https://stackoverflow.com/questions/40718851/regex-that-does-not-allow-consecutive-dots
+            // TODO
+            // if (!asset.matches("(?!\\.)(?!.*\\.$)(?!.*?\\.\\.)")) {
+                // throw new Exception(getResources().getString(R.string.exception_contract_format)); // Wrong asset format: {asset} (asset cannot start or end with dot or contain consecutive dots)"
+            // }
+            if (asset.contains(".")){
+                // contains subasset
+                String[] parts= asset.split(".", 2);
+                asset= parts[0];
+                subasset= parts[1];
+                String minlength=String.valueOf(1);
+                String maxlength= String.valueOf(250- asset.length() -1);
+                String pattern= "^[a-zA-Z0-9.-_@!]{" + minlength + "," + maxlength + "}$";
+                if (!subasset.matches(pattern)) {
+                    throw new Exception(getResources().getString(R.string.exception_contract_format)); // "Wrong subasset format: {subasset} (check for length and unauthorized characters)"
+                }
+            }
+            if (asset.startsWith("A") || asset.startsWith("a")){
+                // numeric asset
+                asset= asset.toUpperCase(Locale.ENGLISH); // a=>A
+                String nbrString= asset.substring(1); // remove the "A"
+                BigInteger nbrBig;
+                try{
+                    nbrBig= new BigInteger(nbrString);
+                } catch (Exception e) {
+                    throw new Exception("Wrong numeric asset format: {asset} is not an integer");
+                }
+                BigInteger minBound= (new BigInteger("26")).pow(12).add(BigInteger.ONE);
+                BigInteger maxBound= (new BigInteger("256")).pow(8);
+                if ( (nbrBig.compareTo(minBound)<0) || (nbrBig.compareTo(maxBound)>0) ){
+                     throw new Exception("Wrong numeric asset format: {asset} (numeric value outside of bounds)");
+                }
+            } else {
+                // named asset
+                asset= asset.toUpperCase(Locale.ENGLISH);
+                if (!asset.matches("^[A-Z]{4,12}$")) {
+                    throw new Exception("Wrong named asset format: {asset} (should be 4-12 uppercase latin characters)");
+                }
+            }
+            // encode 
+            contract= asset+ "." + subasset;
+            contractBytes = contract.getBytes(StandardCharsets.UTF_8);
+            if (contractBytes.length>32){
+                throw new Exception("Unfortunately, Satodime supports only asset name smaller than 32 char");
+            }
+            return contractBytes;
+        } 
+        else {
+            throw new Exception("Unsupported blockchain" + coin); 
+        }
+    }
     
+    public byte[] checkTokenidFieldToBytes(String tokenid) throws Exception{
+        BigInteger tokenidBig= new BigInteger(tokenid); // tokenid is decimal-formated
+        String tokenidHexString= tokenidBig.toString(16); // convert to hex string
+        if (tokenidHexString.length() % 2== 1) {
+            tokenidHexString= "0" + tokenidHexString; // must have an even number of chars
+        }
+        byte[] tokenidBytes= Hex.decode(tokenidHexString); // convert to bytes
+        if (tokenidBytes.length > 32) {
+            throw new Exception(getResources().getString(R.string.exception_tokenid_too_long));
+        }
+        return tokenidBytes;
+    }
     
 }

@@ -20,23 +20,24 @@
     <string name="no">No</string>
     <string name="error">"Error: "</string>
 
+    <!-- used in MyCardsAdapter.java -->
     <string-array name="currency">
         <item>USD</item>
         <item>PKR</item>
         <item>INR</item>
         <item>EURO</item>
+    </string-array> 
+    <string-array name="blockchain">
+        <item>BTC</item>
     </string-array>
 
-    <string-array name="language">
+<!--     <string-array name="language">
         <item>English</item>
         <item>German</item>
         <item>French</item>
         <item>Turkish</item>
-    </string-array>
+    </string-array> -->
 
-    <string-array name="blockchain">
-        <item>BTC</item>
-    </string-array>
 
     <!-- main layout -->
     <string name="card_info">Card info :</string>
@@ -242,11 +243,13 @@
     <string-array name="array_asset_limited" translatable="false">
         <item>Coin</item>
     </string-array>
+    
     <string-array name="array_asset" translatable="false">
         <item>Coin</item>
         <item>Token</item>
         <item>NFT</item>
     </string-array>
+    
     <string-array name="array_asset_full" translatable="false">
         <item>Coin</item>
         <item>Token</item>
@@ -260,6 +263,7 @@
         <item>ETH</item>
         <item>LTC</item>
         <item>BCH</item>
+        <item>XCP</item>
     </string-array>
     <!-- <string name="title_activity_key_slot_details">KeySlotDetailsActivity</string> -->
     <!-- Strings used for fragments for navigation -->

@@ -81,6 +81,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.ybq.android.spinkit.SpinKitView;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.List;
@@ -1612,13 +1613,22 @@ public class MainActivity extends AppCompatActivity
         byte[] keySlip44= keyslotStatus.getKeySlip44();
         ByteBuffer wrapped= ByteBuffer.wrap(keySlip44); // big-endian by default
         int keySlip44Int= wrapped.getInt();
+        int keySlip44Signed= keySlip44Int | 0x80000000; 
         boolean isTestnet= ((keySlip44[0] & 0x80)== 0x00); // testnet if first bit is 0
         keyInfo.put("keySlip44", keySlip44);
         keyInfo.put("keySlip44Int", keySlip44Int);
         keyInfo.put("keySlip44Hex", parser.toHexString(keySlip44));
         keyInfo.put("isTestnet", isTestnet);
         // token/nft info
-        final String keyContractHex= "0x" + parser.toHexString(keyslotStatus.getKeyContract());
+        byte[] contractBytes= keyslotStatus.getKeyContract();
+        final String keyContractHex;
+        if (keySlip44Signed== 0x80000009){ // XCP
+            keyContractHex= new String(contractBytes, StandardCharsets.UTF_8);
+        } else {
+            keyContractHex= "0x" + parser.toHexString(contractBytes);
+        }
+        //final String keyContractHex= "0x" + parser.toHexString(contractBytes);
+        //final String keyContractString= new String(contractBytes, StandardCharsets.UTF_8); //;
         final String keyTokenIdHex= parser.toHexString(keyslotStatus.getKeyTokenId());
         final String keyTokenIdDec;
         if (keyTokenIdHex.length() >= 2) {
@@ -1626,7 +1636,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             keyTokenIdDec= "";
         }
-        keyInfo.put("keyContract", keyslotStatus.getKeyContract());
+        keyInfo.put("keyContract", contractBytes);
         keyInfo.put("keyContractHex", keyContractHex);
         keyInfo.put("keyTokenId", keyslotStatus.getKeyTokenId());
         keyInfo.put("keyTokenIdHex", keyTokenIdHex);
@@ -1707,8 +1717,8 @@ public class MainActivity extends AppCompatActivity
                     keyInfo2.put("tokenBalanceTxt", tokenBalanceTxt);
                     if (isToken || isNFT) {
                         try {
-                            long balanceLong= coin.getTokenBalance(coinAddress, keyContractHex);
-                            HashMap<String, String> tokenInfo= coin.getTokenInfo(keyContractHex);
+                            double balanceLong= coin.getTokenBalance(coinAddress, keyContractHex);
+                            HashMap<String, String> tokenInfo= coin.getTokenInfo(keyContractHex); //TODO integrate directly in getTokenBalance()
                             String decimalsTxt= tokenInfo.get("decimals");
                             int decimals= Integer.parseInt(decimalsTxt);
                             tokenBalance= (double) (balanceLong) / (Math.pow(10, decimals));
@@ -1825,6 +1835,7 @@ public class MainActivity extends AppCompatActivity
 
                         // get data from network
                         try {
+                            // todo: nftImageUrl or nftImageUrlLarge?
                             String nftImageUrl= (String) keyInfoNft.get("nftImageUrl");
                             URL url= new URL(nftImageUrl);
                             HttpURLConnection connection= (HttpURLConnection) url.openConnection();
@@ -2264,8 +2275,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // build a coin object from javacryptotools library
-    public BaseCoin getCoin(int keySlip44Int, boolean isTestnet, HashMap<
-            String, String> apikeys) {
+    public BaseCoin getCoin(int keySlip44Int, boolean isTestnet, HashMap<String, String> apikeys) {
         BaseCoin coin;
         int keySlip44IntAbs= keySlip44Int | 0x80000000; // switch first bit (ignore testnet or mainnet)
         switch (keySlip44IntAbs) {
@@ -2279,7 +2289,10 @@ public class MainActivity extends AppCompatActivity
                 coin= new BitcoinCash(isTestnet, apikeys);
                 break;
             case ETH:
-                coin= new org.satochip.javacryptotools.Ethereum(isTestnet, apikeys);
+                coin= new Ethereum(isTestnet, apikeys);
+                break;
+            case XCP:
+                coin= new Counterparty(isTestnet, apikeys);
                 break;
             default:
                 coin= new UnsupportedCoin(isTestnet, apikeys);

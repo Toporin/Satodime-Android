@@ -176,14 +176,14 @@
                     android:fontFamily="@font/segoe_ui_bold"
                     android:textColor="@color/pure_black"
                     android:textSize="14sp" />
-
+                
+                <!-- android:digits="0123456789ABCDEFabcdefx" depends of asset... -->
                 <EditText
                     android:id="@+id/edittext_contract"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:hint="contract address"
                     android:layout_marginTop="10dp"
-                    android:digits="0123456789ABCDEFabcdefx"
                     android:inputType="textCapCharacters"
                 />
             </LinearLayout>
