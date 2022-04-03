@@ -392,6 +392,9 @@ public class SealFormDialogFragment extends DialogFragment {
     }
     
     public byte[] checkTokenidFieldToBytes(String tokenid) throws Exception{
+        
+        if (tokenid.equals("")) tokenid="0"; // default 
+        
         BigInteger tokenidBig= new BigInteger(tokenid); // tokenid is decimal-formated
         String tokenidHexString= tokenidBig.toString(16); // convert to hex string
         if (tokenidHexString.length() % 2== 1) {

@@ -1674,11 +1674,11 @@ public class MainActivity extends AppCompatActivity
                     keyInfo2.put("tokenBalanceTxt", tokenBalanceTxt);
                     if (isToken || isNFT) {
                         try {
-                            double balanceLong= coin.getTokenBalance(coinAddress, keyContractHex);
-                            HashMap<String, String> tokenInfo= coin.getTokenInfo(keyContractHex); //TODO integrate directly in getTokenBalance()
-                            String decimalsTxt= tokenInfo.get("decimals");
-                            int decimals= Integer.parseInt(decimalsTxt);
-                            tokenBalance= (double) (balanceLong) / (Math.pow(10, decimals));
+                            tokenBalance= coin.getTokenBalance(coinAddress, keyContractHex);
+                            HashMap<String, String> tokenInfo= coin.getTokenInfo(keyContractHex); 
+                            // String decimalsTxt= tokenInfo.get("decimals"); //TODO integrate directly in getTokenBalance()
+                            // int decimals= Integer.parseInt(decimalsTxt);
+                            // tokenBalance= (double) (balanceLong) / (Math.pow(10, decimals));
                             keyInfo2.put("tokenBalance", tokenBalance);
                             // txt
                             String tokenDisplayName= tokenInfo.get("name");
