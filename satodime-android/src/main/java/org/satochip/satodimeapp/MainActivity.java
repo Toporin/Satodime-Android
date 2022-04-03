@@ -521,30 +521,16 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void run() {
                                 if (finalK== 0) {
-                                    String blockChain= (String) keyInfoList.get(0).get("coinDisplayName");
+                                    String blockChain= (String) keyInfoList.get(0).get("coinSymbol");
                                     if (blockChain != null) {
-                                        switch (blockChain) {
-                                            case "Bitcoin":
-                                            case "Bitcoin Testnet":{
-                                                cardImg0.setImageResource(R.drawable.ic_bitcoin);
-                                                break;
-                                            }
-                                            case "Ethereum":
-                                            case "Ethereum Testnet":{
-                                                cardImg0.setImageResource(R.drawable.ic_etherium);
-                                                break;
-                                            }
-                                            case "Litecoin":
-                                            case "Litecoin Testnet":{
-                                                cardImg0.setImageResource(R.drawable.ic_ltc);
-                                                break;
-                                            }
-                                            case "Bitcoin Cash":
-                                            case "Bitcoin Cash Testnet":{
-                                                cardImg0.setImageResource(R.drawable.ic_bch);
-                                                break;
-                                            }
+                                        int id;
+                                        if (blockChain.equals("?")){
+                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                                        } else {
+                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                                         }
+                                        cardImg0.setImageResource(id);
                                     }
                                     firstCard.setVisibility(View.VISIBLE);
                                     progressBar.setVisibility(View.GONE);
@@ -567,8 +553,8 @@ public class MainActivity extends AppCompatActivity
                                         card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                                         cardStatus0.setText(getString(R.string.lbl_uninitalized));
                                         cardStatus0.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg0.setImageResource(R.drawable.ic_hourglass);
-                                        cardImg0.setImageResource(R.drawable.ic_hourglass);
+                                        cardStatusImg0.setImageResource(R.drawable.ic_coin_empty);
+                                        cardImg0.setImageResource(R.drawable.ic_coin_empty);
                                     }
                                     key0.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
 
@@ -705,30 +691,16 @@ public class MainActivity extends AppCompatActivity
                                     });
                                 }
                                 else if (finalK== 1) {
-                                    String blockChain= (String) keyInfoList.get(1).get("coinDisplayName");
+                                    String blockChain= (String) keyInfoList.get(1).get("coinSymbol");
                                     if (blockChain != null) {
-                                        switch (blockChain) {
-                                            case "Bitcoin":
-                                            case "Bitcoin Testnet":{
-                                                cardImg1.setImageResource(R.drawable.ic_bitcoin);
-                                                break;
-                                            }
-                                            case "Ethereum":
-                                            case "Ethereum Testnet":{
-                                                cardImg1.setImageResource(R.drawable.ic_etherium);
-                                                break;
-                                            }
-                                            case "Litecoin":
-                                            case "Litecoin Testnet":{
-                                                cardImg1.setImageResource(R.drawable.ic_ltc);
-                                                break;
-                                            }
-                                            case "Bitcoin Cash":
-                                            case "Bitcoin Cash Testnet":{
-                                                cardImg1.setImageResource(R.drawable.ic_bch);
-                                                break;
-                                            }
+                                        int id;
+                                        if (blockChain.equals("?")){
+                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                                        } else {
+                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                                         }
+                                        cardImg1.setImageResource(id);
                                     }
                                     secondCard.setVisibility(View.VISIBLE);
 
@@ -752,8 +724,8 @@ public class MainActivity extends AppCompatActivity
                                         card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                                         cardStatus1.setText(getString(R.string.lbl_uninitalized));
                                         cardStatus1.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg1.setImageResource(R.drawable.ic_hourglass);
-                                        cardImg1.setImageResource(R.drawable.ic_hourglass);
+                                        cardStatusImg1.setImageResource(R.drawable.ic_coin_empty);
+                                        cardImg1.setImageResource(R.drawable.ic_coin_empty);
                                     }
 
                                     key1.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
@@ -893,31 +865,16 @@ public class MainActivity extends AppCompatActivity
                                     });
                                 }
                                 else {
-                                    String blockChain= (String) keyInfoList.get(2).get("coinDisplayName");
+                                    String blockChain= (String) keyInfoList.get(2).get("coinSymbol");
                                     if (blockChain != null) {
-                                        Log.d("testNetICon", blockChain);
-                                        switch (blockChain) {
-                                            case "Bitcoin":
-                                            case "Bitcoin Testnet":{
-                                                cardImg2.setImageResource(R.drawable.ic_bitcoin);
-                                                break;
-                                            }
-                                            case "Ethereum":
-                                            case "Ethereum Testnet":{
-                                                cardImg2.setImageResource(R.drawable.ic_etherium);
-                                                break;
-                                            }
-                                            case "Litecoin":
-                                            case "Litecoin Testnet":{
-                                                cardImg2.setImageResource(R.drawable.ic_ltc);
-                                                break;
-                                            }
-                                            case "Bitcoin Cash":
-                                            case "Bitcoin Cash Testnet":{
-                                                cardImg2.setImageResource(R.drawable.ic_bch);
-                                                break;
-                                            }
+                                        int id;
+                                        if (blockChain.equals("?")){
+                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                                        } else {
+                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                                         }
+                                        cardImg2.setImageResource(id);
                                     }
                                     thirdCard.setVisibility(View.VISIBLE);
                                     if (array_keyslot_states[keyState].equals(getResources().getString(R.string.sealed))) {
@@ -939,8 +896,8 @@ public class MainActivity extends AppCompatActivity
                                         card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                                         cardStatus2.setText(getString(R.string.lbl_uninitalized));
                                         cardStatus2.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg2.setImageResource(R.drawable.ic_hourglass);
-                                        cardImg2.setImageResource(R.drawable.ic_hourglass);
+                                        cardStatusImg2.setImageResource(R.drawable.ic_coin_empty);
+                                        cardImg2.setImageResource(R.drawable.ic_coin_empty);
                                     }
 
                                     key2.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
@@ -2010,30 +1967,16 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 switch (keyslotNbr) {
                     case 0: {
-                        String blockChain= (String) keyInfoList.get(0).get("coinDisplayName");
+                        String blockChain= (String) keyInfoList.get(0).get("coinSymbol");
                         if (blockChain != null) {
-                            switch (blockChain) {
-                                case "Bitcoin":
-                                case "Bitcoin Testnet":{
-                                    cardImg0.setImageResource(R.drawable.ic_bitcoin);
-                                    break;
-                                }
-                                case "Ethereum":
-                                case "Ethereum Testnet":{
-                                    cardImg0.setImageResource(R.drawable.ic_etherium);
-                                    break;
-                                }
-                                case "Litecoin":
-                                case "Litecoin Testnet":{
-                                    cardImg0.setImageResource(R.drawable.ic_ltc);
-                                    break;
-                                }
-                                case "Bitcoin Cash":
-                                case "Bitcoin Cash Testnet":{
-                                    cardImg0.setImageResource(R.drawable.ic_bch);
-                                    break;
-                                }
+                            int id;
+                            if (blockChain.equals("?")){
+                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                            } else {
+                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                             }
+                            cardImg0.setImageResource(id);
                         }
                         if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
                             key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
@@ -2055,8 +1998,8 @@ public class MainActivity extends AppCompatActivity
                             card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                             cardStatus0.setText(actionMsgUpdated);
                             cardStatus0.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg0.setImageResource(R.drawable.ic_hourglass);
-                            cardImg0.setImageResource(R.drawable.ic_hourglass);
+                            cardStatusImg0.setImageResource(R.drawable.ic_coin_empty);
+                            cardImg0.setImageResource(R.drawable.ic_coin_empty);
                             break;
                         }
 
@@ -2076,30 +2019,16 @@ public class MainActivity extends AppCompatActivity
                         break;
                     }
                     case 1: {
-                        String blockChain= (String) keyInfoList.get(1).get("coinDisplayName");
+                        String blockChain= (String) keyInfoList.get(1).get("coinSymbol");
                         if (blockChain != null) {
-                            switch (blockChain) {
-                                case "Bitcoin":
-                                case "Bitcoin Testnet":{
-                                    cardImg1.setImageResource(R.drawable.ic_bitcoin);
-                                    break;
-                                }
-                                case "Ethereum":
-                                case "Ethereum Testnet":{
-                                    cardImg1.setImageResource(R.drawable.ic_etherium);
-                                    break;
-                                }
-                                case "Litecoin":
-                                case "Litecoin Testnet":{
-                                    cardImg1.setImageResource(R.drawable.ic_ltc);
-                                    break;
-                                }
-                                case "Bitcoin Cash":
-                                case "Bitcoin Cash Testnet":{
-                                    cardImg1.setImageResource(R.drawable.ic_bch);
-                                    break;
-                                }
+                            int id;
+                            if (blockChain.equals("?")){
+                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                            } else {
+                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                             }
+                            cardImg1.setImageResource(id);
                         }
                         if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
                             key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
@@ -2120,8 +2049,8 @@ public class MainActivity extends AppCompatActivity
                             card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                             cardStatus1.setText(actionMsgUpdated);
                             cardStatus1.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg1.setImageResource(R.drawable.ic_hourglass);
-                            cardImg1.setImageResource(R.drawable.ic_hourglass);
+                            cardStatusImg1.setImageResource(R.drawable.ic_coin_empty);
+                            cardImg1.setImageResource(R.drawable.ic_coin_empty);
                         }
 
 //                        cardName1.setText(keyStateTxt);
@@ -2138,31 +2067,16 @@ public class MainActivity extends AppCompatActivity
                         break;
                     }
                     case 2: {
-
-                        String blockChain= (String) keyInfoList.get(2).get("coinDisplayName");
+                        String blockChain= (String) keyInfoList.get(2).get("coinSymbol");
                         if (blockChain != null) {
-                            switch (blockChain) {
-                                case "Bitcoin":
-                                case "Bitcoin Testnet":{
-                                    cardImg2.setImageResource(R.drawable.ic_bitcoin);
-                                    break;
-                                }
-                                case "Ethereum":
-                                case "Ethereum Testnet":{
-                                    cardImg2.setImageResource(R.drawable.ic_etherium);
-                                    break;
-                                }
-                                case "Litecoin":
-                                case "Litecoin Testnet":{
-                                    cardImg2.setImageResource(R.drawable.ic_ltc);
-                                    break;
-                                }
-                                case "Bitcoin Cash":
-                                case "Bitcoin Cash Testnet":{
-                                    cardImg2.setImageResource(R.drawable.ic_bch);
-                                    break;
-                                }
+                            int id;
+                            if (blockChain.equals("?")){
+                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
+                            } else {
+                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
+                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
                             }
+                            cardImg2.setImageResource(id);
                         }
                         if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
                             key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
@@ -2184,8 +2098,8 @@ public class MainActivity extends AppCompatActivity
                             card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
                             cardStatus2.setText(actionMsgUpdated);
                             cardStatus2.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg2.setImageResource(R.drawable.ic_hourglass);
-                            cardImg2.setImageResource(R.drawable.ic_hourglass);
+                            cardStatusImg2.setImageResource(R.drawable.ic_coin_empty);
+                            cardImg2.setImageResource(R.drawable.ic_coin_empty);
                         }
 
 

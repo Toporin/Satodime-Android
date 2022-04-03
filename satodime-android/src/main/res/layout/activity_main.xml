@@ -201,7 +201,7 @@
                                     android:layout_width="80dp"
                                     android:layout_height="80dp"
                                     android:layout_marginStart="20dp"
-                                    android:src="@drawable/ic_hourglass" />
+                                    android:src="@drawable/ic_coin_empty" />
 
                                 <LinearLayout
                                     android:id="@+id/intialized_card_layout_0"
@@ -410,7 +410,7 @@
                                     android:layout_width="80dp"
                                     android:layout_height="80dp"
                                     android:layout_marginStart="20dp"
-                                    android:src="@drawable/ic_hourglass" />
+                                    android:src="@drawable/ic_coin_empty" />
 
                                 <LinearLayout
                                     android:id="@+id/intialized_card_layout_1"
@@ -565,7 +565,7 @@
                                     android:id="@+id/card_status_image_2"
                                     android:layout_width="35dp"
                                     android:layout_height="35dp"
-                                    android:src="@drawable/ic_hourglass"
+                                    android:src="@drawable/ic_coin_empty"
                                     app:tint="@color/gold_and_white_icon" />
 
                                 <TextView
@@ -622,7 +622,7 @@
                                     android:layout_width="80dp"
                                     android:layout_height="80dp"
                                     android:layout_marginStart="20dp"
-                                    android:src="@drawable/ic_hourglass" />
+                                    android:src="@drawable/ic_coin_empty" />
 
                                 <LinearLayout
                                     android:id="@+id/intialized_card_layout_2"
