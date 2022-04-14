@@ -26,6 +26,10 @@ import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;	
 import org.satochip.satodimeapp.BuildConfig;	
+import static org.satochip.satodimeapp.Constants.*;	
+
+import static org.satochip.client.Constants.*;
+import static org.satochip.javacryptotools.coins.Constants.*;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
@@ -38,20 +42,17 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import static org.satochip.client.Constants.*;
-import static org.satochip.javacryptotools.coins.Constants.*;
-
 import androidx.fragment.app.DialogFragment;
-
 
 public class SealFormDialogFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SEAL_FORM_FRAGMENT";
-    public static final int RESULT_OK=1;
-    public static final int RESULT_CANCELLED=0;
-    public static final int REQUEST_CODE=1;
-        
+    // public static final int RESULT_OK=1;
+    // public static final int RESULT_CANCELLED=0;
+    // public static final int REQUEST_CODE=1;
+    
+    private int keyslotNbr;
     byte[] entropyUser;
     SHA256Digest sha256;
     
@@ -71,6 +72,9 @@ public class SealFormDialogFragment extends DialogFragment {
     
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        keyslotNbr = getArguments().getInt("keyslotNbr");
+        
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
@@ -183,7 +187,7 @@ public class SealFormDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 //dialog.dismiss();
-                listener.onDialogNegativeClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_CANCELLED);
+                listener.onDialogNegativeClick(SealFormDialogFragment.this, REQUEST_CODE_SEAL, RESULT_CANCELLED);
                 getDialog().dismiss();
             }
         });
@@ -244,14 +248,14 @@ public class SealFormDialogFragment extends DialogFragment {
 
                     // return data to activity
                     Intent resultIntent= new Intent();
-                    //resultIntent.putExtra("keyNbr", keyNbr); //TODO: remove?
+                    resultIntent.putExtra("keyslotNbr", keyslotNbr);
                     resultIntent.putExtra("entropyUser", entropyUser);
                     resultIntent.putExtra("asset", asset);
                     resultIntent.putExtra("assetInt", assetInt);
                     resultIntent.putExtra("slip44", slip44);
                     resultIntent.putExtra("contractByteTLV", contractByteTLV);
                     resultIntent.putExtra("tokenidByteTLV", tokenidByteTLV);
-                    listener.onDialogPositiveClick(SealFormDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
+                    listener.onDialogPositiveClick(SealFormDialogFragment.this, REQUEST_CODE_SEAL, RESULT_OK, resultIntent);
                     getDialog().dismiss();
                     
                 } catch (Exception e) {

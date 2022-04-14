@@ -156,7 +156,7 @@
                 app:cardCornerRadius="@dimen/card_corner_radious">
 
                 <TextView
-                    android:id="@+id/transfer_btn"
+                    android:id="@+id/unseal_btn"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"

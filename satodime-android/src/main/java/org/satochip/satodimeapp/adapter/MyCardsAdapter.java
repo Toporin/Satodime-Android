@@ -17,27 +17,41 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.satochip.satodimeapp.R;
-import org.satochip.satodimeapp.model.Card;
+import org.satochip.satodimeapp.BuildConfig;
+import org.satochip.satodimeapp.model.Card; // todo: remove
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
+//import org.satochip.satodimeapp.SealFormDialogFragment;
+import org.satochip.satodimeapp.MainActivity;
 
+import java.util.Locale;
 import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
+
+import static org.satochip.client.Constants.*;
 
 /* Currently unused? */
 public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHolder> {
+    
+    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final String TAG = "SATODIME_CARD_ADAPTER";
+    protected List<HashMap<String, Object>> keyInfoList= null;
 
-    List<Card> notesList;
+    List<Card> notesList; // todo: remove
     Context context;
 
-
-    public MyCardsAdapter(List<Card> usersList, Context context) {
-        this.notesList = usersList;
+    //public MyCardsAdapter(List<Card> usersList, Context context) {
+    public MyCardsAdapter(List<HashMap<String, Object>> keyInfoList, Context context) {
+        //this.notesList = usersList;
         this.context = context;
+        this.keyInfoList= keyInfoList;
     }
 
     @NonNull
@@ -51,45 +65,83 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        if (DEBUG) Log.d(TAG, "in onBindViewHolder START position: " + position);
+        long startTime = System.currentTimeMillis();
+        
+        String keyNbr= "Key #" + position;
+            
+        // get keyslot map from list
+        HashMap<String, Object> keyInfo= this.keyInfoList.get(position);
+        int keyState= (int) keyInfo.get("keyState");
 
-        if (position == 0) {
-            holder.assestType.setText("NFT");
-            holder.key.setText("Kay # 0");
-            holder.key.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.green));
-            holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_outline_green));
-            holder.cardImg.setImageResource(R.drawable.ic_etherium);
-            holder.cardStatusImg.setImageResource(R.drawable.ic_lock);
-            holder.cardName.setText("Ethereum");
-            holder.cardStatus.setText("Sealed");
-            holder.cardStatus.setTextColor(context.getResources().getColor(R.color.green));
-        } else if (position == 1) {
-            holder.assestType.setText("Coin");
-            holder.key.setText("Kay # 1");
-            holder.key.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.RED));
-            holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_ouline_red));
-            holder.cardImg.setImageResource(R.drawable.ic_bitcoin);
-            holder.cardStatusImg.setImageResource(R.drawable.ic_unlock);
-            holder.cardName.setText("Bitcoin Cash");
-            holder.cardStatus.setText("Unsealed");
-            holder.cardStatus.setTextColor(context.getResources().getColor(R.color.RED));
-        } else {
-            holder.assestType.setText("Uninitialized");
-            holder.key.setText("Kay # 2");
-            holder.key.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.gold_light));
+        // state info
+        if (keyState== STATE_UNINITIALIZED){
+            holder.keyNbr.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.gold_light));
             holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_outline_gold));
-            holder.cardImg.setImageResource(R.drawable.ic_hourglass);
-            holder.cardStatusImg.setImageResource(R.drawable.ic_hourglass);
-            holder.cardStatus.setText("Uninitialized");
+            holder.cardImg.setImageResource(R.drawable.ic_coin_empty);
+            holder.cardStatusImg.setImageResource(R.drawable.ic_coin_empty);
+            holder.cardStatus.setText(R.string.uninitialized);
             holder.cardStatus.setTextColor(context.getResources().getColor(R.color.grey));
-            holder.initLayout.setVisibility(View.GONE);
-            holder.unInitLayout.setVisibility(View.VISIBLE);
+        } else{
+            // get info
+            String assetType= (String) keyInfo.get("keyAssetTxt");
+            String coinName= (String) keyInfo.get("coinDisplayName");
+            String coinSymbol= (String) keyInfo.get("coinSymbol");
+            String balance= (String) keyInfo.get("coinBalanceTxt");
+            String tokenBalance= (String) keyInfo.get("tokenBalanceTxt");
+            String address= (String) keyInfo.get("coinAddress");
+            // set info
+            holder.assetType.setText(assetType);
+            holder.keyNbr.setText(keyNbr);
+            holder.balance.setText(balance);
+            holder.cardAddress.setText(address);
+            
+            // nft or token
+            boolean isToken= (boolean) keyInfo.get("isToken");
+            boolean isNFT= (boolean) keyInfo.get("isNFT");
+            boolean isTokenOrNFT= (isToken || isNFT);
+            if (isTokenOrNFT){
+                holder.tokenLayout.setVisibility(View.VISIBLE);
+                holder.tokenBalance.setText(tokenBalance);
+            }
+            
+            // icon
+            if (coinSymbol != null) {
+                int id;
+                if (coinSymbol.equals("?")){
+                    id= this.context.getResources().getIdentifier("ic_coin_unknown", "drawable", this.context.getPackageName());
+                } else {
+                    id= this.context.getResources().getIdentifier("ic_coin_"+coinSymbol.toLowerCase(Locale.ENGLISH), "drawable", this.context.getPackageName());
+                }
+                holder.cardImg.setImageResource(id);
+            }
+            
+            // state
+            if(keyState== STATE_SEALED) {
+                holder.keyNbr.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.green));
+                holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_outline_green));
+                holder.cardStatusImg.setImageResource(R.drawable.ic_lock);
+                holder.cardStatus.setText(R.string.sealed);
+                holder.cardStatus.setTextColor(context.getResources().getColor(R.color.green));
+            } else if (keyState== STATE_UNSEALED) {
+                holder.keyNbr.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.RED));
+                holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_ouline_red));
+                holder.cardStatusImg.setImageResource(R.drawable.ic_unlock);
+                holder.cardStatus.setText(R.string.unsealed);
+                holder.cardStatus.setTextColor(context.getResources().getColor(R.color.RED));
+            }
         }
 
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+        long middleTime = System.currentTimeMillis();
+        
+        holder.nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(DEBUG) Log.d(TAG,"Clicked on more details button!");
+                //todo: check if uninitialized
                 Intent intent = new Intent(context, KeySlotDetailsActivity.class);
-                intent.putExtra("position", position);
+                //intent.putExtra("position", position);
+                intent.putExtra("keyInfo", keyInfo);
                 context.startActivity(intent);
             }
         });
@@ -97,8 +149,98 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
         holder.cardStatusImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("clickHers","ok");
-                if (position == 2) {
+                if(DEBUG) Log.d(TAG,"Clicked on cardStatusImg!");
+                boolean isOwner= true; // todo
+                if (isOwner) {
+                    int keyslotNbr= position; // todo
+                    if (keyState == STATE_UNINITIALIZED) { // => seal
+                        if(DEBUG) Log.d(TAG,"Clicked on SEAL!");
+                        ((MainActivity)context).showSealDialog(position);
+                        // DialogFragment dialog = new SealFormDialogFragment();
+                        // dialog.show(context.getSupportFragmentManager(), "SealFormDialogFragment");
+                        
+                    } else if (keyState == STATE_SEALED) { // => unseal
+                        if(DEBUG) Log.d(TAG,"Clicked on UNSEAL!");
+                        ((MainActivity)context).showUnsealDialog(position);
+                        /* final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
+                        ViewGroup viewGroup= findViewById(android.R.id.content);
+                        View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_unseal, viewGroup, false);
+
+                        TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
+                        TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
+
+                        builder.setView(dialogView);
+                        final AlertDialog alertDialog= builder.create();
+
+                        unSealBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
+                                ((MainActivity)context).sendUnsealKeyslotApduToCard();
+                            }
+                        });
+                        cancelBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
+                                Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
+
+                        alertDialog.show(); */
+                        
+                    } else if (keyState == STATE_UNSEALED){ // => reset
+                        if(DEBUG) Log.d(TAG,"Clicked on RESET!");
+                        ((MainActivity)context).showResetDialog(position);
+                        /* final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
+                        ViewGroup viewGroup= findViewById(android.R.id.content);
+                        View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_reset, viewGroup, false);
+
+                        TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
+                        TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
+
+                        builder.setView(dialogView);
+                        final AlertDialog alertDialog= builder.create();
+                        unSealBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
+                                ((MainActivity)context).sendResetKeyslotApduToCard();
+                            }
+                        });
+                        cancelBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
+                                Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
+                        alertDialog.show(); */
+                    }
+                } else {
+                    //todo: toast: not owner!
+                }
+            } // end onClick()
+        });
+
+        /*
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, KeySlotDetailsActivity.class);
+                intent.putExtra("position", position);
+                context.startActivity(intent);
+            }
+        }); */
+
+        /*
+        holder.cardStatusImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(DEBUG) Log.d(TAG,"Clicked on cardStatusImg!");
+                 if (position == 2) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialog);
                     ViewGroup viewGroup = v.findViewById(android.R.id.content);
                     View dialogView = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_uninitialized, viewGroup, false);
@@ -151,46 +293,52 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
                         }
                     });
 
-
-
                     alertDialog.show();
-                }
-            }
-        });
+                } 
+            } // end onClick()
+        });*/
+        
+        if (DEBUG) Log.d(TAG, "Full time: " + (System.currentTimeMillis() - startTime));
+        if (DEBUG) Log.d(TAG, "Last middle time: " + (System.currentTimeMillis() - middleTime));
+        if (DEBUG) Log.d(TAG, "in onBindViewHolder END");
 
     }
-
 
     @Override
     public int getItemCount() {
-        return 3;
+        if (keyInfoList == null){ 
+            if (DEBUG) Log.d(TAG, "keyInfoList is null!");
+            return 0;
+        }
+        if (DEBUG) Log.d(TAG, "keyInfoList size: " + this.keyInfoList.size());
+        return this.keyInfoList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView key, assestType, cardName, balance, unit;
-        ImageView cardStatusImg;
+        TextView keyNbr, cardAddress, assetType, balance, tokenBalance; // cardName, unit
         TextView cardStatus;
-        ImageView cardImg, nextBtn;
-        LinearLayout initLayout, unInitLayout;
-        TextView cardAddress;
+        ImageView cardStatusImg, cardImg, nextBtn;
+        //LinearLayout initLayout;
+        LinearLayout tokenLayout;
         RelativeLayout parentLayout;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            key = itemView.findViewById(R.id.key_number);
-            assestType = itemView.findViewById(R.id.asset_type);
+            keyNbr = itemView.findViewById(R.id.key_number);
+            assetType = itemView.findViewById(R.id.asset_type);
             cardStatusImg = itemView.findViewById(R.id.card_status_image);
             cardStatus = itemView.findViewById(R.id.card_status);
             cardImg = itemView.findViewById(R.id.card_image);
             cardAddress = itemView.findViewById(R.id.card_address);
-            cardName = itemView.findViewById(R.id.card_name);
+            //cardName = itemView.findViewById(R.id.card_name);
             balance = itemView.findViewById(R.id.balance);
-            unit = itemView.findViewById(R.id.unit);
+            tokenBalance= itemView.findViewById(R.id.token_balance);
+            //unit = itemView.findViewById(R.id.unit);
             nextBtn = itemView.findViewById(R.id.next_btn);
 
-            initLayout = itemView.findViewById(R.id.intialized_card_layout);
-            unInitLayout = itemView.findViewById(R.id.unintialized_card_layout);
+            //initLayout = itemView.findViewById(R.id.intialized_card_layout);
             parentLayout = itemView.findViewById(R.id.parent_layout);
+            tokenLayout = itemView.findViewById(R.id.token_balance_layout);
         }
     }
 }

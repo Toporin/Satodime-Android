@@ -1,86 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="10dp"
-    android:layout_marginBottom="30dp"
-    app:cardCornerRadius="@dimen/card_corner_radious">
+    app:cardCornerRadius="@dimen/card_corner_radious"
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/parent_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/card_outline_gold">
+        android:background="@drawable/card_outline_green"
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/key_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/key_number_background"
-            android:backgroundTint="@color/gold_light"
             android:fontFamily="@font/segoe_ui_bold"
             android:paddingStart="20dp"
             android:paddingTop="15dp"
             android:paddingEnd="20dp"
             android:paddingBottom="15dp"
-            android:text="Key #"
+            android:text="Key # 0"
             android:textColor="@color/pure_white" />
 
         <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
+            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/card_status_image"
+                android:src="@drawable/ic_lock"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:src="@drawable/ic_coin_empty"
                 app:tint="@color/gold_and_white_icon" />
-
             <TextView
                 android:id="@+id/card_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:text="Sealed"
+                android:textColor="@color/green"
                 android:layout_marginTop="10dp"
+                android:textSize="14sp"
                 android:fontFamily="@font/segoe_ui"
-                android:text=""
-                android:textColor="@color/grey"
-                android:textSize="14sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/asset_type_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true">
-
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoe_ui_bold"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
-                android:text="@string/asset_type"
-                android:textColor="@color/black" />
-
+                android:text="Asset Type: "
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/asset_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoe_ui"
-                android:paddingStart="10dp"
+                android:paddingStart="20dp"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
-                android:text=""
+                android:text="NFT"
+                android:textSize="16sp"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:fontFamily="@font/segoe_ui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
@@ -97,25 +90,25 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="20dp"
-                android:src="@drawable/ic_coin_empty" />
+                android:src="@drawable/ic_etherium" />
 
             <LinearLayout
                 android:id="@+id/intialized_card_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_marginEnd="10dp"
                     android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/segoe_ui_bold"
-                        android:text="@string/address"
+                        android:text="Address: "
                         android:textColor="@color/grey" />
 
                     <TextView
@@ -124,20 +117,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:fontFamily="@font/segoe_ui"
-                        android:text="(address)"
-                        android:lines="2"
+                        android:text="0x65456416685158"
                         android:textColor="@color/grey" />
                 </LinearLayout>
-                
-                <!-- unused? -->
+
                 <TextView
                     android:id="@+id/card_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/segoe_ui_bold"
-                    android:text=""
-                    android:visibility="gone"
+                    android:text="Bitcoin Cash"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -151,10 +141,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/segoe_ui_bold"
-                        android:text="(balance)"
+                        android:text="0.0"
                         android:textColor="@color/black" />
-                    
-                    <!-- unused? -->
+
                     <TextView
                         android:id="@+id/unit"
                         android:layout_width="wrap_content"
@@ -162,36 +151,65 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/segoe_ui"
-                        android:text="(symbol)"
-                        android:textColor="@color/black"
-                        android:visibility="gone" />
+                        android:text="(BCH)"
+                        android:textColor="@color/black" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/unintialized_card_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
-                    android:id="@+id/token_balance_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/segoe_ui_bold"
-                        android:text="Token Balance: "
-                        android:textColor="@color/grey" />
+                        android:text="Address: "
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/token_balance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:fontFamily="@font/segoe_ui"
-                        android:text="(token balance)"
-                        android:textColor="@color/grey" />
+                        android:text="Uninitialized"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
                 </LinearLayout>
-            </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/segoe_ui_bold"
+                        android:text="Balance: "
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:fontFamily="@font/segoe_ui"
+                        android:text="Uninitialized"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
@@ -204,7 +222,7 @@
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="15dp"
             android:src="@drawable/ic_arrow_dropright_circle"
-            app:tint="@color/gold_and_white_icon" />
+            app:tint="@color/gold_and_white_icon"/>
 
     </RelativeLayout>
 

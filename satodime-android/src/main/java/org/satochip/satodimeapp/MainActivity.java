@@ -48,24 +48,24 @@ import org.satochip.io.CardChannel;
 import org.satochip.io.CardListener;
 import org.satochip.android.NFCCardManager;
 
-import static org.satochip.client.Constants.*;
-
 import org.satochip.client.SatochipCommandSet;
 import org.satochip.client.ApplicationStatus;
 import org.satochip.client.SatodimeStatus;
 import org.satochip.client.SatodimeKeyslotStatus;
 import org.satochip.client.SatochipParser;
 //import org.satochip.client.Util;
+import static org.satochip.client.Constants.*;
 
 import org.satochip.javacryptotools.*;
+import static org.satochip.javacryptotools.coins.Constants.*;
+
+import static org.satochip.satodimeapp.Constants.*;	
 import org.satochip.satodimeapp.adapter.MyCardsAdapter;
 import org.satochip.satodimeapp.model.Card;
 import org.satochip.satodimeapp.ui.activity.CardInfoActivity;
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
-
-import static org.satochip.javacryptotools.coins.Constants.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -95,7 +95,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
-        implements SealFormDialogFragment.SealFormDialogListener {
+                                    implements SealFormDialogFragment.SealFormDialogListener, 
+                                                        UnsealDialogFragment.UnsealDialogListener,
+                                                        ResetDialogFragment.ResetDialogListener {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG= "SATODIME";
@@ -240,12 +242,16 @@ public class MainActivity extends AppCompatActivity
         initAllViews();
 
         clickListners();
-
-//        myCardsAdapter= new MyCardsAdapter(cardArrayList, MainActivity.this);
-//        RecyclerView.LayoutManager mLayoutManager1= new LinearLayoutManager(MainActivity.this);
-//        recyclerView.setLayoutManager(mLayoutManager1);
-//        recyclerView.setAdapter(myCardsAdapter);
-//        myCardsAdapter.notifyDataSetChanged();
+       
+        // debug recyclerview
+        //myCardsAdapter= new MyCardsAdapter(cardArrayList, MainActivity.this);
+        keyInfoList= new ArrayList<HashMap<String, Object>>();
+        RecyclerView.LayoutManager mLayoutManager1= new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(mLayoutManager1);
+        myCardsAdapter= new MyCardsAdapter(keyInfoList, MainActivity.this);
+        recyclerView.setAdapter(myCardsAdapter);
+        //recyclerView.setNestedScrollingEnabled(false); // ? https://stackoverflow.com/questions/31249252/how-to-make-recyclerview-scroll-smoothly#31249751
+        //myCardsAdapter.notifyDataSetChanged();
         cardListners();
 
     } // onCreate
@@ -478,8 +484,9 @@ public class MainActivity extends AppCompatActivity
 
                     // update layout header info (details & transfert card button)
                     isOwner= satodimeStatus.isOwner();
-                    Log.d("cardStatus", isOwner + "");
-                    keyInfoList= new ArrayList<HashMap<String, Object>>();
+                    if(DEBUG) Log.d("cardStatus", isOwner + "");
+                    //keyInfoList= new ArrayList<HashMap<String, Object>>();
+                    keyInfoList.clear(); // remove old data
                     // iterate for each key
                     for (int k= 0; k < nbKeyslot; k++) {
 
@@ -499,6 +506,12 @@ public class MainActivity extends AppCompatActivity
                             updateKeyslotInfoAfterUnseal(k);
                         }
                     }// enfdfor
+                    
+                    // DEBUG update layout
+                    //if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged");
+                    // myCardsAdapter= new MyCardsAdapter(keyInfoList, MainActivity.this);
+                    // recyclerView.setAdapter(myCardsAdapter);
+                    //myCardsAdapter.notifyDataSetChanged();
 
                     /******************************************************************
                      *       modify layout according to number of keyslots
@@ -1240,13 +1253,49 @@ public class MainActivity extends AppCompatActivity
     }
 
     // FRAGMENTS
-    public void showSealFormDialog() {
+    public void showSealFormDialog() { // remove
         // Create an instance of the dialog fragment and show it
         if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
+        Bundle bundle = new Bundle();
+        bundle.putInt("keyslotNbr", 0); // todo: remove
         DialogFragment dialog = new SealFormDialogFragment();
+        dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), "SealFormDialogFragment");
     }
-
+    
+    public void showSealDialog(int keyslotNbr) {
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
+        keyslotAuthentikeyHex= authentikeyHex;
+        Bundle bundle = new Bundle();
+        bundle.putInt("keyslotNbr", keyslotNbr);
+        DialogFragment dialog = new SealFormDialogFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "SealDialogFragment");
+    }
+    
+    public void showUnsealDialog(int keyslotNbr) {
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showUnsealFormDialog START");
+        keyslotAuthentikeyHex= authentikeyHex;
+        Bundle bundle = new Bundle();
+        bundle.putInt("keyslotNbr", keyslotNbr);
+        DialogFragment dialog = new UnsealDialogFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "UnealFormDialogFragment");
+    }
+    
+    public void showResetDialog(int keyslotNbr) {
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showUnsealFormDialog START");
+        keyslotAuthentikeyHex= authentikeyHex;
+        Bundle bundle = new Bundle();
+        bundle.putInt("keyslotNbr", keyslotNbr);
+        DialogFragment dialog = new ResetDialogFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "ResetFormDialogFragment");
+    }
+    
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
@@ -1258,8 +1307,9 @@ public class MainActivity extends AppCompatActivity
         if(DEBUG) Log.d(TAG, "showSealFormDialog onDialogPositiveClick");
 
         switch (requestCode) {
-            case 1: // sealDialog
+            case REQUEST_CODE_SEAL: // sealDialog
                 //String asset= intent.getStringExtra("asset");
+                keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
                 sealKeyslotAsset= intent.getIntExtra("assetInt", 0);
                 sealKeyslotSlip44= intent.getByteArrayExtra("slip44");
                 sealKeyslotContractByteTLV= intent.getByteArrayExtra("contractByteTLV");
@@ -1269,7 +1319,15 @@ public class MainActivity extends AppCompatActivity
                 // in case of failure, seal is postposed to next card connected
                 sendSealKeyslotApduToCard();
                 break;
-            case 2: // settingDialog
+            case REQUEST_CODE_UNSEAL: 
+                keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
+                sendUnsealKeyslotApduToCard();
+                break;
+            case REQUEST_CODE_RESET: 
+                keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
+                sendResetKeyslotApduToCard();
+                break;
+            case REQUEST_CODE_SETTINGS: // settingDialog
                 appFiat= intent.getStringExtra("appFiat");
                 if (appFiat.equals("(none)")) {
                     useFiat= false;
@@ -1278,6 +1336,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 appLanguage= intent.getStringExtra("appLanguage");
                 appDarkModeEnabled= intent.getBooleanExtra("appDarkModeEnabled", false);
+                break;
                 // TODO: move logic from settingDialog to here (prefs edit...)?
             default:
         }
@@ -1300,9 +1359,9 @@ public class MainActivity extends AppCompatActivity
     // send seal keyslot APDU to card
     public boolean sendSealKeyslotApduToCard() {
         if(DEBUG) Log.d(TAG, "DEBUGSEAL: A SEAL ACTION HAS BEEN REQUESTED!");
-        if(DEBUG)
-            Log.d(TAG, "DEBUGSEAL: sealKeyslotSlip44= " + parser.toHexString(sealKeyslotSlip44));
-
+        if(DEBUG) Log.d(TAG, "DEBUGSEAL: sealKeyslotSlip44= " + parser.toHexString(sealKeyslotSlip44));
+        if(DEBUG) Log.d(TAG, "DEBUGSEAL: keyslotNbr= " + keyslotNbr);
+        
         // send seal command to card
         if(DEBUG) Log.d(TAG, "SEAL SENDING APDU TO CARD");
         try {
@@ -1313,7 +1372,7 @@ public class MainActivity extends AppCompatActivity
 
             // check that authentikey match actual card authentikey
             if (!keyslotAuthentikeyHex.equals(cmdSet.getAuthentikeyHex())) {
-                throw new Exception("Authentikeys do not match!");
+                throw new Exception("Authentikeys do not match: expected:" + keyslotAuthentikeyHex + "card: " + cmdSet.getAuthentikeyHex());
             }
             // send apdu commands
             APDUResponse rapduSeal= cmdSet.satodimeSealKey(keyslotNbr, sealKeyslotEntropyUser);
@@ -1346,7 +1405,7 @@ public class MainActivity extends AppCompatActivity
             });
             return true;
         } catch (Exception e) {
-            if(DEBUG) Log.e(TAG, "Failed to seal keyslot" + e);
+            if(DEBUG) Log.e(TAG, "Failed to seal keyslot: " + e);
             e.printStackTrace();
             // if seal failed, will attempt again at next card connection
             pendingAction= PENDING_ACTION_SEAL;
@@ -1374,7 +1433,7 @@ public class MainActivity extends AppCompatActivity
 
             // check that authentikey match actual card authentikey
             if (!keyslotAuthentikeyHex.equals(cmdSet.getAuthentikeyHex())) {
-                throw new Exception("Authentikeys do not match!");
+                throw new Exception("Authentikeys do not match: expected:" + keyslotAuthentikeyHex + "card: " + cmdSet.getAuthentikeyHex());
             }
             // send apdu command
             APDUResponse rapduUnseal= cmdSet.satodimeUnsealKey(keyslotNbr);
@@ -1437,7 +1496,7 @@ public class MainActivity extends AppCompatActivity
 
             // check that authentikey match actual card authentikey
             if (!keyslotAuthentikeyHex.equals(cmdSet.getAuthentikeyHex())) {
-                throw new Exception("Authentikeys do not match!");
+                throw new Exception("Authentikeys do not match: expected:" + keyslotAuthentikeyHex + "card: " + cmdSet.getAuthentikeyHex());
             }
             APDUResponse rapduReset= cmdSet.satodimeResetKey(keyslotNbr);
             if (rapduReset.isOK()) {
@@ -1488,7 +1547,7 @@ public class MainActivity extends AppCompatActivity
 
             // check that authentikey match actual card authentikey
             if (!keyslotAuthentikeyHex.equals(cmdSet.getAuthentikeyHex())) {
-                throw new Exception("Authentikeys do not match!");
+                throw new Exception("Authentikeys do not match: expected:" + keyslotAuthentikeyHex + "card: " + cmdSet.getAuthentikeyHex());
             }
 
             APDUResponse rapduTransfer= cmdSet.satodimeInitiateOwnershipTransfer();
@@ -1709,10 +1768,15 @@ public class MainActivity extends AppCompatActivity
                     // add keyInfo to keyInfoList
                     // TODO: thread safety?
                     keyInfoList.get(keyslotNbr).putAll(keyInfo2);
-
+                    
+                    // update main layout
+                    if(DEBUG) Log.d(TAG, "Update main layout after seal thread");
+                    myCardsAdapter.notifyItemChanged(keyslotNbr);
+                    
                     // update ui?
                     final String coinBalanceTxtFinal= coinBalanceTxt;
                     final String tokenBalanceTxtFinal= tokenBalanceTxt;
+                    
                     try {
 
                         // The layout is not always ready
@@ -1767,7 +1831,7 @@ public class MainActivity extends AppCompatActivity
 
         if(DEBUG) Log.d(TAG, "AFTER THREAD");
 
-        // NFT thread
+        // NFT thread (this info is not shown in main layout)
         if (isNFT) {
             if(DEBUG) Log.d(TAG, "BEFORE NFT THREAD");
             new Thread(new Runnable() {
@@ -1808,7 +1872,7 @@ public class MainActivity extends AppCompatActivity
                         // add keyInfo to keyInfoList
                         // TODO: thread safety?
                         keyInfoList.get(keyslotNbr).putAll(keyInfoNft);
-
+                        
                     } catch (Exception e) {
                         if(DEBUG) Log.e(TAG, "Failed to update keyInfo in thread: " + e);
                         e.printStackTrace();
@@ -1817,7 +1881,11 @@ public class MainActivity extends AppCompatActivity
             }).start();
             if(DEBUG) Log.d(TAG, "AFTER NFT THREAD");
         }
-
+        
+        // update main layout
+        if(DEBUG) Log.d(TAG, "Update main layout after seal");
+        //myCardsAdapter.notifyItemChanged(keyslotNbr);
+        
         return;
     } // end
 
@@ -1886,7 +1954,11 @@ public class MainActivity extends AppCompatActivity
         // add keyInfo to keyInfoList
         // TODO: thread safe?
         keyInfoList.get(keyslotNbr).putAll(keyInfo);
-
+        
+        // update layout
+        if(DEBUG) Log.d(TAG, "Update main layout after unseal");
+        //myCardsAdapter.notifyItemChanged(keyslotNbr);
+        
         return;
     } // end
 
@@ -1914,13 +1986,21 @@ public class MainActivity extends AppCompatActivity
         // add keyInfo to keyInfoList
         // TODO: thread safe?
         keyInfoList.get(keyslotNbr).putAll(keyInfo);
-
+        
+        // update layout
+        if(DEBUG) Log.d(TAG, "Update main layout after reset");
+        //myCardsAdapter.notifyItemChanged(keyslotNbr);
+        
         return;
     }
 
     // update layout  after keyslot status change
     public void updateLayoutAfterKeyslotChange(int keyslotNbr) {
-
+        if(DEBUG) Log.d(TAG, "updateLayoutAfterKeyslotChange: keyslotNbr= " + keyslotNbr);
+        // update layout
+        if(DEBUG) Log.d(TAG, "Update main layout after reset");
+        myCardsAdapter.notifyItemChanged(keyslotNbr);
+        
         // update data from keyInfo
         HashMap<String, Object> keyInfo= keyInfoList.get(keyslotNbr);
         int keyState= (int) keyInfo.get("keyState");

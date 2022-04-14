@@ -13,7 +13,7 @@
         android:orientation="vertical">
         
         <!-- header -->
-        <androidx.cardview.widget.CardView
+       <androidx.cardview.widget.CardView
            android:id="@+id/toolbar"
            android:elevation="50dp"
            android:layout_width="match_parent"
@@ -734,6 +734,14 @@
 
                     </androidx.cardview.widget.CardView>
                     
+                    <!-- DEBUG LOGO -->
+                    <ImageView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_centerInParent="true"
+                       android:paddingTop="10dp"
+                       android:paddingBottom="10dp"
+                       android:src="@drawable/app_logo_horizontal" />
                     
                     <!-- DEBUG RECYCLERVIEW -->
                     <androidx.recyclerview.widget.RecyclerView
@@ -745,6 +753,14 @@
                         tools:listitem="@layout/item_card" />
                     <!-- ENDBUG RECYCLERVIEW -->
                     
+                    <!-- DEBUG LOGO2 -->
+                    <ImageView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_centerInParent="true"
+                       android:paddingTop="10dp"
+                       android:paddingBottom="10dp"
+                       android:src="@drawable/app_logo_horizontal" />
                     
                 </LinearLayout>
                 

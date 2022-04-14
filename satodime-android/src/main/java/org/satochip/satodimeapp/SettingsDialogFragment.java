@@ -21,15 +21,17 @@ import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.DialogFragment;
 
+import static org.satochip.satodimeapp.Constants.*;	
+
 import java.util.Locale;
 
 public class SettingsDialogFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_SETTINGS";
-    public static final int RESULT_OK=1;
-    public static final int RESULT_CANCELLED=0;
-    public static final int REQUEST_CODE=2;
+    // public static final int RESULT_OK=1;
+    // public static final int RESULT_CANCELLED=0;
+    // public static final int REQUEST_CODE_SETTINGS=2;
         
     private Spinner spinnerLanguage;
     private Spinner spinnerFiat;
@@ -93,7 +95,7 @@ public class SettingsDialogFragment extends DialogFragment {
                    public void onClick(DialogInterface dialog, int id) {
                        SettingsDialogFragment.this.getDialog().cancel();
                        if(DEBUG) Log.d(TAG, "onCreateDialog - builder.setNegativeButton - onClick");
-                       listener.onDialogNegativeClick(SettingsDialogFragment.this, REQUEST_CODE, RESULT_CANCELLED);
+                       listener.onDialogNegativeClick(SettingsDialogFragment.this, REQUEST_CODE_SETTINGS, RESULT_CANCELLED);
                    }
                 })
                 .setPositiveButton(R.string.settings_confirm, null)
@@ -145,7 +147,7 @@ public class SettingsDialogFragment extends DialogFragment {
                                 resultIntent.putExtra("appFiat", appFiat);
                                 resultIntent.putExtra("appFiatFull", appFiatFull);
                                 resultIntent.putExtra("appLanguage", appLanguage);
-                                listener.onDialogPositiveClick(SettingsDialogFragment.this, REQUEST_CODE, RESULT_OK, resultIntent);
+                                listener.onDialogPositiveClick(SettingsDialogFragment.this, REQUEST_CODE_SETTINGS, RESULT_OK, resultIntent);
                                 dialog.dismiss();
                             } catch (Exception e) {
                                 if(DEBUG) Log.e(TAG, e.getMessage());
