@@ -24,10 +24,6 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.CardInfoActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity.SplashScreen"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize"
             android:exported="true"
