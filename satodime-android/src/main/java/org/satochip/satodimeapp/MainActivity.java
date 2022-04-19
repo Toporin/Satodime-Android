@@ -60,8 +60,6 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 import static org.satochip.satodimeapp.Constants.*;	
 import org.satochip.satodimeapp.adapter.MyCardsAdapter;
-import org.satochip.satodimeapp.ui.activity.CardInfoActivity;
-import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
@@ -1512,8 +1510,6 @@ public class MainActivity extends AppCompatActivity
                     } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_card_info))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
-                        //fragment instead of activity!
-                        //homeActivity.startActivity(new Intent(homeActivity, CardInfoActivity.class));
                         Bundle bundle = new Bundle();
                         bundle.putStringArray("authResults", authResults);
                         bundle.putBoolean("isOwner", isOwner);

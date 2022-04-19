@@ -170,7 +170,7 @@
     <string name="exception_tokenid_too_long">tokenid field size is too long!</string>
 
     <!-- show details layout -->
-    <string name="keyslot_details_header">Details of Keyslot #</string>
+    <string name="keyslot_details_header">Details of slot #</string>
     <string name="keyslot_info">Key info:</string>
     <string name="keyslot_status">Status:</string>
     <string name="keyslot_status_value">(unknown?)</string>

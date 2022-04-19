@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.satochip.satodimeapp.R;
 import org.satochip.satodimeapp.BuildConfig;
-import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.MainActivity;
 
 import java.util.Locale;
@@ -132,15 +131,7 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             @Override
             public void onClick(View view) {
                 if(DEBUG) Log.d(TAG,"Clicked on more details button!");
-                //todo: check if uninitialized
-                
-                // using fragment
                 ((MainActivity)context).showKeyslotDetailsDialog(position);
-                
-                // using activity
-                // Intent intent = new Intent(context, KeySlotDetailsActivity.class);
-                // intent.putExtra("keyInfo", keyInfo);
-                // context.startActivity(intent);
             }
         });
 

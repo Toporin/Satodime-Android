@@ -42,7 +42,6 @@ import org.satochip.satodimeapp.MainActivity;
 import org.satochip.satodimeapp.R;
 import org.satochip.satodimeapp.SettingsDialogFragment;
 import org.satochip.satodimeapp.ShowAuthDetailsFragment;
-import org.satochip.satodimeapp.ShowDetailsFragment;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;

@@ -1,10 +1,5 @@
 package org.satochip.satodimeapp.ui.fragment;
 
-// import androidx.appcompat.app.AlertDialog;
-// import androidx.appcompat.app.AppCompatActivity;
-// import androidx.cardview.widget.CardView;
-// import androidx.core.content.ContextCompat;
-
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -48,18 +43,15 @@ import androidx.core.content.ContextCompat;
 
 public class KeyslotDetailsFragment extends DialogFragment {
 
-
+    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final String TAG = "SATODIME_SHOW_DETAILS";
+    private static final int[] BACKGROUND_COLORS = {Color.LTGRAY, 0xff90EE90, 0xFFFFD580};
+    
     private CardView toolBar;
     private ImageView backBtn;
     private LinearLayout nftLayout, showPublicKey;
     private TextView showMoreBtn;
     private TextView headingTxt;
-    
-
-
-    private static final boolean DEBUG = BuildConfig.DEBUG;
-    private static final String TAG = "SATODIME_SHOW_DETAILS";
-    private static final int[] BACKGROUND_COLORS = {Color.LTGRAY, 0xff90EE90, 0xFFFFD580};
 
     private HashMap<String, Object> keyInfo;
     
@@ -91,13 +83,8 @@ public class KeyslotDetailsFragment extends DialogFragment {
         int keyState= (int) keyInfo.get("keyState");	
         if(DEBUG) Log.d(TAG, "ShowDetailsActivity: keyState:" + keyState); 	
         
-        
-        
-        
-        
         // header
         headingTxt = view.findViewById(R.id.heading_text);
-        //headingTxt.setText("Details of Keyslot # " + keyNbr);
         String header= getResources().getString(R.string.keyslot_details_header) + keyNbr;
         headingTxt.setText(header);
         toolBar = view.findViewById(R.id.toolbar);
@@ -191,39 +178,6 @@ public class KeyslotDetailsFragment extends DialogFragment {
                 }
             }
         });
-        
-   /*      showPublicKey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //show dialog here
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
-                ViewGroup viewGroup = v.findViewById(android.R.id.content);
-                View dialogView = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_copy_public_key, viewGroup, false);
-
-                TextView key_info = dialogView.findViewById(R.id.key_info);
-                LinearLayout copyBtn = dialogView.findViewById(R.id.copyBtn);
-
-                key_info.setText(pubkeyHex);
-
-                builder.setView(dialogView);
-                final AlertDialog alertDialog = builder.create();
-                copyBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        //copy code here
-                        String text = key_info.getText().toString().trim();
-                        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("public_key", text);
-                        clipboard.setPrimaryClip(clip);
-                        alertDialog.dismiss();
-                        Toast.makeText(getActivity().getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                alertDialog.show();
-            }
-        }); */
         
         // CoinInfo
         // blockchain
