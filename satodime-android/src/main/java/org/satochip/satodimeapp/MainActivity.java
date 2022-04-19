@@ -375,10 +375,9 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void run() {
 
-
                                 final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
                                 ViewGroup viewGroup= findViewById(android.R.id.content);
-                                View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_pending_request, viewGroup, false);
+                                View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_pending_request, viewGroup, false);
 
                                 TextView okBtn= dialogView.findViewById(R.id.ok_btn);
                                 TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
