@@ -64,6 +64,7 @@ import org.satochip.satodimeapp.ui.activity.CardInfoActivity;
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
+import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -643,7 +644,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // FRAGMENTS
-    public void showSealFormDialog() { // remove
+    public void showSealFormDialog() { // todo: remove
         // Create an instance of the dialog fragment and show it
         if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
         Bundle bundle = new Bundle();
@@ -655,7 +656,7 @@ public class MainActivity extends AppCompatActivity
     
     public void showSealDialog(int keyslotNbr) {
         // Create an instance of the dialog fragment and show it
-        if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
+        if(DEBUG) Log.d(TAG, "In showSealDialog START");
         keyslotAuthentikeyHex= authentikeyHex;
         Bundle bundle = new Bundle();
         bundle.putInt("keyslotNbr", keyslotNbr);
@@ -672,18 +673,29 @@ public class MainActivity extends AppCompatActivity
         bundle.putInt("keyslotNbr", keyslotNbr);
         DialogFragment dialog = new UnsealDialogFragment();
         dialog.setArguments(bundle);
-        dialog.show(getSupportFragmentManager(), "UnealFormDialogFragment");
+        dialog.show(getSupportFragmentManager(), "UnsealDialogFragment");
     }
     
     public void showResetDialog(int keyslotNbr) {
         // Create an instance of the dialog fragment and show it
-        if(DEBUG) Log.d(TAG, "In showUnsealFormDialog START");
+        if(DEBUG) Log.d(TAG, "In showResetDialog START");
         keyslotAuthentikeyHex= authentikeyHex;
         Bundle bundle = new Bundle();
         bundle.putInt("keyslotNbr", keyslotNbr);
         DialogFragment dialog = new ResetDialogFragment();
         dialog.setArguments(bundle);
-        dialog.show(getSupportFragmentManager(), "ResetFormDialogFragment");
+        dialog.show(getSupportFragmentManager(), "ResetDialogFragment");
+    }
+    
+    public void showKeyslotDetailsDialog(int keyslotNbr){
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showKeyslotDetailsDialog START");
+        HashMap<String, Object> keyInfo= keyInfoList.get(keyslotNbr);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("keyInfo", keyInfo);
+        DialogFragment dialog = new KeyslotDetailsFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "KeyslotDetailsFragment");
     }
     
     // The dialog fragment receives a reference to this Activity through the

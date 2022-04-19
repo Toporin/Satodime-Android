@@ -34,7 +34,7 @@ import static org.satochip.client.Constants.*;
 
 import androidx.fragment.app.DialogFragment;
 
-
+// DEPRECATED: use KeyslotDetailsFragment instead
 public class ShowDetailsFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
@@ -246,10 +246,10 @@ public class ShowDetailsFragment extends DialogFragment {
                     buttonShowhideShow= !buttonShowhideShow;
                     if (buttonShowhideShow){
                         llPrivInfoShowhide.setVisibility(View.VISIBLE);
-                        buttonShowhide.setText(R.string.button_hide);
+                        buttonShowhide.setText(R.string.button_hide_privkey);
                     } else{
                         llPrivInfoShowhide.setVisibility(View.GONE);
-                        buttonShowhide.setText(R.string.button_show);
+                        buttonShowhide.setText(R.string.button_show_privkey);
                     }
                 }
             }); // end setOnClickListener

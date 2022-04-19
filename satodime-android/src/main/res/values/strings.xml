@@ -40,7 +40,7 @@
 
 
     <!-- main layout -->
-    <string name="card_info">Card info :</string>
+    <string name="card_info">Card info:</string>
     <string name="card_info_text">Card info</string>
     <string name="card_connected_text">Card connected</string>
     <string name="card_connected_value">(no card detected)</string>
@@ -170,16 +170,17 @@
     <string name="exception_tokenid_too_long">tokenid field size is too long!</string>
 
     <!-- show details layout -->
-    <string name="keyslot_info">Keyslot info</string>
+    <string name="keyslot_details_header">Details of Keyslot #</string>
+    <string name="keyslot_info">Key info:</string>
     <string name="keyslot_status">Status:</string>
     <string name="keyslot_status_value">(unknown?)</string>
     <string name="asset_type">Asset type:</string>
     <string name="pubkey">Pubkey:</string>
-    <string name="coin_info">Coin info</string>
+    <string name="coin_info">Coin info:</string>
     <string name="blockchain">Blockchain:</string>
     <string name="address">Address:</string>
     <string name="balance">Balance:</string>
-    <string name="token_info">Token info</string>
+    <string name="token_info">Token info:</string>
     <string name="token">Token:</string>
     <string name="token_balance">Token balance:</string>
     <string name="nft_info">NFT info:</string>
@@ -200,9 +201,12 @@
     <string name="show_details_activity">Keyslot details</string>
     <string name="show_details_title">Details for keyslot #</string>
     <string name="address_copied_toast">Address Copied!</string>
-    <string name="button_hide">Show Less</string>
-    <string name="button_show">Show More</string>
-    <string name="privkey_copied_toast">Private key Copied!</string>
+    <string name="button_hide_pubkey">Hide public key</string>
+    <string name="button_show_pubkey">Show public key</string>
+    <string name="pubkey_copied_toast">Pubkey copied!</string>
+    <string name="button_hide_privkey">Hide private key</string>
+    <string name="button_show_privkey">Show private key</string>
+    <string name="privkey_copied_toast">Privkey copied!</string>
     <string name="wif_copied_toast">WIF Copied!</string>
 
     <!-- show auth details fragment -->
@@ -281,7 +285,6 @@
     <string name="show_certificate_details">Show Certificate Details</string>
     <string name="public_key">Public Key</string>
     <string name="copy">Copy</string>
-    <string name="keslot_info">Keslot Info:</string>
     <string name="status">Status:</string>
     <string name="show_public_key">Show public key</string>
     <string name="private_key">Private key:</string>

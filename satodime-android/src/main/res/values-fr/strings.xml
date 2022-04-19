@@ -156,16 +156,17 @@
     <string name="exception_tokenid_too_long">le tokenid est trop long!</string>
     
     <!-- show details layout -->
-    <string name="keyslot_info">Info clé</string>
+    <string name="keyslot_details_header">Détails du slot #</string>
+    <string name="keyslot_info">Info clé:</string>
     <string name="keyslot_status">"Statut: "</string>
     <string name="keyslot_status_value">(inconnu)</string>
     <string name="asset_type">"Type d\'actif: "</string>
     <string name="pubkey">"Clé publique: "</string>
-    <string name="coin_info">Info coin</string>
+    <string name="coin_info">Info coin:</string>
     <string name="blockchain">"Blockchain: "</string>
     <string name="address">"Adresse: "</string>
     <string name="balance">"Balance: "</string>
-    <string name="token_info">Info token</string>
+    <string name="token_info">Info token:</string>
     <string name="token">"Token: "</string>
     <string name="token_balance">"Balance token: "</string>
     <string name="nft_info">Info NFT</string>
@@ -186,8 +187,11 @@
     <string name="show_details_activity">Détails de la clé</string>
     <string name="show_details_title">Détails de la clé #</string>
     <string name="address_copied_toast">Adresse copiée !</string>
-    <string name="button_hide">Cacher</string>
-    <string name="button_show">Montrer</string>
+    <string name="button_hide_pubkey">Cacher la clé publique</string>
+    <string name="button_show_pubkey">Afficher la clé publique</string>
+    <string name="pubkey_copied_toast">Clé publique copiée!</string>
+    <string name="button_hide_privkey">Cacher la clé privée</string>
+    <string name="button_show_privkey">Afficher la clé privée</string>
     <string name="privkey_copied_toast">Clé privée copiée!</string>
     <string name="wif_copied_toast">WIF copiée!</string>
     
@@ -234,7 +238,6 @@
     <string name="show_certificate_details">Afficher les détails du certificat</string>
     <string name="public_key">Clé publique</string>
     <string name="copy">Copie</string>
-    <string name="keslot_info">Informations sur Keslot :</string>
     <string name="status">Statut:</string>
     <string name="show_public_key">Afficher la clé publique</string>
     <string name="private_key">Clé privée:</string>

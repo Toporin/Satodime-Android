@@ -40,6 +40,7 @@ import org.satochip.satodimeapp.R;
 
 import java.util.HashMap;
 
+// DEPRECATED: use KeyslotDetailsFragment instead
 public class KeySlotDetailsActivity extends AppCompatActivity {
 
 
@@ -265,10 +266,10 @@ public class KeySlotDetailsActivity extends AppCompatActivity {
                     buttonShowhideShow = !buttonShowhideShow;
                     if (buttonShowhideShow) {
                         llPrivInfoShowhide.setVisibility(View.VISIBLE);
-                        buttonShowhide.setText(R.string.button_hide);
+                        buttonShowhide.setText(R.string.button_hide_privkey);
                     } else {
                         llPrivInfoShowhide.setVisibility(View.GONE);
-                        buttonShowhide.setText(R.string.button_show);
+                        buttonShowhide.setText(R.string.button_show_privkey);
                     }
                 }
             }); // end setOnClickListener

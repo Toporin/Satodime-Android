@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- this is a comment -->
+<!-- Deprecated: use activity_keyslot_details.xml instead -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     >
-    
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/group_details_main"
     android:layout_width="fill_parent"
@@ -368,7 +368,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_show"
+                android:text="@string/button_show_privkey"
                 android:id="@+id/button_showhide_info" />
         
          <LinearLayout

@@ -133,9 +133,14 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             public void onClick(View view) {
                 if(DEBUG) Log.d(TAG,"Clicked on more details button!");
                 //todo: check if uninitialized
-                Intent intent = new Intent(context, KeySlotDetailsActivity.class);
-                intent.putExtra("keyInfo", keyInfo);
-                context.startActivity(intent);
+                
+                // using fragment
+                ((MainActivity)context).showKeyslotDetailsDialog(position);
+                
+                // using activity
+                // Intent intent = new Intent(context, KeySlotDetailsActivity.class);
+                // intent.putExtra("keyInfo", keyInfo);
+                // context.startActivity(intent);
             }
         });
 
