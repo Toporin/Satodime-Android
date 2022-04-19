@@ -53,7 +53,6 @@ import org.satochip.client.ApplicationStatus;
 import org.satochip.client.SatodimeStatus;
 import org.satochip.client.SatodimeKeyslotStatus;
 import org.satochip.client.SatochipParser;
-//import org.satochip.client.Util;
 import static org.satochip.client.Constants.*;
 
 import org.satochip.javacryptotools.*;
@@ -171,21 +170,6 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private MyCardsAdapter myCardsAdapter;
 
-
-    TextView key0, key1, key2;
-    RelativeLayout card0, card1, card2;
-    TextView tokenBalance0, tokenBalance1, tokenBalance2;
-    LinearLayout tokenBalanceLayout0, tokenBalanceLayout1, tokenBalanceLayout2;
-    TextView assestType0, assestType1, assestType2;
-    TextView cardName0, cardName1, cardName2;
-    TextView balance0, balance1, balance2;
-    TextView unit0, unit1, unit2;
-    ImageView cardStatusImg0, cardStatusImg1, cardStatusImg2;
-    TextView cardStatus0, cardStatus1, cardStatus2;
-    ImageView cardImg0, cardImg1, cardImg2;
-    ImageView nextBtn0, nextBtn1, nextBtn2;
-    TextView cardAddress0, cardAddress1, cardAddress2;
-
     LinearLayout cardConnectedLayout;
     CardView cardNotConnectedLayout;
 
@@ -241,7 +225,7 @@ public class MainActivity extends AppCompatActivity
 
         clickListners();
        
-        // debug recyclerview
+        // recyclerview
         keyInfoList= new ArrayList<HashMap<String, Object>>();
         RecyclerView.LayoutManager mLayoutManager1= new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(mLayoutManager1);
@@ -263,11 +247,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onConnected(CardChannel cardChannel) {
                 try {
-//                 Applet-specific code
+                    //Applet-specific code
                     if(DEBUG) Log.d(TAG, "onConnected!");
                     isConnected= true;
                     isLayoutReady= false;
-
 
                     // satodime object
                     cmdSet= new SatochipCommandSet(cardChannel);
@@ -482,22 +465,10 @@ public class MainActivity extends AppCompatActivity
 
                     // update layout header info (details & transfert card button)
                     isOwner= satodimeStatus.isOwner();
-                    if(DEBUG) Log.d("cardStatus", isOwner + "");
-                    //keyInfoList= new ArrayList<HashMap<String, Object>>();
-                    keyInfoList.clear(); // remove old data
-                   
-                    // DEBUG update layout
-                    // This is currently needed because updateKeyslotInfoAfterSeal() updates the layout from another thread when fetching balance
-                    // TODO: only notifyDataSetChanged after all keyslot have been updated?
-/*                     if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged START");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            myCardsAdapter.notifyDataSetChanged();
-                        }
-                    }); */
+                    if(DEBUG) Log.d(TAG, "isOwner: " + isOwner);
                     
                     // iterate for each key
+                    keyInfoList.clear(); // remove old data
                     for (int k= 0; k < nbKeyslot; k++) {
 
                         HashMap<String, Object> keyInfo= new HashMap<String, Object>();
@@ -517,11 +488,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }// enfdfor
                     
-                    // DEBUG update layout
-                    if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged START");
-                    // myCardsAdapter= new MyCardsAdapter(keyInfoList, MainActivity.this);
-                    // recyclerView.setAdapter(myCardsAdapter);
-                    //myCardsAdapter.notifyDataSetChanged();
+                    // update layout
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -530,550 +497,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
                     isLayoutReady= true;
-                    if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged END");
                     
-                    
-                    /******************************************************************
-                     *       modify layout according to number of keyslots
-                     *******************************************************************/
-
-                    /*                     
-                    keyslotsLayout= (LinearLayout) findViewById(R.id.group_keyslots); // remove
-                    if(DEBUG) Log.d(TAG, "LAYOUT START!");
-                    for (int k= 0; k < nbKeyslot; k++) {
-                        Log.d("testSAto", k + "");
-                        // recover keyInfo
-                        HashMap<String, Object> keyInfo= keyInfoList.get(k);
-                        int keyState= (int) keyInfo.get("keyState");
-
-                        Log.d("testKeyInfo", keyInfo.toString());
-
-                        // Keyslot container
-                        String[] array_keyslot_states= getResources().getStringArray(R.array.array_keyslot_states);
-                        int finalK= k;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (finalK== 0) {
-                                    String blockChain= (String) keyInfoList.get(0).get("coinSymbol");
-                                    if (blockChain != null) {
-                                        int id;
-                                        if (blockChain.equals("?")){
-                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                                        } else {
-                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                                        }
-                                        cardImg0.setImageResource(id);
-                                    }
-                                    firstCard.setVisibility(View.VISIBLE);
-                                    progressBar.setVisibility(View.GONE);
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.sealed))) {
-                                        key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                                        card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                                        cardStatus0.setText(getString(R.string.sealed));
-                                        cardStatus0.setTextColor(getResources().getColor(R.color.green));
-                                        cardStatusImg0.setImageResource(R.drawable.ic_lock);
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.unsealed))) {
-                                        key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                                        card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                                        cardStatus0.setText(getString(R.string.unsealed));
-                                        cardStatus0.setTextColor(getResources().getColor(R.color.RED));
-                                        cardStatusImg0.setImageResource(R.drawable.ic_unlock);
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.lbl_uninitalized))) {
-                                        key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                                        card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                                        cardStatus0.setText(getString(R.string.lbl_uninitalized));
-                                        cardStatus0.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg0.setImageResource(R.drawable.ic_coin_empty);
-                                        cardImg0.setImageResource(R.drawable.ic_coin_empty);
-                                    }
-                                    key0.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
-
-                                    //asset type
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        assestType0.setText(R.string.uninitialized);
-                                    } else {
-                                        assestType0.setText((String) keyInfo.get("keyAssetTxt"));
-                                    }
-
-                                    //address
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        cardAddress0.setText(R.string.uninitialized);
-                                    } else {
-                                        cardAddress0.setText((String) keyInfo.get("coinAddress"));
-                                    }
-
-                                    //balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        balance0.setText(R.string.uninitialized);
-                                    } else {
-                                        // balance info are only available after network thread has executed
-                                        balance0.setText(R.string.wait);
-                                    }
-
-                                    //token balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        tokenBalance0.setText(R.string.uninitialized);
-                                    } else if (keyState != STATE_UNINITIALIZED) {
-                                        // balance info are only available after network thread has executed
-                                        tokenBalance0.setText(R.string.wait);
-                                    }
-                                    // set visibility and add to layout
-                                    if (keyState != STATE_UNINITIALIZED) {
-                                        boolean isToken= (boolean) keyInfo.get("isToken");
-                                        boolean isNFT= (boolean) keyInfo.get("isNFT");
-                                        if (isToken || isNFT) {
-                                            tokenBalanceLayout0.setVisibility(View.VISIBLE);
-                                        }
-                                    }
-
-                                    cardStatusImg0.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (isOwner) {
-                                                if(DEBUG) Log.d(TAG, "BUTTON ACTION CLICKED!");
-                                                keyslotAuthentikeyHex= authentikeyHex;
-                                                keyslotNbr= 0;
-                                                int keyslotState= (int) keyInfoList.get(keyslotNbr).get("keyState");
-
-                                                if (keyslotState== 0) { // uninitialized=> seal
-                                                    if(DEBUG)
-                                                        Log.d(TAG, "BUTTON ACTION CLICKED=> SEALING KEYSLOT!");
-                                                    // open as fragment
-                                                    showSealFormDialog();
-                                                } else if (keyslotState== 1) { // sealed=> unseal
-
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_unseal, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendUnsealKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                        }
-                                                    });
-
-                                                    alertDialog.show();
-                                                } else { // unsealed=> reset
-                                                    Log.d("dialgoge", "ok");
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_reset, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendResetKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
-                                                            toast.show();
-                                                        }
-                                                    });
-                                                    alertDialog.show();
-                                                }
-
-                                            }
-
-                                        } // end onClick()
-                                    });
-
-                                    //details button
-                                    nextBtn0.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (keyState != STATE_UNINITIALIZED) {
-                                                if(DEBUG)
-                                                    Log.d(TAG, "BUTTON SHOWDETAILS CLICKED!");
-                                                //using fragment
-                                                Bundle bundle= new Bundle();
-                                                bundle.putSerializable("keyInfo", keyInfoList.get(0));
-                                                bundle.putInt("position", 0);
-                                                Intent intent= new Intent(MainActivity.this, KeySlotDetailsActivity.class);
-                                                intent.putExtras(bundle);
-                                                startActivity(intent);
-                                            }
-                                        }
-                                    });
-                                }
-                                else if (finalK== 1) {
-                                    String blockChain= (String) keyInfoList.get(1).get("coinSymbol");
-                                    if (blockChain != null) {
-                                        int id;
-                                        if (blockChain.equals("?")){
-                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                                        } else {
-                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                                        }
-                                        cardImg1.setImageResource(id);
-                                    }
-                                    secondCard.setVisibility(View.VISIBLE);
-
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.sealed))) {
-                                        key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                                        card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                                        cardStatus1.setText(getString(R.string.sealed));
-                                        cardStatus1.setTextColor(getResources().getColor(R.color.green));
-                                        cardStatusImg1.setImageResource(R.drawable.ic_lock);
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.unsealed))) {
-                                        key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                                        card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                                        cardStatus1.setText(getString(R.string.unsealed));
-                                        cardStatus1.setTextColor(getResources().getColor(R.color.RED));
-                                        cardStatusImg1.setImageResource(R.drawable.ic_unlock);
-
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.lbl_uninitalized))) {
-                                        key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                                        card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                                        cardStatus1.setText(getString(R.string.lbl_uninitalized));
-                                        cardStatus1.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg1.setImageResource(R.drawable.ic_coin_empty);
-                                        cardImg1.setImageResource(R.drawable.ic_coin_empty);
-                                    }
-
-                                    key1.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
-
-                                    //asset type
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        assestType1.setText(R.string.uninitialized);
-                                    } else {
-                                        assestType1.setText((String) keyInfo.get("keyAssetTxt"));
-                                    }
-
-                                    //address
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        cardAddress1.setText(R.string.uninitialized);
-                                    } else {
-                                        cardAddress1.setText((String) keyInfo.get("coinAddress"));
-                                    }
-
-                                    //balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        balance1.setText(R.string.uninitialized);
-                                    } else {
-                                        // balance info are only available after network thread has executed
-                                        balance1.setText(R.string.wait);
-                                    }
-
-                                    //token balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        tokenBalance1.setText(R.string.uninitialized);
-                                    } else if (keyState != STATE_UNINITIALIZED) {
-                                        // balance info are only available after network thread has executed
-                                        tokenBalance1.setText(R.string.wait);
-                                    }
-                                    // set visibility and add to layout
-                                    if (keyState != STATE_UNINITIALIZED) {
-                                        boolean isToken= (boolean) keyInfo.get("isToken");
-                                        boolean isNFT= (boolean) keyInfo.get("isNFT");
-                                        if (isToken || isNFT) {
-                                            tokenBalanceLayout1.setVisibility(View.VISIBLE);
-                                        }
-                                    }
-
-
-                                    cardStatusImg1.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (isOwner) {
-                                                if(DEBUG) Log.d(TAG, "BUTTON ACTION CLICKED!");
-                                                keyslotAuthentikeyHex= authentikeyHex;
-                                                keyslotNbr= 1;
-                                                int keyslotState= (int) keyInfoList.get(keyslotNbr).get("keyState");
-
-                                                if (keyslotState== 0) { // uninitialized=> seal
-                                                    if(DEBUG)
-                                                        Log.d(TAG, "BUTTON ACTION CLICKED=> SEALING KEYSLOT!");
-                                                    // open as fragment
-                                                    showSealFormDialog();
-                                                } else if (keyslotState== 1) { // sealed=> unseal
-
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_unseal, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendUnsealKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                        }
-                                                    });
-
-                                                    alertDialog.show();
-                                                } else { // unsealed=> reset
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_reset, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendResetKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
-                                                            toast.show();
-                                                        }
-                                                    });
-                                                    alertDialog.show();
-                                                }
-
-                                            }
-
-                                        } // end onClick()
-                                    });
-
-                                    //details button
-                                    nextBtn1.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (keyState != STATE_UNINITIALIZED) {
-                                                if(DEBUG)
-                                                    Log.d(TAG, "BUTTON SHOWDETAILS CLICKED!");
-                                                //using fragment
-                                                Bundle bundle= new Bundle();
-                                                bundle.putSerializable("keyInfo", keyInfoList.get(1));
-                                                bundle.putInt("position", 1);
-                                                Intent intent= new Intent(MainActivity.this, KeySlotDetailsActivity.class);
-                                                intent.putExtras(bundle);
-                                                startActivity(intent);
-                                            }
-                                        }
-                                    });
-                                }
-                                else {
-                                    String blockChain= (String) keyInfoList.get(2).get("coinSymbol");
-                                    if (blockChain != null) {
-                                        int id;
-                                        if (blockChain.equals("?")){
-                                            id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                                        } else {
-                                            blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                            id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                                        }
-                                        cardImg2.setImageResource(id);
-                                    }
-                                    thirdCard.setVisibility(View.VISIBLE);
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.sealed))) {
-                                        key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                                        card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                                        cardStatus2.setText(getString(R.string.sealed));
-                                        cardStatus2.setTextColor(getResources().getColor(R.color.green));
-                                        cardStatusImg2.setImageResource(R.drawable.ic_lock);
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.unsealed))) {
-                                        key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                                        card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                                        cardStatus2.setText(getString(R.string.unsealed));
-                                        cardStatus2.setTextColor(getResources().getColor(R.color.RED));
-                                        cardStatusImg2.setImageResource(R.drawable.ic_unlock);
-                                    }
-                                    if (array_keyslot_states[keyState].equals(getResources().getString(R.string.lbl_uninitalized))) {
-                                        key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                                        card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                                        cardStatus2.setText(getString(R.string.lbl_uninitalized));
-                                        cardStatus2.setTextColor(getResources().getColor(R.color.grey));
-                                        cardStatusImg2.setImageResource(R.drawable.ic_coin_empty);
-                                        cardImg2.setImageResource(R.drawable.ic_coin_empty);
-                                    }
-
-                                    key2.setText(getResources().getString(R.string.key_nbr) + " " + String.valueOf(finalK));
-
-
-                                    //asset type
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        assestType2.setText(R.string.uninitialized);
-                                    } else {
-                                        assestType2.setText((String) keyInfo.get("keyAssetTxt"));
-                                    }
-
-                                    //address
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        cardAddress2.setText(R.string.uninitialized);
-                                    } else {
-                                        cardAddress2.setText((String) keyInfo.get("coinAddress"));
-                                    }
-
-                                    //balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        balance2.setText(R.string.uninitialized);
-                                    } else {
-                                        // balance info are only available after network thread has executed
-                                        balance2.setText(R.string.wait);
-                                    }
-
-                                    //token balance
-                                    if (keyState== STATE_UNINITIALIZED) {
-                                        tokenBalance2.setText(R.string.uninitialized);
-                                    } else if (keyState != STATE_UNINITIALIZED) {
-                                        // balance info are only available after network thread has executed
-                                        tokenBalance2.setText(R.string.wait);
-                                    }
-                                    // set visibility and add to layout
-                                    if (keyState != STATE_UNINITIALIZED) {
-                                        boolean isToken= (boolean) keyInfo.get("isToken");
-                                        boolean isNFT= (boolean) keyInfo.get("isNFT");
-                                        if (isToken || isNFT) {
-                                            tokenBalanceLayout2.setVisibility(View.VISIBLE);
-                                        }
-                                    }
-                                    cardStatusImg2.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (isOwner) {
-                                                if(DEBUG) Log.d(TAG, "BUTTON ACTION CLICKED!");
-                                                keyslotAuthentikeyHex= authentikeyHex;
-                                                keyslotNbr= 2;
-                                                int keyslotState= (int) keyInfoList.get(keyslotNbr).get("keyState");
-
-                                                if (keyslotState== 0) { // uninitialized=> seal
-                                                    if(DEBUG)
-                                                        Log.d(TAG, "BUTTON ACTION CLICKED=> SEALING KEYSLOT!");
-                                                    // open as fragment
-                                                    showSealFormDialog();
-                                                } else if (keyslotState== 1) { // sealed=> unseal
-
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_unseal, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendUnsealKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                        }
-                                                    });
-
-                                                    alertDialog.show();
-                                                } else { // unsealed=> reset
-                                                    final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                                                    ViewGroup viewGroup= findViewById(android.R.id.content);
-                                                    View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_reset, viewGroup, false);
-
-                                                    TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                                                    TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-
-                                                    builder.setView(dialogView);
-                                                    final AlertDialog alertDialog= builder.create();
-
-                                                    unSealBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            sendResetKeyslotApduToCard();
-                                                        }
-                                                    });
-                                                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            alertDialog.dismiss();
-                                                            Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
-                                                            toast.show();
-                                                        }
-                                                    });
-                                                    alertDialog.show();
-                                                }
-
-                                            }
-
-                                        } // end onClick()
-                                    });
-                                    //details button
-                                    nextBtn2.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (keyState != STATE_UNINITIALIZED) {
-                                                if(DEBUG)
-                                                    Log.d(TAG, "BUTTON SHOWDETAILS CLICKED!");
-                                                //using fragment
-                                                Bundle bundle= new Bundle();
-                                                bundle.putSerializable("keyInfo", keyInfoList.get(2));
-                                                bundle.putInt("position", 2);
-                                                Intent intent= new Intent(MainActivity.this, KeySlotDetailsActivity.class);
-                                                intent.putExtras(bundle);
-                                                startActivity(intent);
-                                            }
-                                        }
-                                    });
-                                }
-
-                                if(DEBUG) Log.d(TAG, "LAYOUT Keyslot " + finalK + " FINISHED!");
-                            }
-                        });
-                    }// end for loop
-                    isLayoutReady= true; */
                 } catch (Exception e) {
                     if(DEBUG) Log.e(TAG, "Exception in onConnected(): " + e.getMessage());
                 }
@@ -1084,13 +508,8 @@ public class MainActivity extends AppCompatActivity
                 if(DEBUG) Log.d(TAG, "Card disconnected");
                 isConnected= false;
                 isReconnectionFlag[0]= true; // detect future reconnection
-                //Button buttonTransfer= (Button) findViewById(R.id.button_transfer);
-                //Button buttonDetails= (Button) findViewById(R.id.button_auth);
-                //TextView tvStatus= (TextView) findViewById(R.id.value_card_status);
-                //TextView tvOwner= (TextView) findViewById(R.id.value_card_owner);
 
                 // update card detected
-
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast toast= Toast.makeText(getApplicationContext(), R.string.card_disconnected, Toast.LENGTH_SHORT);
@@ -1099,16 +518,13 @@ public class MainActivity extends AppCompatActivity
                         connText.setText(getString(R.string.card_disconnected));
 
                         // disable card-specific buttons
-                        //buttonTransfer.setEnabled(false);
-                        //buttonDetails.setEnabled(false);
-                        //tvStatus.setText("(no card detected)");
-                        //tvOwner.setText("(no card detected)");
                     }
                 });
             } // onDisconnected
+            
         }); // cardManager
         cardManager.start();
-    }
+    } // cardListners()
 
     private void clickListners() {
         menuBtn.setOnClickListener(new View.OnClickListener() {
@@ -1138,50 +554,6 @@ public class MainActivity extends AppCompatActivity
 
         cardConnectedLayout= findViewById(R.id.card_connected_layout);
         cardNotConnectedLayout= findViewById(R.id.car_not_connected_layout);
- /*        key0= findViewById(R.id.key_number_0);
-        key1= findViewById(R.id.key_number_1);
-        key2= findViewById(R.id.key_number_2);
-        card0= findViewById(R.id.card0);
-        card1= findViewById(R.id.card1);
-        card2= findViewById(R.id.card2);
-        tokenBalance0= findViewById(R.id.token_balance_0);
-        tokenBalance1= findViewById(R.id.token_balance_1);
-        tokenBalance2= findViewById(R.id.token_balance_2);
-        tokenBalanceLayout0= findViewById(R.id.token_balance_layout0);
-        tokenBalanceLayout1= findViewById(R.id.token_balance_layout1);
-        tokenBalanceLayout2= findViewById(R.id.token_balance_layout2);
-        assestType0= findViewById(R.id.asset_type_0);
-        assestType1= findViewById(R.id.asset_type_1);
-        assestType2= findViewById(R.id.asset_type_2);
-        cardName0= findViewById(R.id.card_name_0);
-        cardName1= findViewById(R.id.card_name_1);
-        cardName2= findViewById(R.id.card_name_2);
-        balance0= findViewById(R.id.balance_0);
-        balance1= findViewById(R.id.balance_1);
-        balance2= findViewById(R.id.balance_2);
-        unit0= findViewById(R.id.unit_0);
-        unit1= findViewById(R.id.unit_1);
-        unit2= findViewById(R.id.unit_2);
-        cardStatusImg0= findViewById(R.id.card_status_image_0);
-        cardStatusImg1= findViewById(R.id.card_status_image_1);
-        cardStatusImg2= findViewById(R.id.card_status_image_2);
-        cardStatus0= findViewById(R.id.card_status_0);
-        cardStatus1= findViewById(R.id.card_status_1);
-        cardStatus2= findViewById(R.id.card_status_2);
-        cardImg0= findViewById(R.id.card_image_0);
-        cardImg1= findViewById(R.id.card_image_1);
-        cardImg2= findViewById(R.id.card_image_2);
-        nextBtn0= findViewById(R.id.next_btn_0);
-        nextBtn1= findViewById(R.id.next_btn_1);
-        nextBtn2= findViewById(R.id.next_btn_2);
-        cardAddress0= findViewById(R.id.card_address_0);
-        cardAddress1= findViewById(R.id.card_address_1);
-        cardAddress2= findViewById(R.id.card_address_2);
-        firstCard= findViewById(R.id.first_card);
-        secondCard= findViewById(R.id.second_card);
-        thirdCard= findViewById(R.id.third_card); */
-
-
     }
 
     @Override
@@ -1470,7 +842,7 @@ public class MainActivity extends AppCompatActivity
                         toast.show();
                         // update action button
                         String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
-                        String actionMsgUpdated= array_actions_from_state[2];
+                        String actionMsgUpdated= array_actions_from_state[2]; // TODO!
                         Log.d("actionMsg", "ActionMessageUpdate");
                     }
                 });
@@ -1787,67 +1159,11 @@ public class MainActivity extends AppCompatActivity
                     // TODO: thread safety?
                     keyInfoList.get(keyslotNbr).putAll(keyInfo2);
                     
-                    // update main layout
+                    // update main layout if layout is ready
                     if (isLayoutReady){
                         updateLayoutAfterKeyslotChange(keyslotNbr);
                     }
-                    // runOnUiThread(new Runnable() {
-                        // @Override
-                        // public void run() {
-                            // if(DEBUG) Log.d(TAG, "Update main layout after seal thread");
-                            // myCardsAdapter.notifyItemChanged(keyslotNbr);
-                        // }
-                    // });
-                    
-  /*                   // update ui?
-                    final String coinBalanceTxtFinal= coinBalanceTxt;
-                    final String tokenBalanceTxtFinal= tokenBalanceTxt; */
-                    
-                    /* try {
 
-                        // The layout is not always ready
-                        while (!isLayoutReady) {
-                            if(DEBUG) Log.d(TAG, "WAITING LAYOUT for keyslot " + keyslotNbr);
-                            Thread.sleep(500);
-                        }
-                        balance0.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                switch (keyslotNbr) {
-                                    case 0: {
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATING LAYOUT for keyslot " + keyslotNbr);
-                                        balance0.setText(coinBalanceTxtFinal);
-                                        tokenBalance0.setText(tokenBalanceTxtFinal);
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATED LAYOUT for keyslot " + keyslotNbr);
-                                        break;
-                                    }
-                                    case 1: {
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATING LAYOUT for keyslot " + keyslotNbr);
-                                        balance1.setText(coinBalanceTxtFinal);
-                                        tokenBalance1.setText(tokenBalanceTxtFinal);
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATED LAYOUT for keyslot " + keyslotNbr);
-                                        break;
-                                    }
-                                    case 2: {
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATING LAYOUT for keyslot " + keyslotNbr);
-                                        balance2.setText(coinBalanceTxtFinal);
-                                        tokenBalance2.setText(tokenBalanceTxtFinal);
-                                        if(DEBUG)
-                                            Log.d(TAG, "UPDATED LAYOUT for keyslot " + keyslotNbr);
-                                        break;
-                                    }
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        if(DEBUG) Log.e(TAG, "Failed to update UI: " + e);
-                        e.printStackTrace();
-                    } */
                 } catch (Exception e) {
                     if(DEBUG) Log.e(TAG, "Failed to update keyInfo in thread: " + e);
                     e.printStackTrace();
@@ -1907,10 +1223,6 @@ public class MainActivity extends AppCompatActivity
             }).start();
             if(DEBUG) Log.d(TAG, "AFTER NFT THREAD");
         }
-        
-        // update main layout
-        if(DEBUG) Log.d(TAG, "Update main layout after seal");
-        //myCardsAdapter.notifyItemChanged(keyslotNbr);
         
         return;
     } // end
@@ -1980,11 +1292,6 @@ public class MainActivity extends AppCompatActivity
         // add keyInfo to keyInfoList
         // TODO: thread safe?
         keyInfoList.get(keyslotNbr).putAll(keyInfo);
-        
-        // update layout
-        if(DEBUG) Log.d(TAG, "Update main layout after unseal");
-        //myCardsAdapter.notifyItemChanged(keyslotNbr);
-        
         return;
     } // end
 
@@ -2012,11 +1319,6 @@ public class MainActivity extends AppCompatActivity
         // add keyInfo to keyInfoList
         // TODO: thread safe?
         keyInfoList.get(keyslotNbr).putAll(keyInfo);
-        
-        // update layout
-        if(DEBUG) Log.d(TAG, "Update main layout after reset");
-        //myCardsAdapter.notifyItemChanged(keyslotNbr);
-        
         return;
     }
 
@@ -2030,205 +1332,6 @@ public class MainActivity extends AppCompatActivity
                 myCardsAdapter.notifyItemChanged(keyslotNbr);
             }
         });
-/*         // update data from keyInfo
-        HashMap<String, Object> keyInfo= keyInfoList.get(keyslotNbr);
-        int keyState= (int) keyInfo.get("keyState");
-        String[] array_keyslot_states= getResources().getStringArray(R.array.array_keyslot_states);
-        String keyStateTxt= getResources().getString(R.string.key_nbr) + String.valueOf(keyslotNbr) + " - " + array_keyslot_states[keyState];
-        // address
-        final String address;
-        if (keyState== STATE_UNINITIALIZED) {
-            address= getResources().getString(R.string.uninitialized);
-        } else {
-            address= (String) keyInfo.get("coinAddress"); // keyInfo.getOrDefault("pubkeyHex", "(unknown address)");
-        }
-        // balance
-        final String keyAssetTxt;
-        final String coinBalanceTxt;
-        final boolean isTokenOrNFT;
-        final String tokenBalanceTxt;
-        if (keyState== STATE_UNINITIALIZED) {
-            keyAssetTxt= getResources().getString(R.string.uninitialized);
-            coinBalanceTxt= getResources().getString(R.string.uninitialized);
-            tokenBalanceTxt= getResources().getString(R.string.uninitialized);
-            isTokenOrNFT= false;
-        } else {
-            keyAssetTxt= (String) keyInfo.get("keyAssetTxt");
-            coinBalanceTxt= (String) keyInfo.get("coinBalanceTxt");
-
-            // token balance
-            boolean isToken= (boolean) keyInfo.get("isToken");
-            boolean isNFT= (boolean) keyInfo.get("isNFT");
-            isTokenOrNFT= (isToken || isNFT);
-            if (isTokenOrNFT) {
-                tokenBalanceTxt= (String) keyInfo.get("tokenBalanceTxt");
-            } else {
-                tokenBalanceTxt= getResources().getString(R.string.not_applicable);
-            }
-        }
-        // button
-        String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
-        String actionMsgUpdated= array_actions_from_state[keyState]; */
-
-
-        /* runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (keyslotNbr) {
-                    case 0: {
-                        String blockChain= (String) keyInfoList.get(0).get("coinSymbol");
-                        if (blockChain != null) {
-                            int id;
-                            if (blockChain.equals("?")){
-                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                            } else {
-                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                            }
-                            cardImg0.setImageResource(id);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
-                            key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                            card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                            cardStatus0.setText(actionMsgUpdated);
-                            cardStatus0.setTextColor(getResources().getColor(R.color.green));
-                            cardStatusImg0.setImageResource(R.drawable.ic_lock);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.unsealed))) {
-                            key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                            card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                            cardStatus0.setText(actionMsgUpdated);
-                            cardStatus0.setTextColor(getResources().getColor(R.color.RED));
-                            cardStatusImg0.setImageResource(R.drawable.ic_unlock);
-                            break;
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.lbl_uninitalized))) {
-                            key0.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                            card0.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                            cardStatus0.setText(actionMsgUpdated);
-                            cardStatus0.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg0.setImageResource(R.drawable.ic_coin_empty);
-                            cardImg0.setImageResource(R.drawable.ic_coin_empty);
-                            break;
-                        }
-
-
-//                        cardName0.setText(keyStateTxt);
-                        assestType0.setText(keyAssetTxt);
-                        cardAddress0.setText(address);
-                        balance0.setText(coinBalanceTxt);
-
-                        // if token/NFT, show layout & balance
-                        if (isTokenOrNFT) {
-                            tokenBalance0.setText(tokenBalanceTxt);
-                            tokenBalanceLayout0.setVisibility(View.VISIBLE);
-                        } else {
-                            tokenBalanceLayout0.setVisibility(View.GONE);
-                        }
-                        break;
-                    }
-                    case 1: {
-                        String blockChain= (String) keyInfoList.get(1).get("coinSymbol");
-                        if (blockChain != null) {
-                            int id;
-                            if (blockChain.equals("?")){
-                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                            } else {
-                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                            }
-                            cardImg1.setImageResource(id);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
-                            key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                            card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                            cardStatus1.setText(actionMsgUpdated);
-                            cardStatus1.setTextColor(getResources().getColor(R.color.green));
-                            cardStatusImg1.setImageResource(R.drawable.ic_lock);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.unsealed))) {
-                            key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                            card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                            cardStatus1.setText(actionMsgUpdated);
-                            cardStatus1.setTextColor(getResources().getColor(R.color.RED));
-                            cardStatusImg1.setImageResource(R.drawable.ic_unlock);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.lbl_uninitalized))) {
-                            key1.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                            card1.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                            cardStatus1.setText(actionMsgUpdated);
-                            cardStatus1.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg1.setImageResource(R.drawable.ic_coin_empty);
-                            cardImg1.setImageResource(R.drawable.ic_coin_empty);
-                        }
-
-//                        cardName1.setText(keyStateTxt);
-                        assestType1.setText(keyAssetTxt);
-                        cardAddress1.setText(address);
-                        balance1.setText(coinBalanceTxt);
-                        // if token/NFT, show layout & balance
-                        if (isTokenOrNFT) {
-                            tokenBalance1.setText(tokenBalanceTxt);
-                            tokenBalanceLayout1.setVisibility(View.VISIBLE);
-                        } else {
-                            tokenBalanceLayout1.setVisibility(View.GONE);
-                        }
-                        break;
-                    }
-                    case 2: {
-                        String blockChain= (String) keyInfoList.get(2).get("coinSymbol");
-                        if (blockChain != null) {
-                            int id;
-                            if (blockChain.equals("?")){
-                                id= getResources().getIdentifier("ic_coin_unknown", "drawable", getPackageName());
-                            } else {
-                                blockChain= blockChain.toLowerCase(Locale.ENGLISH);
-                                id= getResources().getIdentifier("ic_coin_"+blockChain, "drawable", getPackageName());
-                            }
-                            cardImg2.setImageResource(id);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.sealed))) {
-                            key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.green));
-                            card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_green));
-                            cardStatus2.setText(actionMsgUpdated);
-                            cardStatus2.setTextColor(getResources().getColor(R.color.green));
-                            cardStatusImg2.setImageResource(R.drawable.ic_lock);
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.unsealed))) {
-                            key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.RED));
-                            card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_ouline_red));
-                            cardStatus2.setText(actionMsgUpdated);
-                            cardStatus2.setTextColor(getResources().getColor(R.color.RED));
-                            cardStatusImg2.setImageResource(R.drawable.ic_unlock);
-                            break;
-                        }
-                        if (array_keyslot_states[keyState].equals(getString(R.string.lbl_uninitalized))) {
-                            key2.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.gold_light));
-                            card2.setBackground(MainActivity.this.getDrawable(R.drawable.card_outline_gold));
-                            cardStatus2.setText(actionMsgUpdated);
-                            cardStatus2.setTextColor(getResources().getColor(R.color.grey));
-                            cardStatusImg2.setImageResource(R.drawable.ic_coin_empty);
-                            cardImg2.setImageResource(R.drawable.ic_coin_empty);
-                        }
-
-
-//                        cardName2.setText(keyStateTxt);
-                        assestType2.setText(keyAssetTxt);
-                        cardAddress2.setText(address);
-                        balance2.setText(coinBalanceTxt);
-                        // if token/NFT, show layout & balance
-                        if (isTokenOrNFT) {
-                            tokenBalance2.setText(tokenBalanceTxt);
-                            tokenBalanceLayout2.setVisibility(View.VISIBLE);
-                        } else {
-                            tokenBalanceLayout2.setVisibility(View.GONE);
-                        }
-                        break;
-                    }
-                }
-            }
-        }); */
-
     }
 
     /**
@@ -2239,7 +1342,7 @@ public class MainActivity extends AppCompatActivity
      * Prompt the user to unpair card (remove old unlock_secret) once we are sure that ownership has been transfered outside of the app.
      */
     public void updateLayoutOwnershipWarning() {
-//
+
 //        // show error message
 //        TextView tvOwner= (TextView) findViewById(R.id.value_card_owner);
 //        runOnUiThread(new Runnable() {
