@@ -954,11 +954,12 @@ public class MainActivity extends AppCompatActivity
                 prefs.edit().remove(keyslotAuthentikeyHex).apply();
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Button buttonTransfer= (Button) findViewById(R.id.button_transfer);
-                        TextView tvOwner= (TextView) findViewById(R.id.value_card_owner);
-                        buttonTransfer.setEnabled(false);
-                        tvOwner.setText(R.string.card_ownership_value_ko);
-                        tvOwner.setTextColor(COLOR_ORANGE);
+                        // TODO: disable functions requiring ownership?
+                        // Button buttonTransfer= (Button) findViewById(R.id.button_transfer);
+                        // TextView tvOwner= (TextView) findViewById(R.id.value_card_owner);
+                        // buttonTransfer.setEnabled(false);
+                        // tvOwner.setText(R.string.card_ownership_value_ko);
+                        // tvOwner.setTextColor(COLOR_ORANGE);
                         Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_init_success, Toast.LENGTH_SHORT);
                         toast.show();
                     }
