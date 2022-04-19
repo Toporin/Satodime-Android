@@ -93,46 +93,21 @@
                     android:textColor="@color/gold_color" />
             </LinearLayout>
             
-            <!-- SHOW KEYSLOTS  -->
-            <ScrollView
+            <!-- keyslots info  -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/cards_list"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    
-                    
-                    <!-- DEBUG RECYCLERVIEW -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/cards_list"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:overScrollMode="never"
-                        android:visibility="visible"
-                        tools:listitem="@layout/item_card" />
-                    <!-- ENDBUG RECYCLERVIEW -->
-                    
-                    
-                </LinearLayout>
+                    android:overScrollMode="never"
+                    android:visibility="visible"
+                    tools:listitem="@layout/item_card" />
+            </LinearLayout>
                 
-                
-            </ScrollView>
-                        
-            <!--  used??? -->
-            <!-- android:visibility="gone" -->
-            <!-- DEBUG RECYCLERVIEW -->
-            <!-- <androidx.recyclerview.widget.RecyclerView -->
-                <!-- android:id="@+id/cards_list" -->
-                <!-- android:layout_width="match_parent" -->
-                <!-- android:layout_height="match_parent" -->
-                <!-- android:overScrollMode="never" -->
-                <!-- android:visibility="visible" -->
-                <!-- tools:listitem="@layout/item_card" /> -->
-            <!-- ENDBUG RECYCLERVIEW -->
-            
         </LinearLayout>
         
         <!-- shown when no card connected -->
