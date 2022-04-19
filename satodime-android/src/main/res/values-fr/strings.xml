@@ -27,9 +27,7 @@
     <string name="card_info_text">Info carte</string>
     <string name="card_connected_text">"Carte connectée: "</string> 
     <string name="card_connected_value">(pas de carte détectée)</string> 
-    <string name="card_status_text">"Statut de la carte "</string>
     <string name="card_status_value">(pas de carte détectée)</string> 
-    <string name="card_ownership_text">"Propriété "</string>
     <string name="card_ownership_value">(pas de carte détectée)</string> 
     <string name="button_settings">Paramètres</string> 
     <string name="button_details">Détails</string> 
@@ -108,7 +106,6 @@
     <string name="reset_cancel">Réinitialisation de la clé annulée!</string>
     <string name="button_more_details">Plus de détails</string>
     <string name="card_disconnected">Carte déconnectée</string>
-    <string name="card_connected">Carte connectée</string>
     <string name="seal_cancel">Le scellage de la clé a été annulé!</string>
     <string name="seal_success">Clé scellée avec succès!</string>
     <string name="seal_fail">Impossible de sceller la clé, nouvelle tentative prévue à la prochaine connection</string>
@@ -194,6 +191,11 @@
     <string name="button_show_privkey">Afficher la clé privée</string>
     <string name="privkey_copied_toast">Clé privée copiée!</string>
     <string name="wif_copied_toast">WIF copiée!</string>
+    
+    <!-- card info layout -->
+    <string name="card_connected">Statut de connection:</string>
+    <string name="card_ownership_text">"Statut de propriété:"</string>
+    <string name="card_status_text">Statut d\'authenticité:</string>
     
     <!-- show auth details fragment -->
     <string name="auth_success">Carte authentifiée avec succès!</string>
