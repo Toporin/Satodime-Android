@@ -57,7 +57,7 @@ public class ResetDialogFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View view= inflater.inflate(R.layout.dialoge_reset, null);
+        View view= inflater.inflate(R.layout.dialog_reset, null);
         
         TextView resetBtn= (TextView) view.findViewById(R.id.reset_btn);
         TextView cancelBtn= (TextView) view.findViewById(R.id.cancel_btn);
