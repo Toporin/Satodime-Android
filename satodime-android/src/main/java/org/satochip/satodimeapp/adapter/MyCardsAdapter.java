@@ -25,9 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.satochip.satodimeapp.R;
 import org.satochip.satodimeapp.BuildConfig;
-import org.satochip.satodimeapp.model.Card; // todo: remove
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
-//import org.satochip.satodimeapp.SealFormDialogFragment;
 import org.satochip.satodimeapp.MainActivity;
 
 import java.util.Locale;
@@ -37,19 +35,15 @@ import java.util.ArrayList;
 
 import static org.satochip.client.Constants.*;
 
-/* Currently unused? */
 public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHolder> {
     
     private static final boolean DEBUG = BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_CARD_ADAPTER";
     protected List<HashMap<String, Object>> keyInfoList= null;
 
-    List<Card> notesList; // todo: remove
     Context context;
 
-    //public MyCardsAdapter(List<Card> usersList, Context context) {
     public MyCardsAdapter(List<HashMap<String, Object>> keyInfoList, Context context) {
-        //this.notesList = usersList;
         this.context = context;
         this.keyInfoList= keyInfoList;
     }
@@ -72,6 +66,8 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             
         // get keyslot map from list
         HashMap<String, Object> keyInfo= this.keyInfoList.get(position);
+        if (DEBUG) Log.d(TAG, "in onBindViewHolder keyInfo map: " + keyInfo);
+        
         int keyState= (int) keyInfo.get("keyState");
 
         // state info
@@ -97,9 +93,7 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             holder.cardAddress.setText(address);
             
             // nft or token
-            boolean isToken= (boolean) keyInfo.get("isToken");
-            boolean isNFT= (boolean) keyInfo.get("isNFT");
-            boolean isTokenOrNFT= (isToken || isNFT);
+            boolean isTokenOrNFT= (boolean) keyInfo.getOrDefault("isTokenOrNFT", false);
             if (isTokenOrNFT){
                 holder.tokenLayout.setVisibility(View.VISIBLE);
                 holder.tokenBalance.setText(tokenBalance);
@@ -140,7 +134,6 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
                 if(DEBUG) Log.d(TAG,"Clicked on more details button!");
                 //todo: check if uninitialized
                 Intent intent = new Intent(context, KeySlotDetailsActivity.class);
-                //intent.putExtra("position", position);
                 intent.putExtra("keyInfo", keyInfo);
                 context.startActivity(intent);
             }
@@ -152,156 +145,28 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
                 if(DEBUG) Log.d(TAG,"Clicked on cardStatusImg!");
                 boolean isOwner= true; // todo
                 if (isOwner) {
-                    int keyslotNbr= position; // todo
                     if (keyState == STATE_UNINITIALIZED) { // => seal
                         if(DEBUG) Log.d(TAG,"Clicked on SEAL!");
                         ((MainActivity)context).showSealDialog(position);
-                        // DialogFragment dialog = new SealFormDialogFragment();
-                        // dialog.show(context.getSupportFragmentManager(), "SealFormDialogFragment");
                         
                     } else if (keyState == STATE_SEALED) { // => unseal
                         if(DEBUG) Log.d(TAG,"Clicked on UNSEAL!");
                         ((MainActivity)context).showUnsealDialog(position);
-                        /* final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                        ViewGroup viewGroup= findViewById(android.R.id.content);
-                        View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_unseal, viewGroup, false);
-
-                        TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                        TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-                        builder.setView(dialogView);
-                        final AlertDialog alertDialog= builder.create();
-
-                        unSealBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                ((MainActivity)context).sendUnsealKeyslotApduToCard();
-                            }
-                        });
-                        cancelBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-
-                        alertDialog.show(); */
                         
                     } else if (keyState == STATE_UNSEALED){ // => reset
                         if(DEBUG) Log.d(TAG,"Clicked on RESET!");
                         ((MainActivity)context).showResetDialog(position);
-                        /* final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
-                        ViewGroup viewGroup= findViewById(android.R.id.content);
-                        View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialoge_reset, viewGroup, false);
-
-                        TextView unSealBtn= dialogView.findViewById(R.id.transfer_btn);
-                        TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
-
-                        builder.setView(dialogView);
-                        final AlertDialog alertDialog= builder.create();
-                        unSealBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                ((MainActivity)context).sendResetKeyslotApduToCard();
-                            }
-                        });
-                        cancelBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-                        alertDialog.show(); */
+                        
                     }
                 } else {
                     //todo: toast: not owner!
                 }
             } // end onClick()
         });
-
-        /*
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, KeySlotDetailsActivity.class);
-                intent.putExtra("position", position);
-                context.startActivity(intent);
-            }
-        }); */
-
-        /*
-        holder.cardStatusImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(DEBUG) Log.d(TAG,"Clicked on cardStatusImg!");
-                 if (position == 2) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialog);
-                    ViewGroup viewGroup = v.findViewById(android.R.id.content);
-                    View dialogView = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_uninitialized, viewGroup, false);
-
-                    TextView transferBtn = dialogView.findViewById(R.id.transfer_btn);
-                    TextView cancelBtn = dialogView.findViewById(R.id.cancel_btn);
-                    Spinner blockChainSpinner = dialogView.findViewById(R.id.spinner_coin_type);
-                    Spinner currecySpinner = dialogView.findViewById(R.id.spinner_asset_type);
-                    CheckBox textNetCheckBox = dialogView.findViewById(R.id.checkbox_use_testnet);
-                    EditText entropyEt = dialogView.findViewById(R.id.edittext_entropy_input);
-
-                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context, R.layout.spinner_item, context.getResources().getStringArray(R.array.blockchain));
-                    dataAdapter.setDropDownViewResource(R.layout.spinner_item);
-                    blockChainSpinner.setAdapter(dataAdapter);
-
-                    ArrayAdapter<String> currencyAdapter = new ArrayAdapter<String>(context, R.layout.spinner_item, context.getResources().getStringArray(R.array.currency));
-                    currencyAdapter.setDropDownViewResource(R.layout.spinner_item);
-                    currecySpinner.setAdapter(currencyAdapter);
-
-                    builder.setView(dialogView);
-                    final AlertDialog alertDialog = builder.create();
-                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            alertDialog.dismiss();
-                        }
-                    });
-
-                    blockChainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            String item = adapterView.getItemAtPosition(i).toString();
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-
-                        }
-                    });
-
-                    currecySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            String item = adapterView.getItemAtPosition(i).toString();
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-
-                        }
-                    });
-
-                    alertDialog.show();
-                } 
-            } // end onClick()
-        });*/
         
         if (DEBUG) Log.d(TAG, "Full time: " + (System.currentTimeMillis() - startTime));
         if (DEBUG) Log.d(TAG, "Last middle time: " + (System.currentTimeMillis() - middleTime));
         if (DEBUG) Log.d(TAG, "in onBindViewHolder END");
-
     }
 
     @Override
@@ -315,10 +180,9 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView keyNbr, cardAddress, assetType, balance, tokenBalance; // cardName, unit
+        TextView keyNbr, cardAddress, assetType, balance, tokenBalance;
         TextView cardStatus;
         ImageView cardStatusImg, cardImg, nextBtn;
-        //LinearLayout initLayout;
         LinearLayout tokenLayout;
         RelativeLayout parentLayout;
 
@@ -330,13 +194,10 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             cardStatus = itemView.findViewById(R.id.card_status);
             cardImg = itemView.findViewById(R.id.card_image);
             cardAddress = itemView.findViewById(R.id.card_address);
-            //cardName = itemView.findViewById(R.id.card_name);
             balance = itemView.findViewById(R.id.balance);
             tokenBalance= itemView.findViewById(R.id.token_balance);
-            //unit = itemView.findViewById(R.id.unit);
             nextBtn = itemView.findViewById(R.id.next_btn);
 
-            //initLayout = itemView.findViewById(R.id.intialized_card_layout);
             parentLayout = itemView.findViewById(R.id.parent_layout);
             tokenLayout = itemView.findViewById(R.id.token_balance_layout);
         }

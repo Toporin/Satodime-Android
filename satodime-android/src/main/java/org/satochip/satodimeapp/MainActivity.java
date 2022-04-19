@@ -61,7 +61,6 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 import static org.satochip.satodimeapp.Constants.*;	
 import org.satochip.satodimeapp.adapter.MyCardsAdapter;
-import org.satochip.satodimeapp.model.Card;
 import org.satochip.satodimeapp.ui.activity.CardInfoActivity;
 import org.satochip.satodimeapp.ui.activity.KeySlotDetailsActivity;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
@@ -170,7 +169,6 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView lst_menu;
     private CardView toolBar;
     private RecyclerView recyclerView;
-    private ArrayList<Card> cardArrayList;
     private MyCardsAdapter myCardsAdapter;
 
 
@@ -244,7 +242,6 @@ public class MainActivity extends AppCompatActivity
         clickListners();
        
         // debug recyclerview
-        //myCardsAdapter= new MyCardsAdapter(cardArrayList, MainActivity.this);
         keyInfoList= new ArrayList<HashMap<String, Object>>();
         RecyclerView.LayoutManager mLayoutManager1= new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(mLayoutManager1);
@@ -252,6 +249,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(myCardsAdapter);
         //recyclerView.setNestedScrollingEnabled(false); // ? https://stackoverflow.com/questions/31249252/how-to-make-recyclerview-scroll-smoothly#31249751
         //myCardsAdapter.notifyDataSetChanged();
+        
         cardListners();
 
     } // onCreate
@@ -487,6 +485,18 @@ public class MainActivity extends AppCompatActivity
                     if(DEBUG) Log.d("cardStatus", isOwner + "");
                     //keyInfoList= new ArrayList<HashMap<String, Object>>();
                     keyInfoList.clear(); // remove old data
+                   
+                    // DEBUG update layout
+                    // This is currently needed because updateKeyslotInfoAfterSeal() updates the layout from another thread when fetching balance
+                    // TODO: only notifyDataSetChanged after all keyslot have been updated?
+/*                     if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged START");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            myCardsAdapter.notifyDataSetChanged();
+                        }
+                    }); */
+                    
                     // iterate for each key
                     for (int k= 0; k < nbKeyslot; k++) {
 
@@ -508,16 +518,27 @@ public class MainActivity extends AppCompatActivity
                     }// enfdfor
                     
                     // DEBUG update layout
-                    //if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged");
+                    if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged START");
                     // myCardsAdapter= new MyCardsAdapter(keyInfoList, MainActivity.this);
                     // recyclerView.setAdapter(myCardsAdapter);
                     //myCardsAdapter.notifyDataSetChanged();
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            myCardsAdapter.notifyDataSetChanged();
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                    isLayoutReady= true;
+                    if(DEBUG) Log.d(TAG, "myCardsAdapter.notifyDataSetChanged END");
+                    
+                    
                     /******************************************************************
                      *       modify layout according to number of keyslots
                      *******************************************************************/
 
-                    keyslotsLayout= (LinearLayout) findViewById(R.id.group_keyslots);
+                    /*                     
+                    keyslotsLayout= (LinearLayout) findViewById(R.id.group_keyslots); // remove
                     if(DEBUG) Log.d(TAG, "LAYOUT START!");
                     for (int k= 0; k < nbKeyslot; k++) {
                         Log.d("testSAto", k + "");
@@ -1052,13 +1073,11 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
                     }// end for loop
-                    isLayoutReady= true;
+                    isLayoutReady= true; */
                 } catch (Exception e) {
-                    if(DEBUG) Log.e(TAG, e.getMessage());
-                    Log.d("errorinCode", e.toString());
+                    if(DEBUG) Log.e(TAG, "Exception in onConnected(): " + e.getMessage());
                 }
-            }
-            // onConnected
+            } // onConnected
 
             @Override
             public void onDisconnected() {
@@ -1116,11 +1135,10 @@ public class MainActivity extends AppCompatActivity
         recyclerView= findViewById(R.id.cards_list);
         toolBar= findViewById(R.id.toolbar);
         toolBar.setBackgroundResource(R.drawable.bottom_corer_round);
-        cardArrayList= new ArrayList<>();
 
         cardConnectedLayout= findViewById(R.id.card_connected_layout);
         cardNotConnectedLayout= findViewById(R.id.car_not_connected_layout);
-        key0= findViewById(R.id.key_number_0);
+ /*        key0= findViewById(R.id.key_number_0);
         key1= findViewById(R.id.key_number_1);
         key2= findViewById(R.id.key_number_2);
         card0= findViewById(R.id.card0);
@@ -1161,7 +1179,7 @@ public class MainActivity extends AppCompatActivity
         cardAddress2= findViewById(R.id.card_address_2);
         firstCard= findViewById(R.id.first_card);
         secondCard= findViewById(R.id.second_card);
-        thirdCard= findViewById(R.id.third_card);
+        thirdCard= findViewById(R.id.third_card); */
 
 
     }
@@ -1454,8 +1472,6 @@ public class MainActivity extends AppCompatActivity
                         String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
                         String actionMsgUpdated= array_actions_from_state[2];
                         Log.d("actionMsg", "ActionMessageUpdate");
-//                        Button buttonAction= (Button) keyslotsLayout.findViewWithTag(keyslotNbr);
-//                        buttonAction.setText(actionMsgUpdated);
                     }
                 });
                 return true;
@@ -1623,8 +1639,10 @@ public class MainActivity extends AppCompatActivity
         keyInfo.put("keyAssetTxt", keyAssetTxt);
         boolean isToken= TOKENSET.contains(keyAssetTxt);
         boolean isNFT= NFTSET.contains(keyAssetTxt);
+        boolean isTokenOrNFT= (isToken || isNFT);
         keyInfo.put("isToken", isToken); // convert byte to int, otherwise it is boxed to Byte value (instead of Integer)
         keyInfo.put("isNFT", isNFT);
+        keyInfo.put("isTokenOrNFT", isTokenOrNFT);
         // slip44
         byte[] keySlip44= keyslotStatus.getKeySlip44();
         ByteBuffer wrapped= ByteBuffer.wrap(keySlip44); // big-endian by default
@@ -1770,14 +1788,22 @@ public class MainActivity extends AppCompatActivity
                     keyInfoList.get(keyslotNbr).putAll(keyInfo2);
                     
                     // update main layout
-                    if(DEBUG) Log.d(TAG, "Update main layout after seal thread");
-                    myCardsAdapter.notifyItemChanged(keyslotNbr);
+                    if (isLayoutReady){
+                        updateLayoutAfterKeyslotChange(keyslotNbr);
+                    }
+                    // runOnUiThread(new Runnable() {
+                        // @Override
+                        // public void run() {
+                            // if(DEBUG) Log.d(TAG, "Update main layout after seal thread");
+                            // myCardsAdapter.notifyItemChanged(keyslotNbr);
+                        // }
+                    // });
                     
-                    // update ui?
+  /*                   // update ui?
                     final String coinBalanceTxtFinal= coinBalanceTxt;
-                    final String tokenBalanceTxtFinal= tokenBalanceTxt;
+                    final String tokenBalanceTxtFinal= tokenBalanceTxt; */
                     
-                    try {
+                    /* try {
 
                         // The layout is not always ready
                         while (!isLayoutReady) {
@@ -1821,7 +1847,7 @@ public class MainActivity extends AppCompatActivity
                     } catch (Exception e) {
                         if(DEBUG) Log.e(TAG, "Failed to update UI: " + e);
                         e.printStackTrace();
-                    }
+                    } */
                 } catch (Exception e) {
                     if(DEBUG) Log.e(TAG, "Failed to update keyInfo in thread: " + e);
                     e.printStackTrace();
@@ -1998,10 +2024,13 @@ public class MainActivity extends AppCompatActivity
     public void updateLayoutAfterKeyslotChange(int keyslotNbr) {
         if(DEBUG) Log.d(TAG, "updateLayoutAfterKeyslotChange: keyslotNbr= " + keyslotNbr);
         // update layout
-        if(DEBUG) Log.d(TAG, "Update main layout after reset");
-        myCardsAdapter.notifyItemChanged(keyslotNbr);
-        
-        // update data from keyInfo
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myCardsAdapter.notifyItemChanged(keyslotNbr);
+            }
+        });
+/*         // update data from keyInfo
         HashMap<String, Object> keyInfo= keyInfoList.get(keyslotNbr);
         int keyState= (int) keyInfo.get("keyState");
         String[] array_keyslot_states= getResources().getStringArray(R.array.array_keyslot_states);
@@ -2039,10 +2068,10 @@ public class MainActivity extends AppCompatActivity
         }
         // button
         String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
-        String actionMsgUpdated= array_actions_from_state[keyState];
+        String actionMsgUpdated= array_actions_from_state[keyState]; */
 
 
-        runOnUiThread(new Runnable() {
+        /* runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 switch (keyslotNbr) {
@@ -2198,7 +2227,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }
-        });
+        }); */
 
     }
 
