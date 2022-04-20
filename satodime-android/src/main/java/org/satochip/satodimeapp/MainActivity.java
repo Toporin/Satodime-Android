@@ -459,12 +459,11 @@ public class MainActivity extends AppCompatActivity
                             } else {
                                 cardAuthenticityImg.setImageResource(R.drawable.ic_auth_batch_no);
                             }
-                        }
-                    });
-                    
-                    cardAuthenticityImg.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            showAuthenticityDetailsDialog();
+                            cardAuthenticityImg.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    showAuthenticityDetailsDialog();
+                                }
+                            });
                         }
                     });
                     
