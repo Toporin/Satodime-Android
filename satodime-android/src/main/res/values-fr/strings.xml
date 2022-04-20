@@ -25,7 +25,6 @@
     <!-- main layout -->
     <string name="card_info">Info carte</string>
     <string name="card_info_text">Info carte</string>
-    <string name="card_connected_text">"Carte connectée: "</string> 
     <string name="card_connected_value">(pas de carte détectée)</string> 
     <string name="card_status_value">(pas de carte détectée)</string> 
     <string name="card_ownership_value">(pas de carte détectée)</string> 
@@ -105,6 +104,7 @@
     <string name="reset_confirm">Réinitialiser</string>
     <string name="reset_cancel">Réinitialisation de la clé annulée!</string>
     <string name="button_more_details">Plus de détails</string>
+    <string name="card_connected">Carte connectée</string>
     <string name="card_disconnected">Carte déconnectée</string>
     <string name="seal_cancel">Le scellage de la clé a été annulé!</string>
     <string name="seal_success">Clé scellée avec succès!</string>
@@ -193,7 +193,7 @@
     <string name="wif_copied_toast">WIF copiée!</string>
     
     <!-- card info layout -->
-    <string name="card_connected">Statut de connection:</string>
+    <string name="card_connected_text">Statut de connection:</string>
     <string name="card_ownership_text">"Statut de propriété:"</string>
     <string name="card_status_text">Statut d\'authenticité:</string>
     

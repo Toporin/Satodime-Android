@@ -38,11 +38,9 @@
         <item>Turkish</item>
     </string-array> -->
 
-
     <!-- main layout -->
     <string name="card_info">Card info:</string>
     <string name="card_info_text">Card info</string>
-    <string name="card_connected_text">Card connected</string>
     <string name="card_connected_value">(no card detected)</string>
     <string name="card_status_value">(no card detected)</string>
     <string name="card_ownership_value">(no card detected)</string>
@@ -119,6 +117,7 @@
     <string name="reset_confirm">Reset</string>
     <string name="reset_cancel">Keyslot reset cancelled!</string>
     <string name="button_more_details">More details</string>
+    <string name="card_connected">Card connected</string>
     <string name="card_disconnected">Card disconnected</string>
     <string name="seal_cancel">Seal keyslot action cancelled!</string>
     <string name="seal_success">Keyslot sealed successfully!</string>
@@ -207,7 +206,7 @@
     <string name="wif_copied_toast">WIF Copied!</string>
 
     <!-- card info layout -->
-    <string name="card_connected">Connection status:</string>
+    <string name="card_connected_text">Connection status:</string>
     <string name="card_ownership_text">Ownership status:</string>
     <string name="card_status_text">Authenticity status:</string>
     
