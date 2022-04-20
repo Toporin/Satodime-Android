@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity
     CardView firstCard, secondCard, thirdCard;
 
     SpinKitView progressBar;
-    ImageView connLogo, cardAuthticityImg;
+    ImageView connLogo, cardAuthenticityImg;
     TextView connText,noCardMainText;
     Activity myactivity= this;
     Context mycontext= this;
@@ -455,14 +455,14 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             if (authResults[0].equals("OK")) {
-                                cardAuthticityImg.setImageResource(R.drawable.ic_auth_batch_ok);
+                                cardAuthenticityImg.setImageResource(R.drawable.ic_auth_batch_ok);
                             } else {
-                                cardAuthticityImg.setImageResource(R.drawable.ic_auth_batch_no);
+                                cardAuthenticityImg.setImageResource(R.drawable.ic_auth_batch_no);
                             }
                         }
                     });
                     
-                    cardAuthticityImg.setOnClickListener(new View.OnClickListener() {
+                    cardAuthenticityImg.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
                             showAuthenticityDetailsDialog();
                         }
@@ -546,7 +546,7 @@ public class MainActivity extends AppCompatActivity
     private void initAllViews() {
         drawer= findViewById(R.id.drawer_layout);
         noCardMainText= findViewById(R.id.card_not_connected_tv_main);
-        cardAuthticityImg= findViewById(R.id.card_authenticity_img);
+        cardAuthenticityImg= findViewById(R.id.card_authenticity_img);
         connLogo= findViewById(R.id.card_connected_view1_logo);
         connText= findViewById(R.id.card_connected_view1);
         progressBar= findViewById(R.id.spin_progress_bar);
