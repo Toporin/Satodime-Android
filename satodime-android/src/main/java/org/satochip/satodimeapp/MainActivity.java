@@ -63,6 +63,7 @@ import org.satochip.satodimeapp.adapter.MyCardsAdapter;
 import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
+import org.satochip.satodimeapp.ui.fragment.AuthenticityDetailsFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -460,7 +461,13 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
                     });
-
+                    
+                    cardAuthticityImg.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            showAuthenticityDetailsDialog();
+                        }
+                    });
+                    
                     // update layout header info (details & transfert card button)
                     isOwner= satodimeStatus.isOwner();
                     if(DEBUG) Log.d(TAG, "isOwner: " + isOwner);
@@ -694,6 +701,17 @@ public class MainActivity extends AppCompatActivity
         dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), "KeyslotDetailsFragment");
     }
+    
+    public void showAuthenticityDetailsDialog(){
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showAuthenticityDetailsDialog START");
+        Bundle bundle = new Bundle();
+        bundle.putStringArray("authResults", authResults);
+        DialogFragment fragment = new AuthenticityDetailsFragment();
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(), "AuthenticityDetailsFragment");
+    }
+    
     
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods

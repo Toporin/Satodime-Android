@@ -95,7 +95,9 @@ public class CardInfoFragment extends DialogFragment {
         showCertificateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
+                ((MainActivity)getActivity()).showAuthenticityDetailsDialog();
+                
+                /* final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
                 ViewGroup viewGroup = v.findViewById(android.R.id.content);
                 View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_certificate_details, viewGroup, false);
                 builder.setView(view);
@@ -146,7 +148,7 @@ public class CardInfoFragment extends DialogFragment {
                 tvDevice.setText(authDevice);
 
                 final AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                alertDialog.show(); */
             }
         });
         

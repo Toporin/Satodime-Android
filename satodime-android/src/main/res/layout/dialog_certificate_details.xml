@@ -5,7 +5,7 @@
     android:background="@color/white"
     android:layout_height="match_parent">
 
-
+    <!-- Title -->
     <androidx.cardview.widget.CardView
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
+    
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

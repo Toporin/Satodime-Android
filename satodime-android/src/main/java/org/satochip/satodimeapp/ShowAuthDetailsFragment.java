@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
-
+// Deprecated 
 public class ShowAuthDetailsFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
