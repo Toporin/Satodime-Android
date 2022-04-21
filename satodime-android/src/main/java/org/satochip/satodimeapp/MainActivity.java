@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity
     private static final int MAX_OWNERSHIP_ERROR= 5;
     private int ownership_error_counter= 0;
     private String[] authResults= null;
+    private boolean waitForSetup=false;
     
     // settings button 
     private Button buttonSettings= null;
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity
     // keyslot layout root
     private LinearLayout keyslotsLayout= null;
     private boolean isLayoutReady= false;
-
+    
     // API KEYS
     private HashMap<String, String> APIKEYS= null;
 
@@ -285,6 +286,7 @@ public class MainActivity extends AppCompatActivity
                     if(DEBUG) Log.d(TAG, "Card status:" + cardStatus.toString());
                     // check if setup done
                     if (!cardStatus.isSetupDone()) {
+                        waitForSetup=true;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -322,11 +324,13 @@ public class MainActivity extends AppCompatActivity
                                             prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
                                             Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_success, Toast.LENGTH_SHORT);
                                             toast.show();
+                                            waitForSetup= false;
                                             alertDialog.dismiss();
                                         } else {
                                             if(DEBUG) Log.e(TAG, "Error: setupDone: " + rapduSetup.toHexString());
                                             Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_fail, Toast.LENGTH_SHORT);
                                             toast.show();
+                                            waitForSetup= false;
                                         }
                                     }
                                 });
@@ -334,15 +338,23 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onClick(View v) {
                                         alertDialog.dismiss();
-                                        if(DEBUG)
-                                            Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
                                         Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_rejected, Toast.LENGTH_SHORT);
                                         toast.show();
+                                        waitForSetup= false;
                                     }
                                 });
                                 alertDialog.show();
                             }
                         });
+                        
+                        // todo: temporary fix...
+                        // we need to wait for the 'ownership approval' fragment to complete before continuing the setup
+                        while (waitForSetup){
+                            if(DEBUG) Log.d(TAG, "Waiting for approval...");
+                            Thread.sleep(500);
+                        }
+                        
                     } // end setup
 
                     // get authentikey
