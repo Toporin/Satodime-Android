@@ -81,8 +81,8 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Na
         if (!selectedItem.equals("")) {
             for (int j= 0; j < menu_icon.length; j++) {
                 if (navigationHolder.item_text.getText().equals(selectedItem)) {
-                    Log.d(TAG, navigationHolder.item_text.getText() + "");
-                    Log.d(TAG, selectedItem + "");
+                    if (DEBUG) Log.d(TAG, navigationHolder.item_text.getText() + "");
+                    if (DEBUG) Log.d(TAG, selectedItem + "");
                     navigationHolder.item_background.setBackgroundResource(R.drawable.item_selected_background);
                     navigationHolder.item_icon.setColorFilter(homeActivity.getColor(R.color.white));
                     navigationHolder.item_text.setTextColor(homeActivity.getColor(R.color.white));
@@ -140,8 +140,8 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Na
     void setFilter(NavigationAdapter.NavigationHolder navigationHolder, int index) {
         for (int i= 0; i < menu_icon.length; i++) {
             if (navigationHolder.item_text.getText().equals(selectedItem)) {
-                Log.d("txt_menu", navigationHolder.item_text.getText() + "");
-                Log.d("selectedItem", selectedItem + "");
+                if (DEBUG) Log.d(TAG, navigationHolder.item_text.getText() + "");
+                if (DEBUG) Log.d(TAG, selectedItem + "");
                 navigationHolder.item_background.setBackgroundResource(R.drawable.item_selected_background);
                 navigationHolder.item_icon.setColorFilter(homeActivity.getColor(R.color.white));
                 navigationHolder.item_text.setTextColor(homeActivity.getColor(R.color.white));

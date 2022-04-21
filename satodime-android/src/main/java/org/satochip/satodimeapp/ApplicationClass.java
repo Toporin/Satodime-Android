@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import io.paperdb.Paper;
 
 public class ApplicationClass extends Application {
+    private static final boolean DEBUG= BuildConfig.DEBUG;
+    private static final String TAG = "SATODIME_APP";
     private String darkTheme;
     @Override
     public void onCreate() {
@@ -24,7 +26,7 @@ public class ApplicationClass extends Application {
                     .setDefaultNightMode(
                             AppCompatDelegate
                                     .MODE_NIGHT_YES);
-            Log.d("testtheme","always on");
+            if (DEBUG) Log.d(TAG,"always on");
             Utils.isDark = true;
         }
         else if(darkTheme.equals("off")){
@@ -32,7 +34,7 @@ public class ApplicationClass extends Application {
                     .setDefaultNightMode(
                             AppCompatDelegate
                                     .MODE_NIGHT_NO);
-            Log.d("testtheme","always off");
+            if (DEBUG) Log.d(TAG,"always off");
             Utils.isDark = false;
         }
     }

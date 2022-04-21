@@ -233,8 +233,7 @@ public class SealFormDialogFragment extends DialogFragment {
                     contractByteTLV[0]= (byte) 0;
                     contractByteTLV[1]= (byte) (contractBytes.length);
                     System.arraycopy(contractBytes, 0, contractByteTLV, 2, contractBytes.length);
-                    if(DEBUG)
-                        Log.d(TAG, "SEAL contract (after)   : " + Hex.toHexString(contractBytes));
+                    if(DEBUG) Log.d(TAG, "SEAL contract (after)   : " + Hex.toHexString(contractBytes));
                     // check tokenid: tokenid byte array should be [size(2b) | tokenid | 0-padding to 34b]
                     String tokenid= etTokenid.getText().toString();
                     byte[] tokenidBytes;

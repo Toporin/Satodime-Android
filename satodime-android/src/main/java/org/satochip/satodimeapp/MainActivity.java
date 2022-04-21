@@ -198,7 +198,6 @@ public class MainActivity extends AppCompatActivity
         // persistent memory & locale & fiat
         prefs= getSharedPreferences("satodime", MODE_PRIVATE);
         appLanguage= prefs.getString("appLanguage", Locale.getDefault().getLanguage());
-        Log.d("applang",appLanguage);
         Locale myLocale= new Locale(appLanguage);
         Locale.setDefault(myLocale);
         Resources resource= getResources();
@@ -258,7 +257,7 @@ public class MainActivity extends AppCompatActivity
                     cmdSet= new SatochipCommandSet(cardChannel);
                     if(DEBUG) {
                         cmdSet.setLoggerLevel("info");
-                        Log.d(TAG, "Created a SatochipCommandSet object");
+                        if(DEBUG) Log.d(TAG, "Created a SatochipCommandSet object");
                     } else {
                         cmdSet.setLoggerLevel("warning");
                     }
@@ -282,7 +281,6 @@ public class MainActivity extends AppCompatActivity
 
                     // get card status
                     APDUResponse rapdu2= cmdSet.cardGetStatus();
-                    Log.d("cardAuthneticiy", rapdu2.isOK() + "");
                     ApplicationStatus cardStatus= cmdSet.getApplicationStatus();
                     if(DEBUG) Log.d(TAG, "Card status:" + cardStatus.toString());
                     // check if setup done
@@ -290,6 +288,7 @@ public class MainActivity extends AppCompatActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                // todo: create fragment in class
                                 final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
                                 ViewGroup viewGroup= findViewById(android.R.id.content);
                                 View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_transfer_card, viewGroup, false);
@@ -307,8 +306,7 @@ public class MainActivity extends AppCompatActivity
                                 transferBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        if(DEBUG)
-                                            Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "YES  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "YES  has been clicked!");
                                         SecureRandom random= new SecureRandom();
                                         byte pin_tries0= (byte) 5;
                                         byte[] pin0= new byte[8];
@@ -318,8 +316,7 @@ public class MainActivity extends AppCompatActivity
                                             // save unlockSecret in SharedPreferences
                                             authentikey= cmdSet.getAuthentikey();
                                             authentikeyHex= parser.toHexString(authentikey);
-                                            if(DEBUG)
-                                                Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
+                                            if(DEBUG) Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
                                             byte[] unlockSecret= cmdSet.getSatodimeUnlockSecret();
                                             String unlockSecretHex= parser.toHexString(unlockSecret);
                                             prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
@@ -327,8 +324,7 @@ public class MainActivity extends AppCompatActivity
                                             toast.show();
                                             alertDialog.dismiss();
                                         } else {
-                                            if(DEBUG)
-                                                Log.e(TAG, "Error: setupDone: " + rapduSetup.toHexString());
+                                            if(DEBUG) Log.e(TAG, "Error: setupDone: " + rapduSetup.toHexString());
                                             Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_fail, Toast.LENGTH_SHORT);
                                             toast.show();
                                         }
@@ -377,7 +373,7 @@ public class MainActivity extends AppCompatActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
+                                // todo: add fragment in class
                                 final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
                                 ViewGroup viewGroup= findViewById(android.R.id.content);
                                 View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_pending_request, viewGroup, false);
@@ -403,8 +399,7 @@ public class MainActivity extends AppCompatActivity
                                     public void onClick(View v) {
                                         alertDialog.dismiss();
 
-                                        if(DEBUG)
-                                            Log.d(TAG, "PENDING REQUEST DIALOG " + "YES  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "PENDING REQUEST DIALOG " + "YES  has been clicked!");
                                         switch (pendingAction) {
                                             case PENDING_ACTION_RESET:
                                                 sendResetKeyslotApduToCard();
@@ -425,8 +420,7 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onClick(View v) {
                                         alertDialog.dismiss();
-                                        if(DEBUG)
-                                            Log.d(TAG, "PENDING REQUEST DIALOG " + "NO  has been clicked!");
+                                        if(DEBUG) Log.d(TAG, "PENDING REQUEST DIALOG " + "NO  has been clicked!");
                                         pendingAction= PENDING_ACTION_NONE;
                                         Toast toast= Toast.makeText(getApplicationContext(), R.string.request_rejected, Toast.LENGTH_SHORT);
                                         toast.show();
@@ -892,10 +886,9 @@ public class MainActivity extends AppCompatActivity
                         if(DEBUG) Log.d(TAG, "Update BUTTON SEALED=> UNSEALED");
                         Toast toast= Toast.makeText(getApplicationContext(), R.string.unseal_success, Toast.LENGTH_SHORT);
                         toast.show();
-                        // update action button
+                        // update action button: remove? (done in update layout)
                         String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
                         String actionMsgUpdated= array_actions_from_state[2]; // TODO!
-                        Log.d("actionMsg", "ActionMessageUpdate");
                     }
                 });
                 return true;
@@ -920,7 +913,6 @@ public class MainActivity extends AppCompatActivity
             });
             return false;
         }
-
     }
 
     //send unseal keyslot APDU command to card
@@ -1413,7 +1405,7 @@ public class MainActivity extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    // todo: put fragment in own class
                     final AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this, R.style.CustomAlertDialog);
                     ViewGroup viewGroup= findViewById(android.R.id.content);
                     View dialogView= LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_reset_ownership, viewGroup, false);
@@ -1421,16 +1413,13 @@ public class MainActivity extends AppCompatActivity
                     TextView resetBtn= dialogView.findViewById(R.id.reset_btn);
                     TextView cancelBtn= dialogView.findViewById(R.id.cancel_btn);
 
-
                     builder.setView(dialogView);
                     final AlertDialog alertDialog= builder.create();
 
                     resetBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(DEBUG)
-                                Log.d(TAG, "RESET OWNERSHIP DIALOG " + "YES  has been clicked!");
-                            if(DEBUG) Log.d(TAG, "DEBUGUNLOCK setupDone: START");
+                            if(DEBUG) Log.d(TAG, "RESET OWNERSHIP DIALOG YES  has been clicked!");
                             // remove unlockSecretHex from SharedPreferences
                             prefs.edit().remove(authentikeyHex).apply();
                             isOwner= false;
@@ -1441,8 +1430,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onClick(View v) {
                             alertDialog.dismiss();
-                            if(DEBUG)
-                                Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
+                            if(DEBUG) Log.d(TAG, "OWNERSHIP APPROVAL DIALOG " + "NO  has been clicked!");
                             Toast toast= Toast.makeText(getApplicationContext(), R.string.reset_ownership_rejected, Toast.LENGTH_SHORT);
                             toast.show();
                         }
