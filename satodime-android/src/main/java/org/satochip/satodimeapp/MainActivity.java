@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity
 
         initAllViews();
 
-        clickListners();
+        clickListeners();
        
         // recyclerview
         keyInfoList= new ArrayList<HashMap<String, Object>>();
@@ -235,11 +235,11 @@ public class MainActivity extends AppCompatActivity
         lst_menu.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        cardListners();
+        cardListeners();
 
     } // onCreate
 
-    public void cardListners(){
+    public void cardListeners(){
         // NFC
         nfcAdapter= NfcAdapter.getDefaultAdapter(this);
         cardManager= new NFCCardManager();
@@ -521,9 +521,9 @@ public class MainActivity extends AppCompatActivity
             
         }); // cardManager
         cardManager.start();
-    } // cardListners()
+    } // cardListeners()
 
-    private void clickListners() {
+    private void clickListeners() {
         menuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
