@@ -26,11 +26,8 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-//import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
-
-//import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.satochip.satodimeapp.BuildConfig;
 import org.satochip.satodimeapp.MainActivity;
@@ -81,8 +78,6 @@ public class SettingsFragment extends DialogFragment {
             darkThemeSwitch.setChecked(false);
         }
 
-
-
         // get current language from config and set language spinner to it
         if(DEBUG) Log.d(TAG, "SettingsDialogFragment: get current language");
         prefs = getActivity().getSharedPreferences("satodime", Context.MODE_PRIVATE);
@@ -104,7 +99,7 @@ public class SettingsFragment extends DialogFragment {
         // Do something on language or Fiat selection?
         // Do something on dark mode switch?
         // language
-        final String[] array_language = getResources().getStringArray(R.array.array_language);
+/*         final String[] array_language = getResources().getStringArray(R.array.array_language);
         spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -118,9 +113,9 @@ public class SettingsFragment extends DialogFragment {
             public void onNothingSelected(AdapterView<?> parentView) {
                 if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: ");
             }
-        });
+        }); */
 
-        final String[] array_fiat = getResources().getStringArray(R.array.array_fiat);
+/*         final String[] array_fiat = getResources().getStringArray(R.array.array_fiat);
         spinnerFiat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -139,7 +134,7 @@ public class SettingsFragment extends DialogFragment {
             public void onNothingSelected(AdapterView<?> parentView) {
                 if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: ");
             }
-        });
+        }); */
         
         // build dialog
         AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog)
@@ -166,7 +161,6 @@ public class SettingsFragment extends DialogFragment {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //finish();
                 getDialog().dismiss();
             }
         });
@@ -202,9 +196,7 @@ public class SettingsFragment extends DialogFragment {
                     prefs.edit().putString("appFiatFull", selected_fiat).apply();
                     if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences: " + appFiat);
 
-                    //MainActivity.isLanguageChanged=true;
-                    //recreate(); //todo?
-                    
+                    // return results
                     Intent resultIntent= new Intent();
                     resultIntent.putExtra("appFiat", appFiat);
                     resultIntent.putExtra("appFiatFull", appFiatFull);
@@ -267,16 +259,6 @@ public class SettingsFragment extends DialogFragment {
             throw new ClassCastException("ClassCastException: must implement SettingsDialogListener");
         }
     }
-
-// TODO?
-/*     @Override
-    public void recreate() {
-        if(DEBUG) Log.d(TAG, "In recreate()");
-        finish();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        startActivity(getIntent());
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    } */
 
     public static String  convertLangageToLocaleString(String language){
         switch (language) {
