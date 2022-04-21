@@ -64,7 +64,7 @@ public class SettingsFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();	
         // Inflate and set the layout for the dialog	
         // Pass null as the parent view because its going in the dialog layout	
-        View view= inflater.inflate(R.layout.activity_settigns, null);	
+        View view= inflater.inflate(R.layout.activity_settings, null);	
         
         toolBar = view.findViewById(R.id.toolbar);
         backBtn = view.findViewById(R.id.back_btn);
