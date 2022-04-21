@@ -636,17 +636,7 @@ public class MainActivity extends AppCompatActivity
         if(DEBUG) Log.d(TAG, "LIFECYCLE ONDESTROY ");
     }
 
-    // FRAGMENTS
-    public void showSealFormDialog() { // todo: remove
-        // Create an instance of the dialog fragment and show it
-        if(DEBUG) Log.d(TAG, "In showSealFormDialog START");
-        Bundle bundle = new Bundle();
-        bundle.putInt("keyslotNbr", 0); // todo: remove
-        DialogFragment dialog = new SealFormDialogFragment();
-        dialog.setArguments(bundle);
-        dialog.show(getSupportFragmentManager(), "SealFormDialogFragment");
-    }
-    
+    // FRAGMENTS  
     public void showSealDialog(int keyslotNbr) {
         // Create an instance of the dialog fragment and show it
         if(DEBUG) Log.d(TAG, "In showSealDialog START");
