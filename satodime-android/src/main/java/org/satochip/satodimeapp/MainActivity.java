@@ -886,9 +886,9 @@ public class MainActivity extends AppCompatActivity
                         if(DEBUG) Log.d(TAG, "Update BUTTON SEALED=> UNSEALED");
                         Toast toast= Toast.makeText(getApplicationContext(), R.string.unseal_success, Toast.LENGTH_SHORT);
                         toast.show();
-                        // update action button: remove? (done in update layout)
-                        String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
-                        String actionMsgUpdated= array_actions_from_state[2]; // TODO!
+                        // update action button: todo remove? (done in update layout)
+                        // String[] array_actions_from_state= getResources().getStringArray(R.array.array_actions_from_state);
+                        // String actionMsgUpdated= array_actions_from_state[2]; // TODO!
                     }
                 });
                 return true;
