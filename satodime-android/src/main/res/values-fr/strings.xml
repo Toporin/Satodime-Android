@@ -17,7 +17,8 @@
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="error">"Erreur: "</string>
-
+    <string name="warning">Attention!</string>
+    
     <string name="API_KEY_ETHERSCAN">""</string>
     <string name="API_KEY_ETHPLORER">""</string>
     <string name="API_KEY_BSCSCAN">""</string>

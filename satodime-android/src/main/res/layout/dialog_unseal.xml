@@ -71,7 +71,7 @@
             android:baselineAligned="false"
             android:visibility="gone"
             android:fontFamily="@font/segoe_ui_bold"
-            android:text="Warning!"
+            android:text="@string/warning"
             android:textColor="@color/grey"
             android:textSize="@dimen/normal_heading_size" />
 
