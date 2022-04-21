@@ -28,7 +28,7 @@ import org.satochip.satodimeapp.R;
 
 import static org.satochip.client.Constants.*;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.cardview.widget.CardView;
