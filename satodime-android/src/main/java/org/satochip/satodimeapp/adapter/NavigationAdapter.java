@@ -32,11 +32,6 @@ import org.satochip.satodimeapp.BuildConfig;
 import org.satochip.satodimeapp.MainActivity;
 import org.satochip.satodimeapp.ui.fragment.SettingsFragment;
 
-// import java.util.Locale;
-// import java.util.List;
-// import java.util.HashMap;
-// import java.util.ArrayList;
-
 public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavigationHolder> {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
@@ -112,49 +107,10 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Na
                         break;
                     case 1: // card info
                         homeActivity.showCardInfoDialog();
-                        /* Bundle bundle = new Bundle();
-                        bundle.putStringArray("authResults", authResults);
-                        bundle.putBoolean("isOwner", isOwner);
-                        bundle.putBoolean("isConnected", isConnected);
-                        DialogFragment infoFragment = new CardInfoFragment();
-                        infoFragment.setArguments(bundle);
-                        infoFragment.show(getSupportFragmentManager(), "CardInfoFragment"); */
                         break;
                     case 2: // transfer card
                         homeActivity.showTransferDialog();
                         break;
-                        /* final AlertDialog.Builder builder= new AlertDialog.Builder(homeActivity, R.style.CustomAlertDialog);
-                        ViewGroup viewGroup= v.findViewById(android.R.id.content);
-                        View dialogView= LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_transfer_card, viewGroup, false);
-
-                        TextView transferBtn= (TextView) dialogView.findViewById(R.id.transfer_btn);
-                        TextView cancelBtn= (TextView) dialogView.findViewById(R.id.cancel_btn);
-
-                        builder.setView(dialogView);
-                        final AlertDialog alertDialog= builder.create();
-                        transferBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                keyslotAuthentikeyHex= authentikeyHex;
-                                sendTransferApduToCard();
-                            }
-                        });
-                        cancelBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                selectedItem= "Home";
-                                setFilter(navigationHolder, 0);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_cancelled, Toast.LENGTH_SHORT);
-                                        toast.show();
-                                    }
-                                });
-                            }
-                        });
-                        alertDialog.show(); */
                     case 3: //settings
                         DialogFragment settingsFragment = new SettingsFragment();
                         settingsFragment.show(homeActivity.getSupportFragmentManager(), "SettingsFragment");

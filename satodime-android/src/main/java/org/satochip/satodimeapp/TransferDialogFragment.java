@@ -29,15 +29,15 @@ import org.satochip.satodimeapp.BuildConfig;
 import org.satochip.satodimeapp.DialogListener;	
 import static org.satochip.satodimeapp.Constants.*;	
 
-// import java.util.Arrays;
-// import java.util.List;
-
 import androidx.fragment.app.DialogFragment;
 
 public class TransferDialogFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_TRANSFER";
+    
+    // Use this instance of the interface to deliver action events
+    private DialogListener listener;
     
     // based on https://developer.android.com/guide/topics/ui/dialogs
     @Override
@@ -90,17 +90,6 @@ public class TransferDialogFragment extends DialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
     }    
-    
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-/*     public interface DialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent);
-        public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode);
-    } */
-
-    // Use this instance of the interface to deliver action events
-    DialogListener listener;
 
     // Override the Fragment.onAttach() method to instantiate the ResetDialogListener
     @Override
