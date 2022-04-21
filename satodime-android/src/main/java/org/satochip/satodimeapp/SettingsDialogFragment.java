@@ -141,7 +141,6 @@ public class SettingsDialogFragment extends DialogFragment {
                                 prefs.edit().putString("appFiat", appFiat).apply();
                                 prefs.edit().putString("appFiatFull", selected_fiat).apply();
                                 if(DEBUG) Log.d(TAG, "onCreateDialog - saved in preferences: " + appFiat);
-
                                 
                                 Intent resultIntent= new Intent();
                                 resultIntent.putExtra("appFiat", appFiat);

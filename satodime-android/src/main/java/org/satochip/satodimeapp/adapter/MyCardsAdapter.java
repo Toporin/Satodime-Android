@@ -90,6 +90,10 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             holder.keyNbr.setText(keyNbr);
             holder.balance.setText(balance);
             holder.cardAddress.setText(address);
+            // set static txt (needed when language changes)
+            holder.assetTypeTxt.setText(R.string.asset_type);
+            holder.cardAddressTxt.setText(R.string.address);
+            holder.tokenBalanceTxt.setText(R.string.token_balance);
             
             // nft or token
             boolean isTokenOrNFT= (boolean) keyInfo.getOrDefault("isTokenOrNFT", false);
@@ -176,7 +180,7 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView keyNbr, cardAddress, assetType, balance, tokenBalance;
+        TextView keyNbr, cardAddressTxt, cardAddress, assetTypeTxt, assetType, balance, tokenBalanceTxt, tokenBalance;
         TextView cardStatus;
         ImageView cardStatusImg, cardImg, nextBtn;
         LinearLayout tokenLayout;
@@ -185,12 +189,15 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             keyNbr = itemView.findViewById(R.id.key_number);
+            assetTypeTxt = itemView.findViewById(R.id.asset_type_txt);
             assetType = itemView.findViewById(R.id.asset_type);
             cardStatusImg = itemView.findViewById(R.id.card_status_image);
             cardStatus = itemView.findViewById(R.id.card_status);
             cardImg = itemView.findViewById(R.id.card_image);
+            cardAddressTxt = itemView.findViewById(R.id.card_address_txt);
             cardAddress = itemView.findViewById(R.id.card_address);
             balance = itemView.findViewById(R.id.balance);
+            tokenBalanceTxt= itemView.findViewById(R.id.token_balance_txt);
             tokenBalance= itemView.findViewById(R.id.token_balance);
             nextBtn = itemView.findViewById(R.id.next_btn);
 

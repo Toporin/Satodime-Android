@@ -64,6 +64,7 @@ import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
 import org.satochip.satodimeapp.ui.fragment.AuthenticityDetailsFragment;
+import org.satochip.satodimeapp.ui.fragment.SettingsFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -95,7 +96,8 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity
                                     implements SealFormDialogFragment.SealFormDialogListener, 
                                                         UnsealDialogFragment.UnsealDialogListener,
-                                                        ResetDialogFragment.ResetDialogListener {
+                                                        ResetDialogFragment.ResetDialogListener,
+                                                        SettingsFragment.SettingsDialogListener {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG= "SATODIME";
@@ -169,6 +171,7 @@ public class MainActivity extends AppCompatActivity
     private CardView toolBar;
     private RecyclerView recyclerView;
     private MyCardsAdapter myCardsAdapter;
+    private NavigationAdapter adapter;
 
     LinearLayout cardConnectedLayout;
     CardView cardNotConnectedLayout;
@@ -232,8 +235,13 @@ public class MainActivity extends AppCompatActivity
         myCardsAdapter= new MyCardsAdapter(keyInfoList, MainActivity.this);
         recyclerView.setAdapter(myCardsAdapter);
         //recyclerView.setNestedScrollingEnabled(false); // ? https://stackoverflow.com/questions/31249252/how-to-make-recyclerview-scroll-smoothly#31249751
-        //myCardsAdapter.notifyDataSetChanged();
         
+        lst_menu.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+        adapter= new NavigationAdapter(MainActivity.this);
+        lst_menu.setHasFixedSize(true);
+        lst_menu.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
         cardListners();
 
     } // onCreate
@@ -565,11 +573,11 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESUME");
                 
-        lst_menu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        NavigationAdapter adapter= new NavigationAdapter(this);
-        lst_menu.setHasFixedSize(true);
-        lst_menu.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        // lst_menu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        // adapter= new NavigationAdapter(this);
+        // lst_menu.setHasFixedSize(true);
+        // lst_menu.setAdapter(adapter);
+        // adapter.notifyDataSetChanged();
 
         if (Utils.isDark) {
             headerImg.setImageResource(R.drawable.splash_screen_white_logo);
@@ -596,7 +604,7 @@ public class MainActivity extends AppCompatActivity
     
     @Override
     public void recreate() {
-        Log.d("testActivityREs", "happended");
+        Log.d(TAG, "In recreate()");
         finish();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         startActivity(getIntent());
@@ -711,7 +719,6 @@ public class MainActivity extends AppCompatActivity
         fragment.show(getSupportFragmentManager(), "AuthenticityDetailsFragment");
     }
     
-    
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
@@ -720,10 +727,10 @@ public class MainActivity extends AppCompatActivity
                                       int resultCode, Intent intent) {
         // TODO check resultCode
         // User touched the dialog's positive button
-        if(DEBUG) Log.d(TAG, "showSealFormDialog onDialogPositiveClick");
+        if(DEBUG) Log.d(TAG, "onDialogPositiveClick");
 
         switch (requestCode) {
-            case REQUEST_CODE_SEAL: // sealDialog
+            case REQUEST_CODE_SEAL: 
                 //String asset= intent.getStringExtra("asset");
                 keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
                 sealKeyslotAsset= intent.getIntExtra("assetInt", 0);
@@ -743,7 +750,8 @@ public class MainActivity extends AppCompatActivity
                 keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
                 sendResetKeyslotApduToCard();
                 break;
-            case REQUEST_CODE_SETTINGS: // settingDialog
+            case REQUEST_CODE_SETTINGS: 
+                if(DEBUG) Log.d(TAG, "REQUEST_CODE_SETTINGS STARTS");
                 appFiat= intent.getStringExtra("appFiat");
                 if (appFiat.equals("(none)")) {
                     useFiat= false;
@@ -752,9 +760,16 @@ public class MainActivity extends AppCompatActivity
                 }
                 appLanguage= intent.getStringExtra("appLanguage");
                 appDarkModeEnabled= intent.getBooleanExtra("appDarkModeEnabled", false);
+                
+                // update values
+                adapter.updateMenuTitle();
+                adapter.notifyDataSetChanged(); // menu
+                myCardsAdapter.notifyDataSetChanged(); // keyslots info
+                
+                if(DEBUG) Log.d(TAG, "REQUEST_CODE_SETTINGS END");
                 break;
-                // TODO: move logic from settingDialog to here (prefs edit...)?
             default:
+                break;
         }
     }
 
@@ -1481,6 +1496,10 @@ public class MainActivity extends AppCompatActivity
             menu_title= homeActivity.getResources().getStringArray(R.array.array_menu);
             selectedItem= menu_title[0];
         }
+        
+        public void updateMenuTitle(){
+            menu_title= homeActivity.getResources().getStringArray(R.array.array_menu);
+        }
 
         @NonNull
         @Override
@@ -1502,8 +1521,8 @@ public class MainActivity extends AppCompatActivity
             if (!selectedItem.equals("")) {
                 for (int j= 0; j < menu_icon.length; j++) {
                     if (navigationHolder.item_text.getText().equals(selectedItem)) {
-                        Log.d("txt_menu", navigationHolder.item_text.getText() + "");
-                        Log.d("selectedItem", selectedItem + "");
+                        Log.d(TAG, navigationHolder.item_text.getText() + "");
+                        Log.d(TAG, selectedItem + "");
                         navigationHolder.item_background.setBackgroundResource(R.drawable.item_selected_background);
                         navigationHolder.item_icon.setColorFilter(homeActivity.getColor(R.color.white));
                         navigationHolder.item_text.setTextColor(homeActivity.getColor(R.color.white));
@@ -1519,12 +1538,83 @@ public class MainActivity extends AppCompatActivity
             navigationHolder.item_background.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String menuTittle= menu_title[i];
-                    Log.d("menuNameaa", menuTittle);
-                    if (menuTittle.equalsIgnoreCase(getString(R.string.item_home))) {
+                    selectedItem= menu_title[i];
+                    setFilter(navigationHolder, i);
+                    
+                    // watch out: this switch depends implicitly on the order of items in menu_title!
+                    switch(i){
+                        case 0: // home
+                            break;
+                        case 1: // card info
+                            Bundle bundle = new Bundle();
+                            bundle.putStringArray("authResults", authResults);
+                            bundle.putBoolean("isOwner", isOwner);
+                            bundle.putBoolean("isConnected", isConnected);
+                            DialogFragment infoFragment = new CardInfoFragment();
+                            infoFragment.setArguments(bundle);
+                            infoFragment.show(getSupportFragmentManager(), "CardInfoFragment");
+                            break;
+                        case 2: // transfer card
+                            // todo: use class
+                            final AlertDialog.Builder builder= new AlertDialog.Builder(homeActivity, R.style.CustomAlertDialog);
+                            ViewGroup viewGroup= v.findViewById(android.R.id.content);
+                            View dialogView= LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_transfer_card, viewGroup, false);
+
+                            TextView transferBtn= (TextView) dialogView.findViewById(R.id.transfer_btn);
+                            TextView cancelBtn= (TextView) dialogView.findViewById(R.id.cancel_btn);
+
+                            builder.setView(dialogView);
+                            final AlertDialog alertDialog= builder.create();
+                            transferBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    keyslotAuthentikeyHex= authentikeyHex;
+                                    sendTransferApduToCard();
+                                }
+                            });
+                            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    alertDialog.dismiss();
+                                    selectedItem= "Home";
+                                    setFilter(navigationHolder, 0);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_cancelled, Toast.LENGTH_SHORT);
+                                            toast.show();
+                                        }
+                                    });
+                                }
+                            });
+                            alertDialog.show();
+                            break;
+                        case 3: //settings
+                            DialogFragment settingsFragment = new SettingsFragment();
+                            settingsFragment.show(getSupportFragmentManager(), "SettingsFragment");
+                            break;
+                        case 4: // share
+                            Intent sendIntent= new Intent();
+                            sendIntent.setAction(Intent.ACTION_SEND);
+                            sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_with_friends)); 
+                            sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_details) + BuildConfig.APPLICATION_ID);       
+                            sendIntent.setType("text/plain");
+                            homeActivity.startActivity(sendIntent);
+                            break;
+                        case 5: // FAQ
+                            Intent browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.faq_link)));
+                            homeActivity.startActivity(browserIntent);
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    /* String menuTitle= menu_title[i];
+                    if(DEBUG) Log.d(TAG, "clicked on menu: " + menuTitle);
+                    if (menuTitle.equalsIgnoreCase(getString(R.string.item_home))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
-                    } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_card_info))) {
+                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_card_info))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
                         Bundle bundle = new Bundle();
@@ -1535,7 +1625,7 @@ public class MainActivity extends AppCompatActivity
                         fragment.setArguments(bundle);
                         fragment.show(getSupportFragmentManager(), "CardInfoFragment");
                         
-                    } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_transfer_card))) {
+                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_transfer_card))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
 
@@ -1572,12 +1662,17 @@ public class MainActivity extends AppCompatActivity
                         });
                         alertDialog.show();
 
-                    } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_settings))) {
+                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_settings))) {
+                        if(DEBUG) Log.d(TAG, "Clicked on settings menu - START");
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
-                        homeActivity.startActivity(new Intent(homeActivity, SettignsActivity.class));
-                    } else if (menuTittle.equalsIgnoreCase(getString(R.string.item_tell_a_friend))) {
-                        Log.d("menuNameaa", menu_title[i]);
+                        //homeActivity.startActivity(new Intent(homeActivity, SettignsActivity.class));
+                        // use fragment
+                        DialogFragment fragment = new SettingsFragment();
+                        fragment.show(getSupportFragmentManager(), "SettingsFragment");
+                        if(DEBUG) Log.d(TAG, "Clicked on settings menu - END");
+                        
+                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_tell_a_friend))) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
                         Intent sendIntent= new Intent();
@@ -1586,20 +1681,20 @@ public class MainActivity extends AppCompatActivity
                         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_details) + BuildConfig.APPLICATION_ID);       
                         sendIntent.setType("text/plain");
                         homeActivity.startActivity(sendIntent);
-                    } else if (menuTittle.equalsIgnoreCase("FAQ")) {
+                    } else if (menuTitle.equalsIgnoreCase("FAQ")) {
                         selectedItem= menu_title[i];
                         setFilter(navigationHolder, i);
                         Intent browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.faq_link)));
                         homeActivity.startActivity(browserIntent);
-                    }
+                    } */
 
                     homeActivity.closeDrawer();
                 }
             });
         }
 
-
-        public void shareApp() {
+        // unused?
+/*         public void shareApp() {
             try {
                 Intent i= new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
@@ -1609,7 +1704,7 @@ public class MainActivity extends AppCompatActivity
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        } */
 
 
         @RequiresApi(api= Build.VERSION_CODES.M)
