@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:fontFamily="@font/segoe_ui_bold"
-                    android:text="@string/card_connected"
+                    android:text="@string/card_connected_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/normal_heading_size" />
 
