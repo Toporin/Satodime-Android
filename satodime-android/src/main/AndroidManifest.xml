@@ -20,10 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.activity.SettignsActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity.SplashScreen"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize"
             android:exported="true"

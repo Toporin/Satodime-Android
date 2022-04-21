@@ -44,7 +44,6 @@ import java.util.Locale;
 
 import io.paperdb.Paper;
 
-// currently not used, use SettingsActivity.java
 public class SettingsFragment extends DialogFragment {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;

@@ -60,7 +60,6 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 import static org.satochip.satodimeapp.Constants.*;	
 import org.satochip.satodimeapp.adapter.MyCardsAdapter;
-import org.satochip.satodimeapp.ui.activity.SettignsActivity;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
 import org.satochip.satodimeapp.ui.fragment.AuthenticityDetailsFragment;
@@ -185,8 +184,7 @@ public class MainActivity extends AppCompatActivity
     Context mycontext= this;
     boolean[] isReconnectionFlag= new boolean[1];
 
-
-    public static boolean isLanguageChanged=false;
+    // public static boolean isLanguageChanged=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -573,12 +571,6 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if(DEBUG) Log.d(TAG, "LIFECYCLE ONRESUME");
                 
-        // lst_menu.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        // adapter= new NavigationAdapter(this);
-        // lst_menu.setHasFixedSize(true);
-        // lst_menu.setAdapter(adapter);
-        // adapter.notifyDataSetChanged();
-
         if (Utils.isDark) {
             headerImg.setImageResource(R.drawable.splash_screen_white_logo);
         } else {
@@ -589,10 +581,10 @@ public class MainActivity extends AppCompatActivity
             nfcAdapter.enableReaderMode(this, this.cardManager, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
         }
 
-        if(isLanguageChanged){
+/*         if(isLanguageChanged){
             isLanguageChanged=false;
             recreate();
-        }
+        } */
         
         noCardMainText.setText(getString(R.string.card_disconnected));
 
@@ -602,14 +594,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
     
-    @Override
+/*     @Override
     public void recreate() {
         Log.d(TAG, "In recreate()");
         finish();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         startActivity(getIntent());
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    }
+    } */
 
     public void closeDrawer() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -1608,104 +1600,11 @@ public class MainActivity extends AppCompatActivity
                         default:
                             break;
                     }
-                    
-                    /* String menuTitle= menu_title[i];
-                    if(DEBUG) Log.d(TAG, "clicked on menu: " + menuTitle);
-                    if (menuTitle.equalsIgnoreCase(getString(R.string.item_home))) {
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_card_info))) {
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArray("authResults", authResults);
-                        bundle.putBoolean("isOwner", isOwner);
-                        bundle.putBoolean("isConnected", isConnected);
-                        DialogFragment fragment = new CardInfoFragment();
-                        fragment.setArguments(bundle);
-                        fragment.show(getSupportFragmentManager(), "CardInfoFragment");
-                        
-                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_transfer_card))) {
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-
-                        final AlertDialog.Builder builder= new AlertDialog.Builder(homeActivity, R.style.CustomAlertDialog);
-                        ViewGroup viewGroup= v.findViewById(android.R.id.content);
-                        View dialogView= LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_transfer_card, viewGroup, false);
-
-                        TextView transferBtn= (TextView) dialogView.findViewById(R.id.transfer_btn);
-                        TextView cancelBtn= (TextView) dialogView.findViewById(R.id.cancel_btn);
-
-                        builder.setView(dialogView);
-                        final AlertDialog alertDialog= builder.create();
-                        transferBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                keyslotAuthentikeyHex= authentikeyHex;
-                                sendTransferApduToCard();
-                            }
-                        });
-                        cancelBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                alertDialog.dismiss();
-                                selectedItem= "Home";
-                                setFilter(navigationHolder, 0);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast toast= Toast.makeText(getApplicationContext(), R.string.transfer_cancelled, Toast.LENGTH_SHORT);
-                                        toast.show();
-                                    }
-                                });
-                            }
-                        });
-                        alertDialog.show();
-
-                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_settings))) {
-                        if(DEBUG) Log.d(TAG, "Clicked on settings menu - START");
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-                        //homeActivity.startActivity(new Intent(homeActivity, SettignsActivity.class));
-                        // use fragment
-                        DialogFragment fragment = new SettingsFragment();
-                        fragment.show(getSupportFragmentManager(), "SettingsFragment");
-                        if(DEBUG) Log.d(TAG, "Clicked on settings menu - END");
-                        
-                    } else if (menuTitle.equalsIgnoreCase(getString(R.string.item_tell_a_friend))) {
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-                        Intent sendIntent= new Intent();
-                        sendIntent.setAction(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_with_friends)); 
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_details) + BuildConfig.APPLICATION_ID);       
-                        sendIntent.setType("text/plain");
-                        homeActivity.startActivity(sendIntent);
-                    } else if (menuTitle.equalsIgnoreCase("FAQ")) {
-                        selectedItem= menu_title[i];
-                        setFilter(navigationHolder, i);
-                        Intent browserIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.faq_link)));
-                        homeActivity.startActivity(browserIntent);
-                    } */
 
                     homeActivity.closeDrawer();
                 }
             });
         }
-
-        // unused?
-/*         public void shareApp() {
-            try {
-                Intent i= new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
-                i.putExtra(Intent.EXTRA_TEXT, homeActivity.getResources().getString(R.string.share_txt));
-                homeActivity.startActivityForResult(Intent.createChooser(i, homeActivity.getResources().getString(R.string.share_app_cptn)), 100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } */
-
 
         @RequiresApi(api= Build.VERSION_CODES.M)
         void setFilter(NavigationAdapter.NavigationHolder navigationHolder, int index) {
