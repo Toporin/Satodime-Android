@@ -224,15 +224,7 @@
     <string name="unseal_card_cancel">Click on \"Cancel\"  to abort.</string>
     <string name="reset_card_cancel">Click on \"Cancel\"  to abort.</string>
     <string name="reset_card_continue">Click on \"Reset\" to continue, or</string>
-    <string name="card_authenticity_details">===== Root CA certificate ======  [0]
-        \nVersion: 3
-        \nSerialNumber:1
-        \n IssuerDN C-BEST-Brussels,O-Toporin,CN-Toporin  Personalization Root CA 1 Start Date: Tue Dec 01 13:00:00  GMT+01:00 2020 Final Date Sat Dec 01 13:00LO GMT +01:00 2040 SubjectDN: C=BEST-Brussels O-Toporin
-        \n\n    CN=Toporin Personalization Root CA 1 Public Key EC  Public Key bb:eca1:3a:88:12:5a:be e6:  593e0790e786393544c9338an985347febo32bf0195c 81696 Baf621349202b897efb32a3bo631863b82410Sc dca81d67 4119fca33b2cf14bds68ca64aiesds36a55dd 19431c0571bf 2c3c9942adcd-ci4c09903f0eBe312be f219ed1db82b5 306502310094eob6-451Se7ed1605 eer6c00ea7 ac8944b7678 8x154c9896557eza13e8949
-        \n\n   14d Extensions, cncal(rue)  Basicconstraints: istCaltrue), SirinalR
-        \n\not CA 1 Start Date: Tue Dec 01 13:00:00  GMT+01:00 2020 Final Date Sat Dec 01 13:00LO GMT +01:00 2040 SubjectDN: C=BEST-Brussels O-Toporin
-        \n\not CA 1 Start Date: Tue Dec 01 13:00:00  GMT+01:00 2020 Final Date Sat Dec 01 13:00LO GMT +01:00 2040 SubjectDN: C=BEST-Brussels O-Toporin
-        \n\nca81d67 4119fca33b2cf14bds68ca64aiesds36a55dd 19431c0571bf 2c3c9942adcd-ci4c09903f0eBe312be f219ed1db82b5 306502310094eob6-451Se7ed1605 eer6c00ea7 ac8944b7678 8x154c9896557eza13e8949</string>
+    
     <string name="select_currency">Sélectionnez la devise</string>
     <string name="settings">Réglages</string>
     <string name="use_test_net">Utiliser le réseau de test</string>
