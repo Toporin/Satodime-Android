@@ -1,7 +1,7 @@
 package org.satochip.satodimeapp;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
+//import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,8 +39,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 
-// fragment
-
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
 import org.satochip.io.*;
@@ -60,6 +58,7 @@ import static org.satochip.javacryptotools.coins.Constants.*;
 
 import static org.satochip.satodimeapp.Constants.*;	
 import org.satochip.satodimeapp.adapter.MyCardsAdapter;
+import org.satochip.satodimeapp.adapter.NavigationAdapter;
 import org.satochip.satodimeapp.ui.fragment.CardInfoFragment;
 import org.satochip.satodimeapp.ui.fragment.KeyslotDetailsFragment;
 import org.satochip.satodimeapp.ui.fragment.AuthenticityDetailsFragment;
@@ -96,7 +95,8 @@ public class MainActivity extends AppCompatActivity
                                     implements SealFormDialogFragment.SealFormDialogListener, 
                                                         UnsealDialogFragment.UnsealDialogListener,
                                                         ResetDialogFragment.ResetDialogListener,
-                                                        SettingsFragment.SettingsDialogListener {
+                                                        SettingsFragment.SettingsDialogListener, 
+                                                        DialogListener {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG= "SATODIME";
@@ -690,6 +690,14 @@ public class MainActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "ResetDialogFragment");
     }
     
+    public void showTransferDialog(){
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showTransferDialog START");
+        keyslotAuthentikeyHex= authentikeyHex;
+        DialogFragment fragment = new TransferDialogFragment();
+        fragment.show(getSupportFragmentManager(), "TransferDialogFragment");
+    }
+    
     public void showKeyslotDetailsDialog(int keyslotNbr){
         // Create an instance of the dialog fragment and show it
         if(DEBUG) Log.d(TAG, "In showKeyslotDetailsDialog START");
@@ -699,6 +707,18 @@ public class MainActivity extends AppCompatActivity
         DialogFragment dialog = new KeyslotDetailsFragment();
         dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), "KeyslotDetailsFragment");
+    }
+
+    public void showCardInfoDialog(){
+        // Create an instance of the dialog fragment and show it
+        if(DEBUG) Log.d(TAG, "In showCardInfoDialog START");
+        Bundle bundle = new Bundle();
+        bundle.putStringArray("authResults", authResults);
+        bundle.putBoolean("isOwner", isOwner);
+        bundle.putBoolean("isConnected", isConnected);
+        DialogFragment fragment = new CardInfoFragment();
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(), "CardInfoFragment");
     }
     
     public void showAuthenticityDetailsDialog(){
@@ -741,6 +761,9 @@ public class MainActivity extends AppCompatActivity
             case REQUEST_CODE_RESET: 
                 keyslotNbr= intent.getIntExtra("keyslotNbr", -1);
                 sendResetKeyslotApduToCard();
+                break;
+            case REQUEST_CODE_TRANSFER:
+                sendTransferApduToCard();
                 break;
             case REQUEST_CODE_SETTINGS: 
                 if(DEBUG) Log.d(TAG, "REQUEST_CODE_SETTINGS STARTS");
@@ -1467,7 +1490,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavigationHolder> {
+    /* public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavigationHolder> {
 
         private final MainActivity homeActivity;
         private String[] menu_title;
@@ -1647,7 +1670,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
-    }
+    } */
 
 
 }
