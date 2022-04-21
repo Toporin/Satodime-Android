@@ -92,11 +92,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
-                                    implements SealFormDialogFragment.SealFormDialogListener, 
-                                                        UnsealDialogFragment.UnsealDialogListener,
-                                                        ResetDialogFragment.ResetDialogListener,
-                                                        SettingsFragment.SettingsDialogListener, 
-                                                        DialogListener {
+                                    implements DialogListener {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG= "SATODIME";

@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;	
 import org.satochip.satodimeapp.BuildConfig;	
+import org.satochip.satodimeapp.DialogListener;	
 import static org.satochip.satodimeapp.Constants.*;	
 
 import java.util.Arrays;
@@ -40,9 +41,9 @@ public class UnsealDialogFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "UNSEAL_FRAGMENT";
-    // public static final int RESULT_OK=1;
-    // public static final int RESULT_CANCELLED=0;
-    // public static final int REQUEST_CODE_UNSEAL=3;
+    
+    // Use this instance of the interface to deliver action events
+    DialogListener listener;
     
     private int keyslotNbr;
     
@@ -106,18 +107,7 @@ public class UnsealDialogFragment extends DialogFragment {
         }
     }    
     
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface UnsealDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent);
-        public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode);
-    }
-
-    // Use this instance of the interface to deliver action events
-    UnsealDialogListener listener;
-
-    // Override the Fragment.onAttach() method to instantiate the UnsealDialogListener
+    // Override the Fragment.onAttach() method to instantiate the DialogListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -125,11 +115,11 @@ public class UnsealDialogFragment extends DialogFragment {
         if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the UnsealDialogListener so we can send events to the host
-            listener = (UnsealDialogListener) context;
+            listener = (DialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            //throw new ClassCastException(activity.toString() + " must implement UnsealDialogListener");
-            throw new ClassCastException("ClassCastException: must implement UnsealDialogListener");
+            //throw new ClassCastException(activity.toString() + " must implement DialogListener");
+            throw new ClassCastException("ClassCastException: must implement DialogListener");
         }
     }
 

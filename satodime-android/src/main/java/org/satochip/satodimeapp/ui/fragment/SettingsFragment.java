@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.satochip.satodimeapp.BuildConfig;
+import org.satochip.satodimeapp.DialogListener;	
 import org.satochip.satodimeapp.MainActivity;
 import org.satochip.satodimeapp.R;
 import org.satochip.satodimeapp.Utils;
@@ -45,9 +46,12 @@ public class SettingsFragment extends DialogFragment {
 
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "SATODIME_SETTINGS";
+    
+    // Use this instance of the interface to deliver action events
+    private DialogListener listener;
+    
     private CardView toolBar;
     private ImageView backBtn;
-
     private SwitchCompat darkThemeSwitch;
     private Spinner spinnerLanguage, spinnerFiat;
     private String darkTheme;
@@ -95,46 +99,6 @@ public class SettingsFragment extends DialogFragment {
         spinnerFiat.setSelection(adapterFiat.getPosition(appFiatFull));
         
         clickListeners();
-        
-        // Do something on language or Fiat selection?
-        // Do something on dark mode switch?
-        // language
-/*         final String[] array_language = getResources().getStringArray(R.array.array_language);
-        spinnerLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + position + " " + id);
-                String language= array_language[position];
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + language);
-                // update fields accordingl
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: ");
-            }
-        }); */
-
-/*         final String[] array_fiat = getResources().getStringArray(R.array.array_fiat);
-        spinnerFiat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + position + " " + id);
-                String fiat= array_fiat[position];
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: setOnItemSelectedListener languages: " + fiat);
-                // update fields accordingly
-                if (fiat.equals("(none)")) {
-                    MainActivity.useFiat = false;
-                } else {
-                    MainActivity.useFiat = true;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                if(DEBUG) Log.d(TAG, "SettingsDialogFragment: onNothingSelected: ");
-            }
-        }); */
         
         // build dialog
         AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog)
@@ -233,18 +197,7 @@ public class SettingsFragment extends DialogFragment {
         });
     }
     
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface SettingsDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent);
-        public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode);
-    }
-
-    // Use this instance of the interface to deliver action events
-    SettingsDialogListener listener;
-
-    // Override the Fragment.onAttach() method to instantiate the SettingsDialogListener
+    // Override the Fragment.onAttach() method to instantiate the DialogListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -252,11 +205,11 @@ public class SettingsFragment extends DialogFragment {
         if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the SettingsDialogListener so we can send events to the host
-            listener = (SettingsDialogListener) context;
+            listener = (DialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            //throw new ClassCastException(activity.toString() + " must implement SettingsDialogListener");
-            throw new ClassCastException("ClassCastException: must implement SettingsDialogListener");
+            //throw new ClassCastException(activity.toString() + " must implement DialogListener");
+            throw new ClassCastException("ClassCastException: must implement DialogListener");
         }
     }
 

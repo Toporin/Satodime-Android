@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;	
 import org.satochip.satodimeapp.BuildConfig;	
+import org.satochip.satodimeapp.DialogListener;	
 import static org.satochip.satodimeapp.Constants.*;	
 
 import java.util.Arrays;
@@ -39,13 +40,11 @@ public class ResetDialogFragment extends DialogFragment {
     
     private static final boolean DEBUG= BuildConfig.DEBUG;
     private static final String TAG = "RESET_FRAGMENT";
-    // public static final int RESULT_OK=1;
-    // public static final int RESULT_CANCELLED=0;
-    // public static final int REQUEST_CODE_RESET=4;
+    
+    // Use this instance of the interface to deliver action events
+    private DialogListener listener;
     
     private int keyslotNbr;
-    
-    // based on https://developer.android.com/guide/topics/ui/dialogs
     
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -105,17 +104,6 @@ public class ResetDialogFragment extends DialogFragment {
         }
     }    
     
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface ResetDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent);
-        public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode);
-    }
-
-    // Use this instance of the interface to deliver action events
-    ResetDialogListener listener;
-
     // Override the Fragment.onAttach() method to instantiate the ResetDialogListener
     @Override
     public void onAttach(Context context) {
@@ -124,7 +112,7 @@ public class ResetDialogFragment extends DialogFragment {
         if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the ResetDialogListener so we can send events to the host
-            listener = (ResetDialogListener) context;
+            listener = (DialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             //throw new ClassCastException(activity.toString() + " must implement ResetDialogListener");

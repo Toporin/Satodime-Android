@@ -25,7 +25,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
 import org.satochip.satodimeapp.R;	
-import org.satochip.satodimeapp.BuildConfig;	
+import org.satochip.satodimeapp.BuildConfig;
+import org.satochip.satodimeapp.DialogListener;		
 import static org.satochip.satodimeapp.Constants.*;	
 
 import static org.satochip.client.Constants.*;
@@ -51,6 +52,9 @@ public class SealFormDialogFragment extends DialogFragment {
     // public static final int RESULT_OK=1;
     // public static final int RESULT_CANCELLED=0;
     // public static final int REQUEST_CODE=1;
+    
+    // Use this instance of the interface to deliver action events
+    private DialogListener listener;
     
     private int keyslotNbr;
     byte[] entropyUser;
@@ -286,19 +290,8 @@ public class SealFormDialogFragment extends DialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
     }    
-    
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface SealFormDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, int requestCode, int resultCode, Intent intent);
-        public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode);
-    }
 
-    // Use this instance of the interface to deliver action events
-    SealFormDialogListener listener;
-
-    // Override the Fragment.onAttach() method to instantiate the SealFormDialogListener
+    // Override the Fragment.onAttach() method to instantiate the DialogListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -306,11 +299,11 @@ public class SealFormDialogFragment extends DialogFragment {
         if(DEBUG) Log.d(TAG, "onAttach");
         try {
             // Instantiate the SealFormDialogListener so we can send events to the host
-            listener = (SealFormDialogListener) context;
+            listener = (DialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            //throw new ClassCastException(activity.toString() + " must implement SealFormDialogListener");
-            throw new ClassCastException("ClassCastException: must implement SealFormDialogListener");
+            //throw new ClassCastException(activity.toString() + " must implement DialogListener");
+            throw new ClassCastException("ClassCastException: must implement DialogListener");
         }
     }
 
