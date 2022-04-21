@@ -141,6 +141,7 @@
                 \n\nClick on \'Reset\' to continue, or \'Cancel\' to abort</string>
     <string name="reset_ownership_confirmation">Reset</string>
     <string name="reset_ownership_rejected">Ownership reset rejected!</string>
+    <string name="action_cancelled">Action cancelled!</string>
     
     <!-- side menu -->
     <string name="share_with_friends">Share with your friends</string>

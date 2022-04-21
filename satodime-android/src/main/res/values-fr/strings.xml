@@ -128,6 +128,7 @@
                 \n\nAppuyez sur \'Réinitialiser\' pour continuer, ou sur \'Annuler\'</string>
     <string name="reset_ownership_confirmation">Réinitialiser</string>
     <string name="reset_ownership_rejected">Réinitialisation du statut de propriété rejetée!</string>
+    <string name="action_cancelled">Action annulée!</string>
     
     <!-- side menu -->
     <string name="share_with_friends">Partagez avec vos amis</string>

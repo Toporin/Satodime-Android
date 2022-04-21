@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
                                             // save unlockSecret in SharedPreferences
                                             authentikey= cmdSet.getAuthentikey();
                                             authentikeyHex= parser.toHexString(authentikey);
-                                            if(DEBUG) Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
+                                            if(DEBUG) Log.d(TAG, "Satodime authentikey after setup: " + authentikeyHex);
                                             byte[] unlockSecret= cmdSet.getSatodimeUnlockSecret();
                                             String unlockSecretHex= parser.toHexString(unlockSecret);
                                             prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
@@ -341,12 +341,9 @@ public class MainActivity extends AppCompatActivity
                                     }
                                 });
                                 alertDialog.show();
-
                             }
                         });
-
-
-                    }
+                    } // end setup
 
                     // get authentikey
                     authentikey= cmdSet.getAuthentikey();
@@ -771,11 +768,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogFragment dialog, int requestCode, int resultCode) {
         // User touched the dialog's negative button
-        if(DEBUG) Log.d(TAG, "onDialogNegativeClick: ABCD");
+        if(DEBUG) Log.d(TAG, "onDialogNegativeClick");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast toast= Toast.makeText(getApplicationContext(), R.string.seal_cancel, Toast.LENGTH_SHORT);
+                Toast toast;
+                switch (requestCode) {
+                    case REQUEST_CODE_SEAL: 
+                        toast= Toast.makeText(getApplicationContext(), R.string.seal_cancel, Toast.LENGTH_SHORT);
+                        break;
+                    case REQUEST_CODE_UNSEAL: 
+                        toast= Toast.makeText(getApplicationContext(), R.string.unseal_cancel, Toast.LENGTH_SHORT);
+                        break;
+                    case REQUEST_CODE_RESET: 
+                        toast= Toast.makeText(getApplicationContext(), R.string.reset_cancel, Toast.LENGTH_SHORT);
+                        break;
+                    case REQUEST_CODE_TRANSFER: 
+                        toast= Toast.makeText(getApplicationContext(), R.string.transfer_cancelled, Toast.LENGTH_SHORT);
+                        break;
+                    default:
+                        toast= Toast.makeText(getApplicationContext(), R.string.action_cancelled, Toast.LENGTH_SHORT);
+                        break;
+                }
                 toast.show();
             }
         });
