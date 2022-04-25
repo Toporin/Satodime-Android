@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">Satodime</string>
-    <string name="app_version" translatable="false">Version 0.1.0</string>
+    <string name="app_version" translatable="false">Version 0.1.1</string>
     
     <string-array name="array_menu">
         <!--        <item>Spin &amp; Win</item>-->
