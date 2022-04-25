@@ -141,7 +141,9 @@
     <string name="select_asset">"Selectionnez le type d\'actif: "</string> 
     <string name="use_testnet">"Utiliser le testnet: "</string> 
     <string name="enter_contract">"Entrez l\'adresse du contrat: "</string> 
+    <string name="enter_contract_hint">"addresse du contrat"</string>
     <string name="enter_tokenid">"Entrez le tokenID:</string> 
+    <string name="enter_tokenid_hint">"tokenID</string>
     <string name="enter_entropy">Entrez des données aléatoires (entropie):</string> 
     <string name="entropy_output">Entropie générée:</string> 
     <string name="entropy_output_value">(64-hex entropy)</string> 

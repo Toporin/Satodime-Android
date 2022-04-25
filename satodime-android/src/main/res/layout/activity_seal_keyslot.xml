@@ -181,7 +181,8 @@
                     android:id="@+id/edittext_contract"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="contract address"
+                    android:hint="@string/enter_contract_hint"
+                    android:textColorHint="@color/grey"
                     android:layout_marginTop="10dp"
                     android:inputType="textCapCharacters"
                 />
@@ -211,7 +212,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
-                    android:hint="tokenID"
+                    android:hint="@string/enter_tokenid_hint"
+                    android:textColorHint="@color/grey"
                     android:digits="0123456789"
                     android:inputType="number"
                     />

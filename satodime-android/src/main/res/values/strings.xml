@@ -147,7 +147,9 @@
     <string name="select_asset">"Select asset type: "</string>
     <string name="use_testnet">"Use testnet: "</string>
     <string name="enter_contract">"Enter contract address:"</string>
+    <string name="enter_contract_hint">"contract address"</string>
     <string name="enter_tokenid">"Enter tokenID:</string>
+    <string name="enter_tokenid_hint">"tokenID</string>
     <string name="enter_entropy">Enter entropy (random) data:</string>
     <string name="entropy_output">Extracted entropy:</string>
     <string name="entropy_output_value">(64-hex entropy)</string>
