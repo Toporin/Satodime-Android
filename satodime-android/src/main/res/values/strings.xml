@@ -1,25 +1,46 @@
 <resources>
-    
+
     <string name="app_name">Satodime</string>
+    <string name="app_version" translatable="false">Version 0.1.1</string>
     
+    <string-array name="array_menu">
+        <!--        <item>Spin &amp; Win</item>-->
+        <item>Home</item>
+        <item>Card Info</item>
+        <item>Transfer Card</item>
+        <item>Settings</item>
+        <item>Tell a Friend</item>
+        <item>FAQ</item>
+    </string-array>
+
     <!-- generic -->
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="error">"Error: "</string>
-    
+    <string name="warning">Warning!</string>
+
+    <!-- used in MyCardsAdapter.java -->
+    <string-array name="currency">
+        <item>USD</item>
+        <item>PKR</item>
+        <item>INR</item>
+        <item>EURO</item>
+    </string-array> 
+    <string-array name="blockchain">
+        <item>BTC</item>
+    </string-array>
+
     <!-- main layout -->
-    <string name="card_info">Card info</string> 
-    <string name="card_connected_text">"Card connected: "</string> 
-    <string name="card_connected_value">(no card detected)</string> 
-    <string name="card_status_text">"Card status: "</string> 
-    <string name="card_status_value">(no card detected)</string> 
-    <string name="card_ownership_text">"Ownership: "</string> 
-    <string name="card_ownership_value">(no card detected)</string> 
-    <string name="button_settings">Settings</string> 
-    <string name="button_details">Details</string> 
-    <string name="button_transfer">Transfer card</string> 
+    <string name="card_info">Card info:</string>
+    <string name="card_info_text">Card info</string>
+    <string name="card_connected_value">(no card detected)</string>
+    <string name="card_status_value">(no card detected)</string>
+    <string name="card_ownership_value">(no card detected)</string>
+    <string name="button_settings">Settings</string>
+    <string name="button_details">Details</string>
+    <string name="button_transfer">Transfer card</string>
     <!-- main activity -->
     <string-array name="array_pending_actions">
         <item>Reset keyslot</item>
@@ -27,7 +48,7 @@
         <item>Unseal keyslot</item>
         <item>Transfer card ownership</item>
     </string-array>
-     <string-array name="array_keyslot_states">
+    <string-array name="array_keyslot_states">
         <item>Uninitialized</item>
         <item>Sealed</item>
         <item>Unsealed</item>
@@ -36,8 +57,7 @@
         <item>Seal key!</item>
         <item>Unseal key!</item>
         <item>Reset key!</item>
-    </string-array>    
-    <string name="card_connected">Card connected!</string>
+    </string-array>
     <string name="accept_transfer_question">Accept ownership?</string>
     <string name="accept_transfer_warning">
             A transfer of ownership has been initiated by the previous owner. 
@@ -56,16 +76,16 @@
     <string name="request_pending_title">Request pending</string>
     <string name="request_rejected">Pending request rejected!</string>
     <string name="card_connected_value_ok">Card connected</string>
+    <string name="card_connected_value_ko">Card disconnected</string>
+    <string name="card_connected_value_no">No card connected</string>
     <string name="card_status_value_ok">Device authenticated successfully</string>
     <string name="card_status_value_ko">Error: could not authenticate the issuer of this card!</string>
-    <string name="card_ownership_value_ok">you are the card owner</string>
-    <string name="card_ownership_value_ko">you are NOT the card owner</string>
+    <string name="card_ownership_value_ok">You are the card owner</string>
+    <string name="card_ownership_value_ko">You are NOT the card owner</string>
     <string name="card_ownership_value_unknown">there was an issue - you may not be the card owner anymore</string>
-    <string name="warning_initiate_transfer"> 
-            Warning! 
-            \nThis will initiate the transfer of the card ownership. 
+    <string name="warning_initiate_transfer">This will initiate the transfer of the card ownership.
             \nCard transfer allows to perform sensitive operations (seal-unseal-reset-transfer) on a new device. 
-            \n\nClick on \'Transfer\' to continue, or \'Cancel\' to abort</string>
+            \n\nClick on \'Transfer\' to continue, or\n\n \'Cancel\' to abort</string>
     <string name="transfer_card_ownership">Transfer card ownership?</string>
     <string name="transfer">Transfer</string>
     <string name="transfer_cancelled">Card ownership transfer cancelled!</string>
@@ -84,14 +104,15 @@
     <string name="reset_question">Reset keyslot?</string>
     <string name="reset_warning">
              Warning! 
-             \nThis will reset the corresponding private key. 
+             \n\nThis will reset the corresponding private key.
              \nOnce reset, all the corresponding data will be wiped. 
              \nPlease ensure that you securely saved the private key before proceeding. 
              \n\nClick on \'Reset\' to continue, or \'Cancel\' to abort</string>
     <string name="reset_confirm">Reset</string>
     <string name="reset_cancel">Keyslot reset cancelled!</string>
     <string name="button_more_details">More details</string>
-    <string name="card_disconnected">Card disconnected!</string>
+    <string name="card_connected">Card connected</string>
+    <string name="card_disconnected">Card disconnected</string>
     <string name="seal_cancel">Seal keyslot action cancelled!</string>
     <string name="seal_success">Keyslot sealed successfully!</string>
     <string name="seal_fail">Failed to seal keyslot, will try again at next card connection</string>
@@ -104,6 +125,7 @@
     <string name="not_applicable">(N/A)</string>
     <string name="coin_balance_fail">(failed to fetch coin balance)</string>
     <string name="token_balance_fail">(failed to fetch token balance)</string>
+    <string name="token_balance_wait">(balance unavailable, please try again)</string>
     <string name="reset_ownership_question">Reset ownership?</string>
     <string name="reset_ownership_warning">
                 Warning:
@@ -113,16 +135,24 @@
                 \n\nClick on \'Reset\' to continue, or \'Cancel\' to abort</string>
     <string name="reset_ownership_confirmation">Reset</string>
     <string name="reset_ownership_rejected">Ownership reset rejected!</string>
+    <string name="action_cancelled">Action cancelled!</string>
+    
+    <!-- side menu -->
+    <string name="share_with_friends">Share with your friends</string>
+    <string name="share_details">Satodime: the secure bearer crypto card! Exchange cryptos physically, easily and securely: https://play.google.com/store/apps/details?id=</string>
+    <string name="faq_link">https://satochip.io/faq/</string>
     
     <!-- seal keyslot layout -->
-    <string name="select_blockchain">"Select blockchain: "</string> 
-    <string name="select_asset">"Select asset type: "</string> 
-    <string name="use_testnet">"Use testnet: "</string> 
-    <string name="enter_contract">"Enter contract address:"</string> 
-    <string name="enter_tokenid">"Enter tokenID:</string> 
-    <string name="enter_entropy">Enter entropy (random) data:</string> 
-    <string name="entropy_output">Extracted entropy:</string> 
-    <string name="entropy_output_value">(64-hex entropy)</string> 
+    <string name="select_blockchain">Select blockchain:</string>
+    <string name="select_asset">"Select asset type: "</string>
+    <string name="use_testnet">"Use testnet: "</string>
+    <string name="enter_contract">"Enter contract address:"</string>
+    <string name="enter_contract_hint">"contract address"</string>
+    <string name="enter_tokenid">"Enter tokenID:</string>
+    <string name="enter_tokenid_hint">"tokenID</string>
+    <string name="enter_entropy">Enter entropy (random) data:</string>
+    <string name="entropy_output">Extracted entropy:</string>
+    <string name="entropy_output_value">(64-hex entropy)</string>
     <string name="button_seal_keyslot">Seal keyslot!</string>
     <!-- seal keyslot fragment -->
     <string name="seal_keyslot_title">Seal keyslot</string>
@@ -131,42 +161,51 @@
     <string name="exception_contract_format_hex">wrong contract address hex format</string>
     <string name="exception_contract_too_long">contract field size is too long</string>
     <string name="exception_tokenid_too_long">tokenid field size is too long!</string>
-    
+
     <!-- show details layout -->
-    <string name="keyslot_info">Keyslot info</string>
-    <string name="keyslot_status">"Status: "</string>
+    <string name="keyslot_details_header">Details of slot #</string>
+    <string name="keyslot_info">Key info:</string>
+    <string name="keyslot_status">Status:</string>
     <string name="keyslot_status_value">(unknown?)</string>
-    <string name="asset_type">"Asset type: "</string>
-    <string name="pubkey">"Pubkey: "</string>
-    <string name="coin_info">Coin info</string>
-    <string name="blockchain">"Blockchain: "</string>
-    <string name="address">"Address: "</string>
-    <string name="balance">"Balance: "</string>
-    <string name="token_info">Token info</string>
-    <string name="token">"Token: "</string>
-    <string name="token_balance">"Token balance: "</string>
-    <string name="nft_info">NFT info</string>
-    <string name="nft">"NFT: "</string>
-    <string name="nft_balance">"Balance: "</string>
+    <string name="asset_type">Asset type:</string>
+    <string name="pubkey">Pubkey:</string>
+    <string name="coin_info">Coin info:</string>
+    <string name="blockchain">Blockchain:</string>
+    <string name="address">Address:</string>
+    <string name="balance">Balance:</string>
+    <string name="token_info">Token info:</string>
+    <string name="token">Token:</string>
+    <string name="token_balance">Token balance:</string>
+    <string name="nft_info">NFT info:</string>
+    <string name="nft">NFT:</string>
+    <string name="nft_balance">Balance:</string>
     <string name="nft_balance_value">(unknown NFT balance)</string>
-    <string name="nft_tokenid">"TokenID: "</string>
+    <string name="nft_tokenid">TokenID:</string>
     <string name="nft_tokenid_value">(unknown NFT tokenid)</string>
-    <string name="nft_name">"Name: "</string>
+    <string name="nft_name">Name: </string>
     <string name="nft_name_value">(unknown NFT name)</string>
-    <string name="nft_description">"Description: "</string>
+    <string name="nft_description">Description: </string>
     <string name="nft_description_value">(unknown NFT description)</string>
-    <string name="private_info">Private info</string>
-    <string name="privkey">"Private key: "</string>
-    <string name="wif">"WIF: "</string>
-    <string name="entropy">"Entropy: "</string>
+    <string name="private_info">Private info:</string>
+    <string name="privkey">Private key:</string>
+    <string name="wif">WIF:</string>
+    <string name="entropy">Entropy:</string>
     <!-- show details fragment -->
     <string name="show_details_activity">Keyslot details</string>
     <string name="show_details_title">Details for keyslot #</string>
     <string name="address_copied_toast">Address Copied!</string>
-    <string name="button_hide">Hide</string>
-    <string name="button_show">Show</string>
-    <string name="privkey_copied_toast">Private key Copied!</string>
+    <string name="button_hide_pubkey">Hide public key</string>
+    <string name="button_show_pubkey">Show public key</string>
+    <string name="pubkey_copied_toast">Pubkey copied!</string>
+    <string name="button_hide_privkey">Hide private key</string>
+    <string name="button_show_privkey">Show private key</string>
+    <string name="privkey_copied_toast">Privkey copied!</string>
     <string name="wif_copied_toast">WIF Copied!</string>
+
+    <!-- card info layout -->
+    <string name="card_connected_text">Connection status:</string>
+    <string name="card_ownership_text">Ownership status:</string>
+    <string name="card_status_text">Authenticity status:</string>
     
     <!-- show auth details fragment -->
     <string name="auth_success">Device authenticated successfully!</string>
@@ -176,23 +215,34 @@
             \nContact support(at)satochip.io to report a suspicious device</string>
     <string name="reason">"Reason: "</string>
     <string name="show_auth_details_title">Card authenticity details</string>
-    
+
     <!-- setting layout -->
     <string name="enable_dark_mode">Enable dark mode:</string>
-    <string name="select_language">Select language:</string>
-    <string name="select_fiat">Select default fiat:</string>    
+    <string name="select_language">Select language</string>
+    <string name="select_fiat">Select default fiat:</string>
     <!-- setting fragment -->
     <string name="settings_title">Settings</string>
     <string name="settings_confirm">Apply settings</string>
+    <string name="share_txt">Share app</string>
+    <string name="share_app_cptn">Share data</string>
+    <string name="card_not_connected">Card Not Connected</string>
+    <string name="transfer_card_continue">Click on \"Transfer\" to continue, or</string>
+    <string name="transfer_card_cancel">Click on \"Cancel\"  to abort.</string>
+    <string name="unseal_card_continue">Click on \"Unseal\" to continue, or</string>
+    <string name="unseal_card_cancel">Click on \"Cancel\"  to abort.</string>
+    <string name="reset_card_continue">Click on \"Reset\" to continue, or</string>
+    <string name="reset_card_cancel">Click on \"Cancel\"  to abort.</string>
     
     <string-array name="array_asset_limited" translatable="false">
         <item>Coin</item>
     </string-array>
+    
     <string-array name="array_asset" translatable="false">
         <item>Coin</item>
         <item>Token</item>
         <item>NFT</item>
     </string-array>
+    
     <string-array name="array_asset_full" translatable="false">
         <item>Coin</item>
         <item>Token</item>
@@ -200,12 +250,51 @@
         <item>NFT</item>
         <item>ERC721</item>
     </string-array>
-    
+
     <string-array name="array_coin" translatable="false">
         <item>BTC</item>
         <item>ETH</item>
         <item>LTC</item>
         <item>BCH</item>
+        <item>XCP</item>
     </string-array>
+    <!-- <string name="title_activity_key_slot_details">KeySlotDetailsActivity</string> -->
+    <!-- Strings used for fragments for navigation -->
+    <!-- 
+    <string name="next">Next</string>
+    <string name="previous">Previous</string> 
+    -->
 
+    <string name="select_currency">Select currency</string>
+    <string name="settings">Settings</string>
+    <string name="use_test_net">Use testnet</string>
+    <string name="enter_entropy_data">Enter entropy data:</string>
+    <string name="entropy_data">Entropy data</string>
+    <string name="_64_hex_entropy_data">64 hex entropy data</string>
+    <string name="show_certificate_details">Show Certificate Details</string>
+    <string name="public_key">Public Key</string>
+    <string name="copy">Copy</string>
+    <string name="status">Status:</string>
+    <string name="show_public_key">Show public key</string>
+    <string name="private_key">Private key:</string>
+    <string name="show_more">Show More</string>
+    <string name="seal_onboarding_1">SEAL</string>
+    <string name="load_onboarding_2">LOAD</string>
+    <string name="verify_onboarding_3">VERIFY</string>
+    <string name="enjoy_onboarding_4">ENJOY</string>
+    <string name="text_onboarding_1">Randomly generate a new crypto-currency wallet and seal the private key in a vault of your Satodime bearer card.</string>
+    <string name="text_onboarding_2">Use the deposit address to transfer your chosen crypto-currency to the card.</string>
+    <string name="text_onboarding_3">At anytime, anywhere, verify the balance of your wallet and the current state of the vault: sealed, unsealed or uninitialized.</string>
+    <string name="text_onboarding_4">It has never been this easy to physically exchange crypto-currencies.
+      Offer your Satodime card, exchange it for goods or services, go off grid, be your own bank.</string>
+    <string name="apply">Apply</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="item_home">Home</string>
+    <string name="item_card_info">Card Info</string>
+    <string name="item_transfer_card">Transfer Card</string>
+    <string name="item_settings">Settings</string>
+    <string name="item_tell_a_friend">Tell a Friend</string>
+    <string name="sealed">Sealed</string>
+    <string name="unsealed">Unsealed</string>
+    <string name="lbl_uninitalized">Uninitialized</string>
 </resources>

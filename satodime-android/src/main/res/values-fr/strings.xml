@@ -1,21 +1,33 @@
 <resources>
     
     <string name="app_name">Satodime</string>
-    
+
+    <string-array name="array_menu">
+        <!--        <item>Spin &amp; Win</item>-->
+        <item>Accueil</item>
+        <item>Informations sur la carte</item>
+        <item>Transférer la carte</item>
+        <item>Réglages</item>
+        <item>Partager</item>
+        <item>FAQ</item>
+    </string-array>
     <!-- generic -->
     <string name="cancel">Annuler</string>
     <string name="ok">OK</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="error">"Erreur: "</string>
+    <string name="warning">Attention!</string>
+    
+    <string name="API_KEY_ETHERSCAN">""</string>
+    <string name="API_KEY_ETHPLORER">""</string>
+    <string name="API_KEY_BSCSCAN">""</string>
     
     <!-- main layout -->
-    <string name="card_info">Info carte</string> 
-    <string name="card_connected_text">"Carte connectée: "</string> 
+    <string name="card_info">Info carte</string>
+    <string name="card_info_text">Info carte</string>
     <string name="card_connected_value">(pas de carte détectée)</string> 
-    <string name="card_status_text">"Statut de la carte: "</string> 
     <string name="card_status_value">(pas de carte détectée)</string> 
-    <string name="card_ownership_text">"Propriété: "</string> 
     <string name="card_ownership_value">(pas de carte détectée)</string> 
     <string name="button_settings">Paramètres</string> 
     <string name="button_details">Détails</string> 
@@ -25,7 +37,7 @@
         <item>Réinitialiser le slot</item>
         <item>Sceller le slot</item>
         <item>Desceller le slot</item>
-        <item>Transférer le slot</item>
+        <item>Transférer la carte</item>
     </string-array>
      <string-array name="array_keyslot_states">
         <item>Non initialisé</item>
@@ -37,7 +49,6 @@
         <item>Desceller le slot</item>
         <item>Réinitialiser le slot</item>
     </string-array>    
-    <string name="card_connected">Carte connectée!</string>
     <string name="accept_transfer_question">Accepter le transfert de carte?</string>
     <string name="accept_transfer_warning">
             Un transfert de propriété a été initié par le précédent propriétaire de la carte.
@@ -57,10 +68,12 @@
     <string name="request_pending_title">Requête en attente</string>
     <string name="request_rejected">Requête rejetée!</string>
     <string name="card_connected_value_ok">Carte connectée</string>
+    <string name="card_connected_value_ko">Carte déconnectée</string>
+    <string name="card_connected_value_no">Pas de carte connectée</string>
     <string name="card_status_value_ok">Carte authentifiée avec succès</string>
     <string name="card_status_value_ko">Erreur: l\'émetteur de la carte n\'a pas pu être authentifié!</string>
-    <string name="card_ownership_value_ok">vous êtes le propriétaire de la carte</string>
-    <string name="card_ownership_value_ko">vous n\'êtes PAS le propriétaire de la carte</string>
+    <string name="card_ownership_value_ok">Vous êtes le propriétaire de la carte</string>
+    <string name="card_ownership_value_ko">Vous n’êtes PAS le propriétaire de la carte</string>
     <string name="card_ownership_value_unknown">il y a eu une erreur - êtes-vous bien propriétaire de la carte?</string>
     <string name="warning_initiate_transfer"> 
             Attention!
@@ -92,7 +105,8 @@
     <string name="reset_confirm">Réinitialiser</string>
     <string name="reset_cancel">Réinitialisation de la clé annulée!</string>
     <string name="button_more_details">Plus de détails</string>
-    <string name="card_disconnected">Carte déconnectée!</string>
+    <string name="card_connected">Carte connectée</string>
+    <string name="card_disconnected">Carte déconnectée</string>
     <string name="seal_cancel">Le scellage de la clé a été annulé!</string>
     <string name="seal_success">Clé scellée avec succès!</string>
     <string name="seal_fail">Impossible de sceller la clé, nouvelle tentative prévue à la prochaine connection</string>
@@ -105,6 +119,7 @@
     <string name="not_applicable">(N/A)</string>
     <string name="coin_balance_fail">(échec de la récupération du solde)</string>
     <string name="token_balance_fail">(échec de la récupération du solde)</string>
+    <string name="token_balance_wait">(balance indisponible, veuillez réessayer)</string>
     <string name="reset_ownership_question">Réinitialiser le statut de propriété?</string>
     <string name="reset_ownership_warning">
                 Attention:
@@ -114,13 +129,21 @@
                 \n\nAppuyez sur \'Réinitialiser\' pour continuer, ou sur \'Annuler\'</string>
     <string name="reset_ownership_confirmation">Réinitialiser</string>
     <string name="reset_ownership_rejected">Réinitialisation du statut de propriété rejetée!</string>
+    <string name="action_cancelled">Action annulée!</string>
+    
+    <!-- side menu -->
+    <string name="share_with_friends">Partagez avec vos amis</string>
+    <string name="share_details">Satodime: la carte au porteur pour vos cryptos! Stockez et échangez vos crypto-monnaies physiquement en toute sécurité: https://play.google.com/store/apps/details?id=</string>
+    <string name="faq_link">https://satochip.io/faq/?lang=fr</string>
     
     <!-- seal keyslot layout -->
     <string name="select_blockchain">"Selectionnez la blockchain: "</string> 
     <string name="select_asset">"Selectionnez le type d\'actif: "</string> 
     <string name="use_testnet">"Utiliser le testnet: "</string> 
     <string name="enter_contract">"Entrez l\'adresse du contrat: "</string> 
+    <string name="enter_contract_hint">"addresse du contrat"</string>
     <string name="enter_tokenid">"Entrez le tokenID:</string> 
+    <string name="enter_tokenid_hint">"tokenID</string>
     <string name="enter_entropy">Entrez des données aléatoires (entropie):</string> 
     <string name="entropy_output">Entropie générée:</string> 
     <string name="entropy_output_value">(64-hex entropy)</string> 
@@ -134,16 +157,17 @@
     <string name="exception_tokenid_too_long">le tokenid est trop long!</string>
     
     <!-- show details layout -->
-    <string name="keyslot_info">Info clé</string>
+    <string name="keyslot_details_header">Détails du slot #</string>
+    <string name="keyslot_info">Info clé:</string>
     <string name="keyslot_status">"Statut: "</string>
     <string name="keyslot_status_value">(inconnu)</string>
     <string name="asset_type">"Type d\'actif: "</string>
     <string name="pubkey">"Clé publique: "</string>
-    <string name="coin_info">Info coin</string>
+    <string name="coin_info">Info coin:</string>
     <string name="blockchain">"Blockchain: "</string>
     <string name="address">"Adresse: "</string>
     <string name="balance">"Balance: "</string>
-    <string name="token_info">Info token</string>
+    <string name="token_info">Info token:</string>
     <string name="token">"Token: "</string>
     <string name="token_balance">"Balance token: "</string>
     <string name="nft_info">Info NFT</string>
@@ -156,7 +180,7 @@
     <string name="nft_name_value">(nom NFT inconnu)</string>
     <string name="nft_description">"Description: "</string>
     <string name="nft_description_value">(description NFT inconnue)</string>
-    <string name="private_info">Info privée</string>
+    <string name="private_info">Info privée: </string>
     <string name="privkey">"Clé privée: "</string>
     <string name="wif">"WIF: "</string>
     <string name="entropy">"Entropie: "</string>
@@ -164,10 +188,18 @@
     <string name="show_details_activity">Détails de la clé</string>
     <string name="show_details_title">Détails de la clé #</string>
     <string name="address_copied_toast">Adresse copiée !</string>
-    <string name="button_hide">Cacher</string>
-    <string name="button_show">Montrer</string>
+    <string name="button_hide_pubkey">Cacher la clé publique</string>
+    <string name="button_show_pubkey">Afficher la clé publique</string>
+    <string name="pubkey_copied_toast">Clé publique copiée!</string>
+    <string name="button_hide_privkey">Cacher la clé privée</string>
+    <string name="button_show_privkey">Afficher la clé privée</string>
     <string name="privkey_copied_toast">Clé privée copiée!</string>
     <string name="wif_copied_toast">WIF copiée!</string>
+    
+    <!-- card info layout -->
+    <string name="card_connected_text">Statut de connection:</string>
+    <string name="card_ownership_text">"Statut de propriété:"</string>
+    <string name="card_status_text">Statut d\'authenticité:</string>
     
     <!-- show auth details fragment -->
     <string name="auth_success">Carte authentifiée avec succès!</string>
@@ -180,10 +212,54 @@
     
     <!-- setting layout -->
     <string name="enable_dark_mode">Activer le mode sombre:</string>
-    <string name="select_language">Selectionnez la langue:</string>
+    <string name="select_language">Selectionnez la langue</string>
     <string name="select_fiat">Selectionnez la monnaie fiat:</string>    
     <!-- setting fragment -->
     <string name="settings_title">Paramètres</string>
     <string name="settings_confirm">Appliquer</string>
+    <string name="share_txt">Share app</string>
+    <string name="share_app_cptn">Share data</string>
+    <string name="card_not_connected">Carte non connectée</string>
+    <string name="transfer_card_continue">Click on \"Transfer\" to continue, or</string>
+    <string name="transfer_card_cancel">Click on \"Cancel\" to abort.</string>
+    <string name="unseal_card_continue">Click on \"Unseal\" to continue, or</string>
+    <string name="unseal_card_cancel">Click on \"Cancel\"  to abort.</string>
+    <string name="reset_card_cancel">Click on \"Cancel\"  to abort.</string>
+    <string name="reset_card_continue">Click on \"Reset\" to continue, or</string>
+    
+    <string name="select_currency">Sélectionnez la devise</string>
+    <string name="settings">Réglages</string>
+    <string name="use_test_net">Utiliser le réseau de test</string>
+    <string name="enter_entropy_data">Saisissez les données d\'entropie :</string>
+    <string name="entropy_data">Données d\'entropie</string>
+    <string name="_64_hex_entropy_data">64 données d\'entropie hexadécimale</string>
+    <string name="show_certificate_details">Afficher les détails du certificat</string>
+    <string name="public_key">Clé publique</string>
+    <string name="copy">Copie</string>
+    <string name="status">Statut:</string>
+    <string name="show_public_key">Afficher la clé publique</string>
+    <string name="private_key">Clé privée:</string>
+    <string name="show_more">Montre plus</string>
+    <string name="seal_onboarding_1">SEAL</string>
+    <string name="load_onboarding_2">LOAD</string>
+    <string name="verify_onboarding_3">VERIFY</string>
+    <string name="enjoy_onboarding_4">ENJOY</string>
+    <string name="text_onboarding_1">Générez aléatoirement un nouveau portefeuille de crypto-monnaies et scellez la clé privée dans un coffre-fort de votre carte Satodime.</string>
+    <string name="text_onboarding_2">Utilisez l\'adresse de dépôt pour transférer la crypto-monnaie de votre choix sur la carte.</string>
+    <string name="text_onboarding_3">À tout moment et en tout lieu, vérifiez le solde de votre portefeuille et l\'état actuel du coffre-fort : scellé, non scellé ou non initialisé.</string>
+    <string name="text_onboarding_4">Il n\'a jamais été aussi facile d\'échanger physiquement des crypto-monnaies.
+      Offrez votre carte Satodime, échangez-la contre des biens ou des services, sortez du réseau, devenez votre propre banque.</string>
+    <string name="apply">Appliquer</string>
+    <string name="dark_mode">Mode sombre</string>
+
+    <string name="item_home">Accueil</string>
+    <string name="item_card_info">Informations sur la carte</string>
+    <string name="item_transfer_card">Transférer la carte</string>
+    <string name="item_settings">Réglages</string>
+    <string name="item_tell_a_friend">Partager</string>
+    <string name="sealed">Scellé</string>
+    <string name="unsealed">Descellé</string>
+    <string name="lbl_uninitalized">Non initialisé</string>
+
 
 </resources>

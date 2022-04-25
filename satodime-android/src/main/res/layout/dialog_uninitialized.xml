@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- DEPRECATED use activity_seal_keyslot instead -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/pure_white"
+    android:layout_height="wrap_content">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        app:cardBackgroundColor="@color/dialog_gold_grey"
+        app:cardCornerRadius="@dimen/dialog_card_corner_radious"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                android:layout_width="@dimen/dialog_header_img_size"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/pure_white"
+                app:cardCornerRadius="100dp"
+                android:layout_height="@dimen/dialog_header_img_size">
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_hourglass"
+                    app:tint="@color/dialog_gold_grey" />
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/warning"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    app:tint="@color/pure_white" />
+                <TextView
+                    android:id="@+id/text_coin_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/segoe_ui_bold"
+                    android:text="@string/button_seal_keyslot"
+                    android:textColor="@color/pure_white"
+                    android:textSize="@dimen/normal_heading_size" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+   <ScrollView
+       android:layout_width="match_parent"
+       android:layout_below="@+id/header"
+       android:layout_height="wrap_content">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+
+           android:layout_marginStart="20dp"
+           android:layout_marginTop="20dp"
+           android:layout_marginEnd="20dp"
+           android:orientation="vertical">
+
+
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="15dp"
+               android:fontFamily="@font/segoe_ui_bold"
+               android:text="@string/select_currency"
+               android:textColor="@color/pure_black"
+               android:textSize="14sp" />
+
+           <androidx.cardview.widget.CardView
+               android:layout_width="match_parent"
+               android:layout_height="50dp"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="15dp"
+               android:layout_marginEnd="20dp"
+               android:elevation="20dp"
+               app:cardBackgroundColor="@color/pure_white"
+               app:cardCornerRadius="10dp">
+
+               <Spinner
+                   android:id="@+id/spinner_asset_type"
+                   android:backgroundTint="@color/gold_color"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent" />
+           </androidx.cardview.widget.CardView>
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="10dp"
+               android:fontFamily="@font/segoe_ui_bold"
+               android:text="@string/select_blockchain"
+               android:textColor="@color/pure_black"
+               android:textSize="14sp" />
+
+           <androidx.cardview.widget.CardView
+               android:layout_width="match_parent"
+               android:layout_height="50dp"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="15dp"
+               android:layout_marginEnd="20dp"
+               android:elevation="20dp"
+               app:cardBackgroundColor="@color/pure_white"
+               app:cardCornerRadius="10dp">
+
+               <Spinner
+                   android:id="@+id/spinner_coin_type"
+                   android:backgroundTint="@color/gold_color"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent" />
+
+           </androidx.cardview.widget.CardView>
+
+
+
+
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="15dp">
+
+               <TextView
+                   android:id="@+id/text_use_testnet"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                   android:layout_marginStart="20dp"
+                   android:fontFamily="@font/segoe_ui_bold"
+                   android:text="@string/use_test_net"
+                   android:textColor="@color/pure_black"
+                   android:textSize="14sp" />
+
+               <CheckBox
+                   android:id="@+id/checkbox_use_testnet"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentEnd="true"
+                   android:layout_centerVertical="true"
+                   android:layout_marginEnd="20dp"
+                   android:buttonTint="@color/dialog_gold_grey" />
+
+           </RelativeLayout>
+
+           <!-- CONTRACT -->
+           <LinearLayout
+               android:id="@+id/group_contract"
+               android:orientation="vertical"
+               android:layout_width="fill_parent"
+               android:layout_marginStart="20dp"
+               android:layout_marginEnd="20dp"
+               android:layout_marginTop="10dp"
+               android:layout_height="wrap_content"
+               android:visibility="gone"
+               >
+
+               <TextView android:id="@+id/text_contract_address"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/enter_contract"
+                   android:fontFamily="@font/segoe_ui_bold"
+                   android:textColor="@color/pure_black"
+                   android:textSize="14sp" />
+
+               <EditText
+                   android:id="@+id/edittext_contract"
+                   android:layout_height="wrap_content"
+                   android:layout_width="match_parent"
+                   android:hint="contract address"
+                   android:layout_marginTop="10dp"
+                   android:digits="0123456789ABCDEFabcdefx"
+                   android:inputType="textCapCharacters"
+                   />
+           </LinearLayout>
+
+           <!-- TOKENID -->
+           <LinearLayout
+               android:id="@+id/group_tokenid"
+               android:orientation="vertical"
+               android:layout_width="fill_parent"
+               android:layout_marginTop="10dp"
+               android:layout_marginStart="20dp"
+               android:layout_marginEnd="20dp"
+               android:layout_height="wrap_content"
+               android:visibility="gone"
+               >
+
+               <TextView android:id="@+id/text_tokenid"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/enter_tokenid"
+                   android:fontFamily="@font/segoe_ui_bold"
+                   android:textColor="@color/pure_black"
+                   android:textSize="14sp"/>
+
+               <EditText
+                   android:id="@+id/edittext_tokenid"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="10dp"
+                   android:layout_width="match_parent"
+                   android:hint="tokenID"
+                   android:digits="0123456789"
+                   android:inputType="number"
+                   />
+           </LinearLayout>
+           
+           <!-- ENTROPY -->
+           <TextView
+               android:id="@+id/text_entropy_input"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="15dp"
+               android:text="@string/enter_entropy_data"
+               android:fontFamily="@font/segoe_ui_bold"
+               android:textColor="@color/pure_black"
+               android:textSize="14sp" />
+
+
+           <EditText
+               android:id="@+id/edittext_entropy_input"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="10dp"
+               android:layout_marginEnd="20dp"
+               android:hint="@string/entropy_data"
+               android:paddingStart="10dp"
+               android:textColor="@color/pure_black"
+               android:textColorHint="@color/grey" />
+
+           <TextView
+               android:id="@+id/text_entropy_output"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="25dp"
+               android:text="@string/entropy_output"
+               android:textColor="@color/grey"
+               android:textSize="10dp" />
+
+           <TextView
+               android:id="@+id/value_entropy_output"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="25dp"
+               android:text="@string/_64_hex_entropy_data"
+               android:layout_marginTop="10dp"
+               android:textColor="@color/grey"
+               android:textSize="10dp" />
+
+           <!-- NOTIFICATIONS -->
+           <TextView android:id="@+id/text_notification"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="(error msg)"
+               android:layout_marginStart="20dp"
+               android:layout_marginTop="10dp"
+               android:textColor="#FFFF0000"
+               android:visibility="gone"
+               />
+            
+            <!-- buttons -->
+            <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="20dp"
+               android:layout_marginBottom="30dp"
+               android:orientation="horizontal"
+               android:paddingTop="5dp"
+               android:paddingBottom="5dp"
+               android:weightSum="100">
+                
+               <androidx.cardview.widget.CardView
+                   android:layout_width="0dp"
+                   android:layout_height="45dp"
+                   android:layout_marginEnd="10dp"
+                   android:layout_marginBottom="5dp"
+                   android:layout_weight="50"
+                   android:clickable="true"
+                   android:focusable="true"
+                   android:foreground="?selectableItemBackground"
+                   app:cardBackgroundColor="#CBC7C3"
+                   app:cardCornerRadius="@dimen/card_corner_radious">
+
+                   <TextView
+                       android:id="@+id/cancel_btn"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:layout_gravity="center"
+                       android:fontFamily="@font/segoe_ui_bold"
+                       android:gravity="center"
+                       android:text="@string/cancel"
+                       android:textColor="@color/pure_white"
+                       android:textSize="16sp" />
+               </androidx.cardview.widget.CardView>
+
+               <androidx.cardview.widget.CardView
+                   android:layout_width="0dp"
+                   android:layout_height="45dp"
+                   android:layout_marginStart="10dp"
+                   android:layout_marginBottom="5dp"
+                   android:layout_weight="50"
+                   android:clickable="true"
+                   android:focusable="true"
+                   android:foreground="?selectableItemBackground"
+                   app:cardBackgroundColor="@color/dialog_gold_grey"
+                   app:cardCornerRadius="@dimen/card_corner_radious">
+
+                   <TextView
+                       android:id="@+id/transfer_btn"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:layout_gravity="center"
+                       android:fontFamily="@font/segoe_ui_bold"
+                       android:gravity="center"
+                       android:text="Seal"
+                       android:textColor="@color/pure_white"
+                       android:textSize="16sp" />
+               </androidx.cardview.widget.CardView>
+           </LinearLayout>
+
+
+       </LinearLayout>
+   </ScrollView>
+
+</RelativeLayout>
