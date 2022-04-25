@@ -37,7 +37,7 @@
         <item>Réinitialiser le slot</item>
         <item>Sceller le slot</item>
         <item>Desceller le slot</item>
-        <item>Transférer le slot</item>
+        <item>Transférer la carte</item>
     </string-array>
      <string-array name="array_keyslot_states">
         <item>Non initialisé</item>
