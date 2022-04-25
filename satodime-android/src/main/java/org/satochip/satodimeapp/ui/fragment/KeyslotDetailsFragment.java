@@ -109,11 +109,11 @@ public class KeyslotDetailsFragment extends DialogFragment {
         TextView tvKeyslotStatus = (TextView) view.findViewById(R.id.value_details_keyslot_status);
         tvKeyslotStatus.setText(ARRAY_KEYSLOT_STATES[keyState]);
         // keyAsset
-        String keyAssetTxt = (String) keyInfo.get("keyAssetTxt");
+        String keyAssetTxt = (String) keyInfo.getOrDefault("keyAssetTxt", "");
         TextView tvKeyslotAsset = (TextView) view.findViewById(R.id.value_details_keyslot_asset_type);
         tvKeyslotAsset.setText(keyAssetTxt);
         // pubkey
-        pubkeyHex = (String) keyInfo.get("pubkeyHex");
+        pubkeyHex = (String) keyInfo.getOrDefault("pubkeyHex", "");
         TextView tvPubkeyHex = (TextView) view.findViewById(R.id.value_details_pubkey);
         tvPubkeyHex.setText(pubkeyHex);
         if (DEBUG) Log.d(TAG, "ShowDetailsActivity: pubkeyHex:" + pubkeyHex);
@@ -159,7 +159,7 @@ public class KeyslotDetailsFragment extends DialogFragment {
                 if (imviewPubkey.getVisibility() == View.GONE){
                     try {
                         QRCodeWriter writer = new QRCodeWriter();
-                        BitMatrix bitMatrix = writer.encode(pubkeyHex, BarcodeFormat.QR_CODE, 512, 512);
+                        BitMatrix bitMatrix = writer.encode(pubkeyHex.equals("")? "(null)": pubkeyHex, BarcodeFormat.QR_CODE, 512, 512);
                         int width = bitMatrix.getWidth();
                         int height = bitMatrix.getHeight();
                         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
@@ -181,16 +181,16 @@ public class KeyslotDetailsFragment extends DialogFragment {
         
         // CoinInfo
         // blockchain
-        String coinDisplayName = (String) keyInfo.get("coinDisplayName");
+        String coinDisplayName = (String) keyInfo.getOrDefault("coinDisplayName", "");
         TextView tvCoinBlockchain = (TextView) view.findViewById(R.id.value_details_coin_blockchain);
         tvCoinBlockchain.setText(coinDisplayName);
         // address
-        String coinAddress = (String) keyInfo.get("coinAddress");
+        String coinAddress = (String) keyInfo.getOrDefault("coinAddress", "");
         TextView tvCoinAddress = (TextView) view.findViewById(R.id.value_details_coin_address);
         tvCoinAddress.setText(coinAddress);
-        String coinAddressWeburl = (String) keyInfo.get("coinAddressWeburl");
+        String coinAddressWeburl = (String) keyInfo.getOrDefault("coinAddressWeburl", "");
         // balance
-        String coinBalanceTxt = (String) keyInfo.get("coinBalanceTxt");
+        String coinBalanceTxt = (String) keyInfo.getOrDefault("coinBalanceTxt", "");
         TextView tvCoinBalance = (TextView) view.findViewById(R.id.value_details_coin_balance);
         tvCoinBalance.setText(coinBalanceTxt);
 
@@ -218,7 +218,7 @@ public class KeyslotDetailsFragment extends DialogFragment {
                     try {
                         QRCodeWriter writer = new QRCodeWriter();
                         //TODO: change coinAddress?
-                        BitMatrix bitMatrix = writer.encode(coinAddress, BarcodeFormat.QR_CODE, 512, 512);
+                        BitMatrix bitMatrix = writer.encode(coinAddress.equals("")? "(null)" : coinAddress , BarcodeFormat.QR_CODE, 512, 512);
                         int width = bitMatrix.getWidth();
                         int height = bitMatrix.getHeight();
                         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
@@ -259,16 +259,16 @@ public class KeyslotDetailsFragment extends DialogFragment {
         });
 
         // token/NFT
-        // boolean isToken = (boolean) keyInfo.get("isToken");
-        // boolean isNFT = (boolean) keyInfo.get("isNFT");
-        boolean isToken = false; 
+        boolean isToken = (boolean) keyInfo.getOrDefault("isToken", false);
+        boolean isNFT = (boolean) keyInfo.getOrDefault("isNFT", false);
+        /* boolean isToken = false; 
         boolean isNFT = false; 
         try{ //temp fix
             isToken = (boolean) keyInfo.get("isToken");
             isNFT = (boolean) keyInfo.get("isNFT");
         } catch (Exception e){
             if(DEBUG) Log.e(TAG, "Exception while fetching isToken and isNFT: " + e);
-        }
+        } */
         if (isToken) {
             String keyContractHex = (String) keyInfo.get("keyContractHex");
             TextView tvTokenContract = (TextView) view.findViewById(R.id.value_details_token_contract);
