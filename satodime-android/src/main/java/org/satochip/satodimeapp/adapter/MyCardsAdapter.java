@@ -82,6 +82,7 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             holder.assetType.setText("");
             holder.balance.setText(R.string.uninitialized);
             holder.cardAddress.setText("");
+            holder.tokenBalance.setText("");
             // static text
             holder.assetTypeTxt.setText("");
             holder.cardAddressTxt.setText("");
