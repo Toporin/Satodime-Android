@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/segoe_ui_bold"
-                    android:text="Transfer Card Ownership?"
+                    android:text="@string/transfer_card_ownership"
                     android:textColor="@color/pure_white"
                     android:textSize="@dimen/normal_heading_size" />
             </LinearLayout>
