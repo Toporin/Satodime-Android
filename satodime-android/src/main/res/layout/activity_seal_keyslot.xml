@@ -183,6 +183,7 @@
                     android:layout_width="match_parent"
                     android:hint="@string/enter_contract_hint"
                     android:textColorHint="@color/grey"
+                    android:textColor="@color/pure_black"
                     android:layout_marginTop="10dp"
                     android:inputType="textCapCharacters"
                 />
@@ -214,6 +215,7 @@
                     android:layout_width="match_parent"
                     android:hint="@string/enter_tokenid_hint"
                     android:textColorHint="@color/grey"
+                    android:textColor="@color/pure_black"
                     android:digits="0123456789"
                     android:inputType="number"
                     />
