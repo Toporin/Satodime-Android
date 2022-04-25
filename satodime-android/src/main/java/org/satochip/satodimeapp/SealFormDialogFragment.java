@@ -375,13 +375,17 @@ public class SealFormDialogFragment extends DialogFragment {
                 }
             }
             // encode 
-            contract= asset+ "." + subasset;
+            if (subasset.equals("")){
+                contract= asset;
+            }else {
+                contract= asset+ "." + subasset;
+            }
             contractBytes = contract.getBytes(StandardCharsets.UTF_8);
             if (contractBytes.length>32){
                 throw new Exception("Unfortunately, Satodime supports only asset name smaller than 32 char");
             }
             return contractBytes;
-        } 
+        }
         else {
             throw new Exception("Unsupported blockchain" + coin); 
         }
