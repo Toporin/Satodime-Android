@@ -62,11 +62,11 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
         long startTime = System.currentTimeMillis();
         
         String keyNbr= "Key #" + position;
-            
+        holder.keyNbr.setText(keyNbr);
+        
         // get keyslot map from list
         HashMap<String, Object> keyInfo= this.keyInfoList.get(position);
         if (DEBUG) Log.d(TAG, "in onBindViewHolder keyInfo map: " + keyInfo);
-        
         int keyState= (int) keyInfo.get("keyState");
 
         // state info
@@ -74,20 +74,28 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             holder.keyNbr.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.gold_light));
             holder.parentLayout.setBackground(context.getDrawable(R.drawable.card_outline_gold));
             holder.cardImg.setImageResource(R.drawable.ic_coin_empty);
+            // status
             holder.cardStatusImg.setImageResource(R.drawable.ic_coin_empty);
             holder.cardStatus.setText(R.string.uninitialized);
             holder.cardStatus.setTextColor(context.getResources().getColor(R.color.grey));
+            // set info
+            holder.assetType.setText("");
+            holder.balance.setText(R.string.uninitialized);
+            holder.cardAddress.setText("");
+            // static text
+            holder.assetTypeTxt.setText("");
+            holder.cardAddressTxt.setText("");
+            holder.tokenBalanceTxt.setText("");
         } else{
             // get info
             String assetType= (String) keyInfo.get("keyAssetTxt");
-            String coinName= (String) keyInfo.get("coinDisplayName");
+            //String coinName= (String) keyInfo.get("coinDisplayName");
             String coinSymbol= (String) keyInfo.get("coinSymbol");
             String balance= (String) keyInfo.get("coinBalanceTxt");
-            String tokenBalance= (String) keyInfo.get("tokenBalanceTxt");
+            //String tokenBalance= (String) keyInfo.get("tokenBalanceTxt");
             String address= (String) keyInfo.get("coinAddress");
             // set info
             holder.assetType.setText(assetType);
-            holder.keyNbr.setText(keyNbr);
             holder.balance.setText(balance);
             holder.cardAddress.setText(address);
             // set static txt (needed when language changes)
@@ -98,6 +106,7 @@ public class MyCardsAdapter extends RecyclerView.Adapter<MyCardsAdapter.MyViewHo
             // nft or token
             boolean isTokenOrNFT= (boolean) keyInfo.getOrDefault("isTokenOrNFT", false);
             if (isTokenOrNFT){
+                String tokenBalance= (String) keyInfo.get("tokenBalanceTxt");
                 holder.tokenLayout.setVisibility(View.VISIBLE);
                 holder.tokenBalance.setText(tokenBalance);
             }
