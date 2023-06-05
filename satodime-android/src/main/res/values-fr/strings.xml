@@ -240,15 +240,16 @@
     <string name="show_public_key">Afficher la clé publique</string>
     <string name="private_key">Clé privée:</string>
     <string name="show_more">Montre plus</string>
-    <string name="seal_onboarding_1">SEAL</string>
-    <string name="load_onboarding_2">LOAD</string>
-    <string name="verify_onboarding_3">VERIFY</string>
-    <string name="enjoy_onboarding_4">ENJOY</string>
-    <string name="text_onboarding_1">Générez aléatoirement un nouveau portefeuille de crypto-monnaies et scellez la clé privée dans un coffre-fort de votre carte Satodime.</string>
-    <string name="text_onboarding_2">Utilisez l\'adresse de dépôt pour transférer la crypto-monnaie de votre choix sur la carte.</string>
-    <string name="text_onboarding_3">À tout moment et en tout lieu, vérifiez le solde de votre portefeuille et l\'état actuel du coffre-fort : scellé, non scellé ou non initialisé.</string>
-    <string name="text_onboarding_4">Il n\'a jamais été aussi facile d\'échanger physiquement des crypto-monnaies.
-      Offrez votre carte Satodime, échangez-la contre des biens ou des services, sortez du réseau, devenez votre propre banque.</string>
+
+    <!-- onboarding activity layout -->
+    <string name="title_onboarding_1">Bienvenue!</string>
+    <string name="title_onboarding_2">Réutilisable à l\'infini</string>
+    <string name="title_onboarding_3">Comment utiliser le NFC</string>
+    <string name="title_onboarding_4">Un example de coffre</string>
+    <string name="text_onboarding_1">Satodime vous permet de créer facilement des coffres pour crypto-monnaie à la volée. Elle prend en charge les crypto-monnaies les plus innovantes et les jetons ERC-20.</string>
+    <string name="text_onboarding_2">Créez jusqu\'à 3 coffres pour stocker vos crypto-monnaies et NFT préférés. \n\nScellez un nouveau coffre, chargez votre token. Descellez-le pour récupérer la clé privée. Et réutilisez-les indéfiniment !</string>
+    <string name="text_onboarding_3">Votre Satodime est équipée d\'une interface NFC intégrée. \n\nPour interagir avec la carte, vous devez la placer sur votre lecteur NFC et la maintenir pendant toute l\'opération. \n\nLa position du senseur NFC varie selon le modèle de téléphone, consultez le manuel du fabricant pour plus d\'information.</string>
+    <string name="text_onboarding_4">La couleur verte signifie que le coffre est scellé : la clé privée a été générée aléatoirement par la carte et n\'a jamais été exposée à quiconque. Un coffre orange signifie que le coffre a été descellé. Un coffre gris signifie que la clé privée n\'a pas encore été générée. \n\nCliquez sur l\'icône en haut à droite du coffre pour modifier l\'état du coffre (sceller, desceller ou réinitialiser le coffre). \n\nCliquez sur la flèche en bas à droite pour obtenir plus d\'informations.</string>
     <string name="apply">Appliquer</string>
     <string name="dark_mode">Mode sombre</string>
 

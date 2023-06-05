@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="40dp" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:text="Stay Connected"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="@color/pure_white"
+        android:textColor="@color/gold_color"
         android:textSize="@dimen/header_text_size"
         android:textStyle="bold" />
 
@@ -43,9 +43,9 @@
         android:gravity="center"
         android:paddingStart="25dp"
         android:paddingEnd="25dp"
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lacinia quis neque sit amet venenatis. Proin sed magna a erat auctor blandit."
+        android:text="A description"
         android:textAlignment="center"
-        android:textColor="@color/pure_white"
+        android:textColor="@color/gold_color"
         android:textStyle="bold" />
 
 </RelativeLayout>
