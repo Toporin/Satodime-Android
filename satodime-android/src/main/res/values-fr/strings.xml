@@ -246,10 +246,10 @@
     <string name="title_onboarding_2">Réutilisable à l\'infini</string>
     <string name="title_onboarding_3">Comment utiliser le NFC</string>
     <string name="title_onboarding_4">Un example de coffre</string>
-    <string name="text_onboarding_1">Satodime vous permet de créer facilement des coffres pour crypto-monnaie à la volée. Elle prend en charge les crypto-monnaies les plus innovantes et les jetons ERC-20.</string>
+    <string name="text_onboarding_1">Satodime vous permet de créer facilement des coffres pour crypto-monnaie à la volée. Elle prend en charge les monnaies, tokens et NFTs les plus innovants. \n\nSatodime est facile à utiliser, open-source et vos clés privées sont entièrement sous votre contrôle!</string>
     <string name="text_onboarding_2">Créez jusqu\'à 3 coffres pour stocker vos crypto-monnaies et NFT préférés. \n\nScellez un nouveau coffre, chargez votre token. Descellez-le pour récupérer la clé privée. Et réutilisez-les indéfiniment !</string>
     <string name="text_onboarding_3">Votre Satodime est équipée d\'une interface NFC intégrée. \n\nPour interagir avec la carte, vous devez la placer sur votre lecteur NFC et la maintenir pendant toute l\'opération. \n\nLa position du senseur NFC varie selon le modèle de téléphone, consultez le manuel du fabricant pour plus d\'information.</string>
-    <string name="text_onboarding_4">La couleur verte signifie que le coffre est scellé : la clé privée a été générée aléatoirement par la carte et n\'a jamais été exposée à quiconque. Un coffre orange signifie que le coffre a été descellé. Un coffre gris signifie que la clé privée n\'a pas encore été générée. \n\nCliquez sur l\'icône en haut à droite du coffre pour modifier l\'état du coffre (sceller, desceller ou réinitialiser le coffre). \n\nCliquez sur la flèche en bas à droite pour obtenir plus d\'informations.</string>
+    <string name="text_onboarding_4">La couleur verte signifie que le coffre est scellé : la clé privée a été générée aléatoirement par la carte et n\'a jamais été exposée à quiconque. Un coffre orange signifie que le coffre a été descellé. Un coffre gris signifie que la clé privée n\'a pas encore été générée. \n\nCliquez sur l\'icône en haut à droite du coffre pour modifier l\'état du coffre (sceller, desceller ou réinitialiser le coffre). Cliquez sur la flèche en bas à droite pour obtenir plus d\'informations.</string>
     <string name="apply">Appliquer</string>
     <string name="dark_mode">Mode sombre</string>
 

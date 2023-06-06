@@ -55,10 +55,12 @@ public class OnBoardingSliderAdapter extends PagerAdapter {
         layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.onboarding_slide_layout, container, false);
 
+        ImageView logoImageView = (ImageView) view.findViewById(R.id.iv_app_logo);
         ImageView slideImageView = (ImageView) view.findViewById(R.id.iv_image_icon);
         TextView slideHeading = (TextView) view.findViewById(R.id.tv_heading);
         TextView slideDescription = (TextView) view.findViewById(R.id.tv_description);
 
+        logoImageView.setImageResource(R.drawable.app_logo_horizontal);
         slideImageView.setImageResource(slideImages[position]);
         slideHeading.setText(slideHeadings[position]);
         slideDescription.setText(slideDescriptions[position]);

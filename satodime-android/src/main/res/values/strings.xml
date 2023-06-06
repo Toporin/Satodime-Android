@@ -284,10 +284,10 @@
     <string name="title_onboarding_2">Use it indefinitely</string>
     <string name="title_onboarding_3">How to use NFC</string>
     <string name="title_onboarding_4">A sample vault</string>
-    <string name="text_onboarding_1">Satodime allows you to easily create cryptocurrency vaults on the fly.\n\nIt supports the most innovative cryptocurrencies and ERC-20 tokens.</string>
+    <string name="text_onboarding_1">Satodime allows you to easily create cryptocurrency vaults on the fly. It supports the most innovative currencies, tokens and NFTs. \n\nIt is convenient, open-source and non-custodial!</string>
     <string name="text_onboarding_2">Create up to 3 vaults to store your favorite cryptocurrencies and NFTs. \n\nSeal a new vault, load your token. Unseal it to recover the private key. And reuse it indefinitely!</string>
     <string name="text_onboarding_3">Your Satodime comes with built-in NFC interface, so be sure to enable NFC on your phone. \n\nTo interact with the card, you need to put it on your NFC reader and keep it on throughout the operation. The location of the NFC sensor varies with phone model, consult your phone manual for more information.</string>
-    <string name="text_onboarding_4">A green color means the vault is sealed: the private key has been generated randomly by the card and never been exposed to anyone. An orange vault means the vault has been unsealed. A grey vault means the private key has not been generated yet. \n\nClick on the icon on the upper-right of the vault to change the vault status (seal, unseal or reset the vault). \n\nClick on the arrow on the lower-right to get more information.</string>
+    <string name="text_onboarding_4">A green color means the vault is sealed: the private key has been generated randomly by the card and never been exposed to anyone. An orange vault means the vault has been unsealed. A grey vault means the private key has not been generated yet. \n\nClick on the icon on the upper-right of the vault to change the vault status (seal, unseal or reset the vault). Click on the arrow on the lower-right to get more information.</string>
 
     <string name="apply">Apply</string>
     <string name="dark_mode">Dark Mode</string>
