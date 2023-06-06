@@ -15,8 +15,6 @@ import io.paperdb.Paper;
 
 public class SplashScreen extends AppCompatActivity {
 
-    private ImageView splshLogo;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,9 +39,9 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void initAll() {
-        splshLogo=findViewById(R.id.logo_splash);
+        ImageView splashLogo = findViewById(R.id.logo_splash);
         if(Utils.isDark){
-            splshLogo.setImageResource(R.drawable.splash_screen_white_logo);
+            splashLogo.setImageResource(R.drawable.splash_screen_white_logo);
         }
     }
 }

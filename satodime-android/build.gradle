@@ -6,8 +6,8 @@ android {
         applicationId "org.satochip.satodimeapp"
         minSdkVersion 27
         targetSdkVersion 32
-        versionCode 101 // take versionName, padd each part with 0 to 2 ciphers then remove dots
-        versionName "0.1.1" // also update in main/res/values/strings.xml
+        versionCode 102 // take versionName, padd each part with 0 to 2 ciphers then remove dots
+        versionName "0.1.2" // also update in main/res/values/strings.xml
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -51,6 +51,4 @@ dependencies {
     implementation 'io.paperdb:paperdb:2.7.1'
 
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
-
-
 }

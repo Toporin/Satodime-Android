@@ -51,13 +51,21 @@ public class OnBoardingActivity extends AppCompatActivity implements View.OnClic
         };
 
         String[] slideHeadings = {
-                getString(R.string.seal_onboarding_1),
-                getString(R.string.load_onboarding_2),
-                getString(R.string.verify_onboarding_3),
-                getString(R.string.enjoy_onboarding_4)
+                getString(R.string.title_onboarding_1),
+                getString(R.string.title_onboarding_2),
+                getString(R.string.title_onboarding_3),
+                getString(R.string.title_onboarding_4)
         };
 
-        onBoardingSliderAdapter = new OnBoardingSliderAdapter(OnBoardingActivity.this,slideDescriptions,slideHeadings);
+        int[] slideImages = {
+                R.drawable.onboarding_1,
+                R.drawable.onboarding_2,
+                R.drawable.onboarding_3,
+                R.drawable.onboarding_4_white,
+        };
+
+        //onBoardingSliderAdapter = new OnBoardingSliderAdapter(OnBoardingActivity.this,slideDescriptions,slideHeadings);
+        onBoardingSliderAdapter = new OnBoardingSliderAdapter(OnBoardingActivity.this,slideDescriptions,slideHeadings,slideImages);
 
         mSlideViewPager.setAdapter(onBoardingSliderAdapter);
 
@@ -68,10 +76,6 @@ public class OnBoardingActivity extends AppCompatActivity implements View.OnClic
 
         buttonNext.setOnClickListener(this);
         btnSkip.setOnClickListener(this);
-
-
-
-
     }
 
     public void addDotsIndicator(int position) {
@@ -82,13 +86,13 @@ public class OnBoardingActivity extends AppCompatActivity implements View.OnClic
             mDots[i] = new TextView(this);
             mDots[i].setText(Html.fromHtml("&#8226;")); //code for the dot icon like thing
             mDots[i].setTextSize(35);
-            mDots[i].setTextColor(getResources().getColor(R.color.white));
+            mDots[i].setTextColor(getResources().getColor(R.color.grey));
 
             mDotsLayout.addView(mDots[i]);
         }
 
         if (mDots.length > 0) {
-            mDots[position].setTextColor(getResources().getColor(R.color.black)); //setting currently selected dot to white
+            mDots[position].setTextColor(getResources().getColor(R.color.gold_color)); //setting currently selected dot to white
         }
     }
 
