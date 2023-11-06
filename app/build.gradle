@@ -1,0 +1,91 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+}
+
+android {
+    namespace 'org.satochip.satodime'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "org.satochip.satodime"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "2.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        buildConfigField "String", "API_KEY_ETHERSCAN", "\"${properties.getProperty("API_KEY_ETHERSCAN")}\""
+        buildConfigField "String", "API_KEY_ETHPLORER", "\"${properties.getProperty("API_KEY_ETHPLORER")}\""
+        buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.2'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation "androidx.compose.ui:ui:$compose_ui_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
+    implementation 'androidx.compose.material:material:1.5.1'
+    implementation("androidx.navigation:navigation-compose:2.7.3")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("io.github.g0dkar:qrcode-kotlin-android:3.3.0")
+
+    //satochip libraries
+    implementation files('libs/satochip-lib-0.0.4.jar')
+    implementation files('libs/satochip-android-0.0.1.jar')
+    implementation files('libs/javacryptotools-0.1.0.jar')
+
+    //satochip-android & satochip-lib related dependencies
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+
+    //javacryptotools related dependencies
+    implementation("com.google.guava:guava:32.1.2-jre")
+
+    //Test and debug dependencies
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+}
