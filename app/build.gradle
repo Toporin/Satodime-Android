@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace 'org.satochip.satodime'
+    namespace 'org.satochip.satodimeapp'
     compileSdk 34
 
     defaultConfig {
         applicationId "org.satochip.satodime"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "2.0"
+        versionCode 200
+        versionName "0.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
