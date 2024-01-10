@@ -168,8 +168,9 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.card_ownership_status)
         )
-        val notOwner = if(viewModel.isOwner) "" else " not"
-        val colorOwner = if(viewModel.isOwner) LightGreen else Color.Red
+        //val notOwner = if(viewModel.isOwner) "" else " not"
+        val notOwner = if(NFCCardService.isOwner.value == true) "" else " not"
+        val colorOwner = if(NFCCardService.isOwner.value == true) LightGreen else Color.Red
         CardInfoCard("You are$notOwner the card owner", 300, colorOwner)
         Spacer(Modifier.weight(1f))
         Text(
@@ -198,10 +199,10 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.card_authenticity)
         )
-        val notGeniune = if(viewModel.isAuthentic) "" else " not"
-        val colorGeniune = if(viewModel.isAuthentic) LightGreen else Color.Red
+        val notGeniune = if(NFCCardService.isAuthentic.value == true) "" else " not"
+        val colorGeniune = if(NFCCardService.isAuthentic.value == true) LightGreen else Color.Red
         CardInfoCard("This card is$notGeniune genuine", 275, colorGeniune) {
-            val authenticScreen = if (viewModel.isAuthentic) {
+            val authenticScreen = if (NFCCardService.isAuthentic.value == true) {
                 SatodimeScreen.AuthenticCardView
             } else {
                 SatodimeScreen.FakeCardView

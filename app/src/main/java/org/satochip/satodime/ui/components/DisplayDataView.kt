@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.satochip.satodime.R
-import org.satochip.satodime.data.Vault
+import org.satochip.satodime.data.CardVault
 
 private val topBoxHeight = 225.dp
 
 @Composable
 fun DisplayDataView(
     navController: NavController,
-    vault: Vault,
+    vault: CardVault,
     index: Int,
     title: String,
     label: String,
@@ -97,7 +97,7 @@ fun DisplayDataView(
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.body1,
             color = Color.LightGray,
-            text = if (vault.isTesnet) "Testnet" else ""
+            text = if (vault.isTestnet) "Testnet" else ""
         )
     }
     Card(

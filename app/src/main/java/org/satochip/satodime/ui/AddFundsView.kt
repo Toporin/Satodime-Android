@@ -5,28 +5,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
 import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.DisplayDataView
 import org.satochip.satodime.ui.theme.SatodimeTheme
+import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun AddFundsView(navController: NavController, selectedVault: Int) {
-    val satodimeStore = SatodimeStore(LocalContext.current)
-    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
+//    val satodimeStore = SatodimeStore(LocalContext.current)
+//    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+//
+//    if(vaults.isEmpty() || vaults[selectedVault - 1] == null) return
+//    val vault = vaults[selectedVault - 1]!!
 
-    if(vaults.isEmpty() || vaults[selectedVault - 1] == null) return
-    val vault = vaults[selectedVault - 1]!!
+    val cardVaults = sharedViewModel.cardVaults
+    if(selectedVault>cardVaults.size || cardVaults[selectedVault - 1] == null) return
+    val cardVault = cardVaults[selectedVault - 1]!!
 
     DisplayDataView(
         navController = navController,
-        vault = vault,
+        vault = cardVault,
         index = selectedVault,
         title = stringResource(R.string.add_funds),
         label = stringResource(R.string.deposit_address),
-        data = vault.address
+        data = cardVault.address
     )
 }
 
@@ -34,6 +40,6 @@ fun AddFundsView(navController: NavController, selectedVault: Int) {
 @Composable
 fun AddFundsViewPreview() {
     SatodimeTheme {
-        AddFundsView(rememberNavController(), 1)
+        AddFundsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory), 1)
     }
 }

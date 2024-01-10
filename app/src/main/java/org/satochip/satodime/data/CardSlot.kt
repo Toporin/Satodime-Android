@@ -30,20 +30,42 @@ data class CardSlot(
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
     private val keySlip44Int = wrappedKeySlip44.int
 
-    val isTestnet = keySlip44[0].toInt() and 0x80 == 0x00
+    // TODO: clean and remove unnecessary/redundant fields
+    val isTestnet = keySlip44[0].toInt() and 0x80 == 0x00 // to remove
     val coin = newBaseCoin(keySlip44Int, isTestnet, apiKeys)
+
+    // TODO: remove & compute as needed
     val coinSymbol: String = coin.coin_symbol
     val coinDisplayName: String = coin.display_name
-    val assetName = MAP_ASSET_BY_CODE[slotStatus.keyAsset.toInt()]
-    val isToken = TOKENSET.contains(assetName)
-    val isNFT = NFTSET.contains(assetName)
+    val assetName = MAP_ASSET_BY_CODE[slotStatus.keyAsset.toInt()] // deprecated
+    val isToken = TOKENSET.contains(assetName) //deprecated
+    val isNFT = NFTSET.contains(assetName) // deprecated
     val publicKeyHexString: String = SatochipParser.toHexString(publicKeyBytes)
-    val address: String? = if (publicKeyBytes == null) null else coin.pubToAddress(publicKeyBytes)
+    //val address: String? = if (publicKeyBytes == null) null else coin.pubToAddress(publicKeyBytes)
     val slotState = SlotState.byteAsSlotState(keysState)
     val privateKeyBytes = privateKeyInfos?.get("privkey")
     val privateKeyHex = "0x" + SatochipParser.toHexString(privateKeyBytes)
     val privateKeyWif = if (privateKeyBytes == null) null else coin.encodePrivkey(privateKeyBytes)
     val entropyHex: String = SatochipParser.toHexString(privateKeyInfos?.get("entropy"))
+
+    // TODO: add balance & assets info
+    val index: Int = 0
+    var pubkey: ByteArray? = publicKeyBytes
+    var balance: Double? = null // async value
+    var address: String? = "(undefined)"
+    var addressLink: String? = null // explorer url
+
+    var selectedFirstCurrency: String? = null
+    var selectedSecondCurrency: String? = null
+    var coinValueInFirstCurrency: Double? = null
+    var coinValueInSecondCurrency: Double? = null
+
+    // asset list
+    var tokenList: MutableMap<String, String>? = null
+    var nftList: MutableMap<String, String>? = null
+    // private info
+    var privkey: ByteArray? = null
+    var entropy: ByteArray? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

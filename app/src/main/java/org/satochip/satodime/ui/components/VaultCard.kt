@@ -42,14 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.satochip.satodime.R
-import org.satochip.satodime.data.Vault
+import org.satochip.satodime.data.CardVault
 import org.satochip.satodime.util.getBalance
 
 @Composable
 fun VaultCard(
     index: Int,
     isSelected: Boolean,
-    vault: Vault,
+    vault: CardVault,
 ) {
     val context = LocalContext.current
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -126,7 +126,7 @@ fun VaultCard(
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.body1,
                 color = Color.LightGray,
-                text = if (vault.isTesnet) "Testnet" else ""
+                text = if (vault.isTestnet) "Testnet" else ""
             )
             Balance(modifier = Modifier.offset(130.dp, 70.dp), vault)
         }
@@ -134,7 +134,7 @@ fun VaultCard(
 }
 
 @Composable
-fun Balance(modifier: Modifier, vault: Vault) {
+fun Balance(modifier: Modifier, vault: CardVault) {
     Column(
         horizontalAlignment = Alignment.End,
         modifier = modifier

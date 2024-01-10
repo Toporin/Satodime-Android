@@ -2,10 +2,12 @@ package org.satochip.satodime.data
 
 import kotlinx.serialization.Serializable
 
+// TODO: remove?
+
 @Serializable
 data class Vault(
     val coin: Coin,
-    val isTesnet: Boolean,
+    val isTestnet: Boolean,
     val isSealed: Boolean,
     val displayName: String,
     val address: String,

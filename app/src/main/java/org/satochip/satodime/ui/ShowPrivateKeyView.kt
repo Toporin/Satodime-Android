@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
@@ -42,14 +43,15 @@ import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.NavigationParam
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun ShowPrivateKeyView(navController: NavController, selectedVault: Int) {
-    val satodimeStore = SatodimeStore(LocalContext.current)
-    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
+    //val satodimeStore = SatodimeStore(LocalContext.current)
+    //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
 
-    if(vaults.isEmpty() || vaults[selectedVault - 1] == null) return
-
+    val vaults = sharedViewModel.cardVaults
+    if(selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
     val vault = vaults[selectedVault - 1]!!
 
     RedGradientBackground()
@@ -194,6 +196,6 @@ fun PrivateKeyHelpItem() {
 @Composable
 fun ShowPrivateKeyViewPreview() {
     SatodimeTheme {
-        ShowPrivateKeyView(rememberNavController(), 1)
+        ShowPrivateKeyView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1)
     }
 }

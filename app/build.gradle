@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'org.satochip.satodimeapp'
+    namespace 'org.satochip.satodime' // TODO: switch back to satodimeapp for compatibility!
     compileSdk 34
 
     defaultConfig {

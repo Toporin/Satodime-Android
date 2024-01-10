@@ -49,6 +49,7 @@ fun Navigation() {
         navController = navController,
         startDestination = startDestination
     ) {
+        // ONBOARDING
         composable(route = SatodimeScreen.FirstWelcome.name) {
             FirstWelcomeView(navController)
         }
@@ -58,6 +59,7 @@ fun Navigation() {
         composable(route = SatodimeScreen.ThirdWelcome.name) {
             ThirdWelcomeView(navController)
         }
+        // SEAL
         composable(route = SatodimeScreen.SelectBlockchain.name+ "/{${NavigationParam.SelectedVault.name}}",
             arguments = listOf(
                 navArgument(NavigationParam.SelectedVault.name) {
@@ -93,6 +95,7 @@ fun Navigation() {
             val selectedCoin = it.arguments?.getString(NavigationParam.SelectedCoin.name)!!
             CongratsVaultCreatedView(navController, selectedCoin)
         }
+        // SHOW VAULTS
         composable(route = SatodimeScreen.Vaults.name) {
             VaultsView(navController, vaultsViewModel, sharedViewModel)
         }
@@ -104,8 +107,9 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            AddFundsView(navController, selectedVault)
+            AddFundsView(navController, sharedViewModel, selectedVault)
         }
+        // UNSEAL
         composable(route = SatodimeScreen.UnsealWarning.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(
                 navArgument(NavigationParam.SelectedVault.name) {
@@ -114,7 +118,7 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            UnsealWarningView(navController, selectedVault)
+            UnsealWarningView(navController, sharedViewModel, selectedVault)
         }
         composable(route = SatodimeScreen.UnsealCongrats.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(
@@ -124,8 +128,9 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            UnsealCongratsView(navController, selectedVault)
+            UnsealCongratsView(navController, sharedViewModel, selectedVault)
         }
+        // SHOW PRIVKEY
         composable(route = SatodimeScreen.ShowPrivateKey.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(
                 navArgument(NavigationParam.SelectedVault.name) {
@@ -134,7 +139,7 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            ShowPrivateKeyView(navController, selectedVault)
+            ShowPrivateKeyView(navController, sharedViewModel, selectedVault)
         }
         composable(
             route = SatodimeScreen.ShowPrivateKeyData.name + "/{${NavigationParam.Label.name}}"
@@ -164,8 +169,10 @@ fun Navigation() {
             val subLabel = it.arguments?.getString(NavigationParam.SubLabel.name) ?: ""
             val data = it.arguments?.getString(NavigationParam.Data.name) ?: ""
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            ShowPrivateKeyDataView(navController, label, data, subLabel, selectedVault)
+            ShowPrivateKeyDataView(navController, sharedViewModel, selectedVault, label, data, subLabel)
         }
+        // EXPERT MODE 
+        // TODO: merge with create Vault
         composable(route = SatodimeScreen.ExpertMode.name + "/{${NavigationParam.SelectedCoin.name}}"
                 + "/{${NavigationParam.SelectedVault.name}}",
             arguments = listOf(
@@ -181,6 +188,7 @@ fun Navigation() {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
             ExpertModeView(navController, selectedCoin, selectedVault)
         }
+        // RESET
         composable(route = SatodimeScreen.ResetWarningView.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(
                 navArgument(NavigationParam.SelectedVault.name) {
@@ -189,7 +197,7 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            ResetWarningView(navController, selectedVault)
+            ResetWarningView(navController, sharedViewModel, selectedVault)
         }
         composable(route = SatodimeScreen.ResetCongratsView.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(
@@ -201,18 +209,23 @@ fun Navigation() {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
             ResetCongratsView(navController, selectedVault)
         }
+        // MENU
         composable(route = SatodimeScreen.MenuView.name) {
             MenuView(navController)
         }
+        // CARDINFO
         composable(route = SatodimeScreen.CardInfoView.name) {
             CardInfoView(navController, sharedViewModel)
         }
+        // TRANSFERT
         composable(route = SatodimeScreen.TransferOwnershipView.name) {
             TransferOwnershipView(navController)
         }
+        // SETTINGS
         composable(route = SatodimeScreen.SettingsView.name) {
             SettingsView(navController)
         }
+        // AUTHENTICITY
         composable(route = SatodimeScreen.AuthenticCardView.name) {
             AuthenticCardView(navController)
         }

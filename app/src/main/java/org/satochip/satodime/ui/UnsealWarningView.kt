@@ -29,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
@@ -40,14 +41,16 @@ import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun UnsealWarningView(navController: NavController, selectedVault: Int) {
+fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
     val context = LocalContext.current
-    val satodimeStore = SatodimeStore(context)
-    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+    //val satodimeStore = SatodimeStore(context)
+    //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
 
-    if (vaults.isEmpty()) return
+    val vaults = sharedViewModel.cardVaults
+    if (selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
 
     RedGradientBackground()
     TopLeftBackButton(navController)
@@ -166,6 +169,6 @@ fun UnsealWarningView(navController: NavController, selectedVault: Int) {
 @Composable
 fun UnsealWarningViewPreview() {
     SatodimeTheme {
-        UnsealWarningView(rememberNavController(), 1)
+        UnsealWarningView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1)
     }
 }

@@ -4,16 +4,20 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.satochip.client.ApplicationStatus
 import org.satochip.client.Constants.MAP_CODE_BY_ASSET
 import org.satochip.client.SatochipCommandSet
 import org.satochip.client.SatochipParser
 import org.satochip.client.SatodimeKeyslotStatus
 import org.satochip.client.SatodimeStatus
 import org.satochip.io.APDUResponse
+import org.satochip.satodime.BuildConfig.DEBUG
 import org.satochip.satodime.data.Asset
 import org.satochip.satodime.data.CardSlot
 import org.satochip.satodime.data.Coin
 import org.satochip.satodime.data.SlotState
+import org.satochip.satodime.data.OwnershipStatus
+import org.satochip.satodime.models.CardState
 import org.satochip.satodime.util.getContractByteTLV
 import org.satochip.satodime.util.getSlip44
 import org.satochip.satodime.util.getTokenIdByteTLV
@@ -22,6 +26,7 @@ import kotlin.concurrent.thread
 
 private const val TAG = "NFCCardService"
 
+// singleton
 object NFCCardService {
 
     var isConnected = MutableLiveData(false)
@@ -34,32 +39,68 @@ object NFCCardService {
     var unlockSecret: String? = null
     var certificate: String? = null
 
+    // added
+    var ownershipStatus = MutableLiveData<OwnershipStatus>(OwnershipStatus.Unknown)
+    var isCardDataAvailable = MutableLiveData(false)
+    var cardStatus = MutableLiveData<ApplicationStatus>()
+    var satodimeStatusNew = MutableLiveData<SatodimeStatus>()
+    var authentikeyHex : String? = null
+    // ownership
+    // certificate
+    var certificateList = MutableLiveData<MutableList<String>>()
+
     private var cmdSet: SatochipCommandSet? = null
+    private var parser: SatochipParser?= null
     private var satodimeStatus: SatodimeStatus? = null
 
     fun initialize(cmdSet: SatochipCommandSet) {
         NFCCardService.cmdSet = cmdSet
+        NFCCardService.parser = cmdSet.parser
         cmdSet.cardSelect("satodime")
         readCard()
     }
 
     fun readCard() {
         try {
-            authenticationKeyHex = SatochipParser.toHexString(cmdSet?.authentikey)
+            //authenticationKeyHex = SatochipParser.toHexString(cmdSet?.authentikey)
+            // cardStatus
             cmdSet?.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet?.applicationStatus ?: return
             waitForSetup.postValue(!cardStatus.isSetupDone)
+            CardState.cardStatus.postValue(cardStatus)
             Log.d(TAG, "Need setup (has no owner) : " + !cardStatus.isSetupDone)
+            // satodimeStatus
             satodimeStatus = cmdSet?.satodimeStatus
+            CardState.satodimeStatus.postValue(satodimeStatus)
             Log.d(TAG, "Authentication key : $authenticationKeyHex")
+            // get authentikey
+            var authentikey= cmdSet?.authentikey;
+            var authentikeyHex= SatochipParser.toHexString(authentikey);
+            CardState.authentikeyHex.postValue(authentikeyHex)
+            if(DEBUG) Log.d(TAG, "Satodime authentikey: " + authentikeyHex);
+            // Vaults
             updateCardSlots()
-            isAuthentic.postValue(verifyAuthenticity())
+            // authenticity
+            isAuthentic.postValue(verifyAuthenticity()) // old
+            var authResults = cmdSet?.cardVerifyAuthenticity()
+            if (authResults != null) {
+                CardState.certificateList.postValue(authResults.toMutableList())
+            }
+            if (DEBUG) {
+                if (authResults != null) {
+                    for (index in 0 until authResults.size) {
+                        Log.d(TAG, "DEBUGAUTH : " + authResults[index])
+                    }
+                }
+            }
+            
         } catch (e: Exception) {
             Log.e(TAG, "An exception has been thrown while reading the card.")
             Log.e(TAG, Log.getStackTraceString(e))
         }
         Log.i(TAG, "Card reading finished")
         isReadingFinished.postValue(true)
+        CardState.isCardDataAvailable.postValue(true)
     }
 
     fun acceptOwnership() {
@@ -267,5 +308,7 @@ object NFCCardService {
             }
         }
         cardSlots.postValue(updatedCardSlots)
+        CardState.cardSlots.postValue(updatedCardSlots)
     }
 }
+

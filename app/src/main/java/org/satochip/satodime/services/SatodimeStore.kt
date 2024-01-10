@@ -11,27 +11,28 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.satochip.satodime.data.CardAuth
 import org.satochip.satodime.data.CardsAuthSerializer
-import org.satochip.satodime.data.Vault
-import org.satochip.satodime.data.VaultsSerializer
+//import org.satochip.satodime.data.VaultsSerializer
 import org.satochip.satodime.data.defaultCurrency
 
 class SatodimeStore(private val context: Context) {
 
+
+    // TODO: remove vaultsDataStore
     companion object {
-        private val Context.vaultsDataStore by dataStore("vaults.json", VaultsSerializer)
+        //private val Context.vaultsDataStore by dataStore("vaults.json", VaultsSerializer)
         private val Context.cardsAuthDataStore by dataStore("cards_auth.json", CardsAuthSerializer)
         private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
         private val selectedCurrencyPrefsKey = stringPreferencesKey("selectedCurrency")
     }
 
-    val vaultsFromDataStore: Flow<List<Vault?>> get() =  context.vaultsDataStore.data
+    //val vaultsFromDataStore: Flow<List<Vault?>> get() =  context.vaultsDataStore.data
 
-    suspend fun saveVaultsToDataStore(vaults: List<Vault?>) {
-        context.vaultsDataStore.updateData {
-            vaults
-        }
-    }
+//    suspend fun saveVaultsToDataStore(vaults: List<Vault?>) {
+//        context.vaultsDataStore.updateData {
+//            vaults
+//        }
+//    }
 
     val cardsAuthFromDataStore: Flow<List<CardAuth>> get() =  context.cardsAuthDataStore.data
 

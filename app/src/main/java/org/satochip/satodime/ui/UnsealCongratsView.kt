@@ -20,6 +20,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
@@ -29,12 +30,14 @@ import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun UnsealCongratsView(navController: NavController, selectedVault: Int) {
-    val satodimeStore = SatodimeStore(LocalContext.current)
-    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
+    //val satodimeStore = SatodimeStore(LocalContext.current)
+    //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
 
+    val vaults = sharedViewModel.cardVaults
     if(vaults.isEmpty() || vaults[selectedVault - 1] == null) return
 
     val vault = vaults[selectedVault - 1]!!
@@ -101,6 +104,6 @@ fun UnsealCongratsView(navController: NavController, selectedVault: Int) {
 @Composable
 fun UnsealCongratsViewPreview() {
     SatodimeTheme {
-        UnsealCongratsView(rememberNavController(), 1)
+        UnsealCongratsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1)
     }
 }
