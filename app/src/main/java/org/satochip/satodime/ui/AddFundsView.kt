@@ -22,8 +22,9 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
 //    if(vaults.isEmpty() || vaults[selectedVault - 1] == null) return
 //    val vault = vaults[selectedVault - 1]!!
 
-    val cardVaults = sharedViewModel.cardVaults
-    if(selectedVault>cardVaults.size || cardVaults[selectedVault - 1] == null) return
+    val cardVaults = sharedViewModel.cardVaults.value
+    val cardVaultsSize = cardVaults?.size ?: 0
+    if(selectedVault>cardVaultsSize || cardVaults?.get(selectedVault - 1) == null) return
     val cardVault = cardVaults[selectedVault - 1]!!
 
     DisplayDataView(

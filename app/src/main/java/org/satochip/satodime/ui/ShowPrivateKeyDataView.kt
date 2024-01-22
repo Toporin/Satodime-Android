@@ -23,8 +23,9 @@ fun ShowPrivateKeyDataView(
     //val satodimeStore = SatodimeStore(LocalContext.current)
     //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
 
-    val vaults = sharedViewModel.cardVaults
-    if (selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
+    val vaults = sharedViewModel.cardVaults.value
+    val vaultsSize = vaults?.size ?: 0
+    if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
 
     DisplayDataView(

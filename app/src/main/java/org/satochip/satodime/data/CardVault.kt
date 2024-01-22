@@ -42,12 +42,16 @@ public final class CardVault (val cardSlot: CardSlot) {
     } catch (e: IllegalArgumentException) {
         Coin.UNKNOWN
     }
-    val isSealed: Boolean = (cardSlot.slotState == SlotState.SEALED) // todo!
+    val isSealed: Boolean = (cardSlot.slotState == SlotState.SEALED) // todo replace with state?!
     val displayName: String = baseCoin.display_name
-    val privateKey: String? = "priv0000" // TODO: remove
-    val privateKeyWif: String? = "wif000" // TODO: remove
-    val entropy: String? = "entropy0000" // TODO: remove
+    val state = cardSlot.slotState // UNINITIALIZED, SEALED, UNSEALED;
 
+    // privkey info (available on user request only)
+    val privateKey: String? = "priv0000" // TODO: remove
+    val entropy: String? = "entropy0000" // todo: remove
+    val privateKeyHex: String? = null
+    val privateKeyWif: String? = null
+    val privateKeyEntropy: String? = null
 
     init {
         println("DEBUG in CardVault constructor displayName $displayName")

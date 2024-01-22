@@ -22,13 +22,13 @@ import java.nio.ByteBuffer
 
 data class CardSlot(
     val slotStatus: SatodimeKeyslotStatus,
-    val keysState: Byte,
+    var keysState: Byte,
     val publicKeyBytes: ByteArray? = null,
-    val privateKeyInfos: Map<String, ByteArray>? = null,
+    val privateKeyInfos: Map<String, ByteArray>? = null, // todo remove
 ) {
     private val keySlip44: ByteArray = slotStatus.keySlip44
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
-    private val keySlip44Int = wrappedKeySlip44.int
+    val keySlip44Int = wrappedKeySlip44.int // todo convert using utils ?
 
     // TODO: clean and remove unnecessary/redundant fields
     val isTestnet = keySlip44[0].toInt() and 0x80 == 0x00 // to remove
@@ -92,6 +92,7 @@ data class CardSlot(
 
 }
 
+// todo: move in own file?
 private fun newBaseCoin(
     keySlip44Int: Int,
     isTestnet: Boolean,

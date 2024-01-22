@@ -1,11 +1,8 @@
 package org.satochip.satodime
 
-import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import org.satochip.android.NFCCardManager
-import org.satochip.satodime.services.SatodimeCardListener
 import org.satochip.satodime.ui.theme.SatodimeTheme
 
 class MainActivity : ComponentActivity() {

@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,9 +37,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.BottomButton
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.components.VaultCard
@@ -45,16 +49,18 @@ import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
 
+private const val TAG = "ResetWarningView"
+
 @Composable
 fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
     val context = LocalContext.current
-//    val satodimeStore = SatodimeStore(LocalContext.current)
-//    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
-
-    val vaults = sharedViewModel.cardVaults
-    if(selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
-
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val isBackupConfirmed = remember { mutableStateOf(false) }
+
+    val vaults = sharedViewModel.cardVaults.value
+    val vaultsSize = vaults?.size ?: 0
+    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
+
     RedGradientBackground()
     TopLeftBackButton(navController)
     Column(
@@ -167,34 +173,60 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
         val pleaseConfirmBackupText = stringResource(R.string.please_confirm_that_you_have_made_a_backup)
         BottomButton(
             onClick = {
+
+                // scan card
                 if (isBackupConfirmed.value) {
-                    if (NFCCardService.isConnected.value == true) {
-                        if (NFCCardService.isOwner()) {
-                            if (NFCCardService.isReadingFinished.value != true) {
-                                Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-                            } else if (NFCCardService.reset(selectedVault - 1)) {
-                                navController.navigate(
-                                    SatodimeScreen.ResetCongratsView.name + "/$selectedVault"
-                                ) {
-                                    popUpTo(0)
-                                }
-                            } else {
-                                Toast.makeText(context, resetFailureText, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "ResetWarningView: clicked on reset button!")
+                    showNfcDialog.value = true // NfcDialog
+                    sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
+                    if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                        Log.d(TAG, "ResetWarningView: successfully reset slot ${selectedVault - 1}")
+                        // wait until NfcDialog has closed
+                        if (showNfcDialog.value == false) {
+                            Log.d(TAG, "ResetWarningView navigating to ResetCongrats view")
+                            navController.navigate(
+                                SatodimeScreen.ResetCongratsView.name + "/$selectedVault"
+                            ) {
+                                popUpTo(0)
                             }
-                        } else {
-                            Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
                 }
+
+//                if (isBackupConfirmed.value) {
+//                    if (NFCCardService.isConnected.value == true) {
+//                        if (NFCCardService.isOwner()) {
+//                            if (NFCCardService.isReadingFinished.value != true) {
+//                                Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                            } else if (NFCCardService.resetOld(selectedVault - 1)) {
+//                                navController.navigate(
+//                                    SatodimeScreen.ResetCongratsView.name + "/$selectedVault"
+//                                ) {
+//                                    popUpTo(0)
+//                                }
+//                            } else {
+//                                Toast.makeText(context, resetFailureText, Toast.LENGTH_SHORT).show()
+//                            }
+//                        } else {
+//                            Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+//                        }
+//                    } else {
+//                        Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
+//                }
             },
             color = Color.Red,
             text = stringResource(R.string.reset_the_vault)
         )
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
 }
 
 @Preview(showBackground = true)

@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,25 +36,34 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.satochip.satodime.R
+import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.BottomButton
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
+import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.seconds
+
+private const val TAG = "UnsealWarningView"
 
 @Composable
 fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
     val context = LocalContext.current
-    //val satodimeStore = SatodimeStore(context)
-    //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
 
-    val vaults = sharedViewModel.cardVaults
-    if (selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
+    val vaults = sharedViewModel.cardVaults.value
+    val vaultsSize = vaults?.size ?: 0
+    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
+    val vault = vaults[selectedVault - 1]!!
 
     RedGradientBackground()
     TopLeftBackButton(navController)
@@ -83,7 +96,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         VaultCard(
             index = selectedVault,
             isSelected = true,
-            vault = vaults[selectedVault - 1]!!,
+            vault = vault,
         )
         Text(
             modifier = Modifier
@@ -139,30 +152,62 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         BottomButton(
             onClick = {
-                if (NFCCardService.isConnected.value == true) {
-                    if (NFCCardService.isOwner()) {
-                        if (NFCCardService.isReadingFinished.value != true) {
-                            Toast.makeText(
-                                context, cardLoadingText, Toast.LENGTH_SHORT).show()
-                        } else if (NFCCardService.unseal(selectedVault - 1)) {
-                            navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
-                                popUpTo(0)
-                            }
-                        } else {
-                            Toast.makeText(context, unsealFailureText, Toast.LENGTH_SHORT).show()
-                        }
 
-                    } else {
-                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+                // scan card
+                Log.d(TAG, "UnsealWarningView: clicked on unseal button!")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.unsealSlot(context as Activity, selectedVault - 1)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "UnsealWarningView: successfully unsealed slot ${selectedVault -1}")
+                    // wait until NfcDialog has closed
+                    if (showNfcDialog.value == false){
+                        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
+                        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+                            popUpTo(0)
+                        }
                     }
-                } else {
-                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+                    // add a delay to not display immediately the unsealCongrats view
+                    // TODO: test if correct behavior
+//                    thread {
+//                        runBlocking {
+//                            delay(5000)
+//                            navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+//                                popUpTo(0)
+//                            }
+//                        }
+//                    }
                 }
+
+//                if (NFCCardService.isConnected.value == true) {
+//                    if (NFCCardService.isOwner()) {
+//                        if (NFCCardService.isReadingFinished.value != true) {
+//                            Toast.makeText(
+//                                context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                        } else if (NFCCardService.unsealOld(selectedVault - 1)) {
+//                            navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+//                                popUpTo(0)
+//                            }
+//                        } else {
+//                            Toast.makeText(context, unsealFailureText, Toast.LENGTH_SHORT).show()
+//                        }
+//
+//                    } else {
+//                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+//                }
             },
             color = Color.Red,
             text = stringResource(R.string.unseal)
         )
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
 }
 
 @Preview(showBackground = true)

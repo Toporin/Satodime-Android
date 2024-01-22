@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +23,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,22 +40,35 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
 import org.satochip.satodime.data.Coin
+import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.BottomButton
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.Title
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
+import java.security.SecureRandom
+import java.time.LocalDateTime
+
+private const val TAG = "CreateVaultView"
 
 @Composable
-fun CreateVaultView(navController: NavController, selectedCoinName: String, selectedVault: Int) {
+fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int, selectedCoinName: String) { // todo change order
     val context = LocalContext.current
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val selectedCoin = Coin.valueOf(selectedCoinName)
+    Log.d(TAG, "CreateVaultView selectedVault: $selectedVault")
+    Log.d(TAG, "CreateVaultView selectedCoinName: $selectedCoinName")
+    // todo display vult index in view!
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -137,29 +154,63 @@ fun CreateVaultView(navController: NavController, selectedCoinName: String, sele
         val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         BottomButton(
             onClick = {
-                if (NFCCardService.isConnected.value == true) {
-                    if (NFCCardService.isOwner()) {
-                        if (NFCCardService.isReadingFinished.value != true) {
-                            Toast.makeText(context,cardLoadingText,Toast.LENGTH_SHORT).show()
-                        } else if (NFCCardService.seal(selectedVault - 1, selectedCoin)) {
-                            navController.navigate(
-                                SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
-                            ) {
-                                popUpTo(0)
-                            }
-                        } else {
-                            Toast.makeText(context, sealFailureText, Toast.LENGTH_SHORT).show()
+
+                // generate entropy based on current time
+                val random = SecureRandom()
+                var entropyBytes = ByteArray(32)
+                random.nextBytes(entropyBytes)
+
+                // scan card
+                Log.d(TAG, "CreateVaultView: clicked on create button!")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= false, entropyBytes= entropyBytes)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "CreateVaultView: successfully created slot ${selectedVault - 1}")
+                    // wait until NfcDialog has closed
+                    if (showNfcDialog.value == false) {
+                        Log.d(TAG, "CreateVaultView navigating to CreateCongrats view")
+                        navController.navigate(
+                            SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
+                        ) {
+                            popUpTo(0)
                         }
-                    } else {
-                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(context,pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+
+
                 }
+
+//                if (NFCCardService.isConnected.value == true) {
+//                    if (NFCCardService.isOwner()) {
+//                        if (NFCCardService.isReadingFinished.value != true) {
+//                            Toast.makeText(context,cardLoadingText,Toast.LENGTH_SHORT).show()
+//                        } else if (NFCCardService.sealOld(selectedVault - 1, selectedCoin)) {
+//                            navController.navigate(
+//                                SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
+//                            ) {
+//                                popUpTo(0)
+//                            }
+//                        } else {
+//                            Toast.makeText(context, sealFailureText, Toast.LENGTH_SHORT).show()
+//                        }
+//                    } else {
+//                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    Toast.makeText(context,pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+//                }
+
             },
             text = stringResource(R.string.create_and_seal)
         )
+
+        // TODO: cancel button?
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
 }
 
 @Composable
@@ -193,6 +244,6 @@ fun CoinDisplay(coin: Coin) {
 @Composable
 fun CreateVaultViewPreview() {
     SatodimeTheme {
-        CreateVaultView(rememberNavController(), Coin.BTC.name, 3)
+        CreateVaultView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),3, Coin.BTC.name)
     }
 }

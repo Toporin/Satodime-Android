@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui.components
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +20,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,14 +38,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.viewmodels.SharedViewModel
 
+private const val TAG = "AcceptOwnershipView"
+
 @Composable
 fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel) {
     val context = LocalContext.current
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -93,11 +103,33 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
             text = stringResource(R.string.in_order_to_perform_sensitive_operations_on_the_card)
         )
         Spacer(Modifier.weight(1f))
-        val toastText = stringResource(R.string.you_are_now_the_owner)
+        //var toastText = stringResource(R.string.you_are_now_the_owner)
+        val cardLoadingText = stringResource(R.string.card_loading_please_try_again_in_few_seconds)
+        val successText = stringResource(R.string.you_are_now_the_owner)
+        val failureText = "Failed To take ownership" // todo
+        // ACCEPT
         Button(
             onClick = {
-                viewModel.acceptCardOwnership()
-                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+
+                Log.d(TAG, "Clicked on accept button!")
+                // scan card
+                showNfcDialog.value = true // NfcDialog
+                viewModel.takeOwnership(context as Activity)
+                Log.d(TAG, "Action Accept Ownership terminated!")
+
+//                if (NFCCardService.isReadingFinished.value != true) {
+//                    Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                } else if (viewModel.resultCodeLive == NfcResultCode.Ok) {
+//                    Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
+//                    navController.navigateUp()
+//                } else {
+//                    Toast.makeText(context, failureText, Toast.LENGTH_SHORT).show()
+//                }
+
+//                val result = viewModel.resultCodeLive
+//                toastText = if (result == NfcResultCode.Ok) {toastText}
+//                            else {"Failed to take ownership $result"}// todo refactor
+//                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier
                 .padding(10.dp)
@@ -111,9 +143,11 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         ) {
             Text(stringResource(R.string.accept))
         }
+        // CANCEL
         Button(
             onClick = {
                 viewModel.dismissCardOwnership()
+                Toast.makeText(context, "Action cancelled", Toast.LENGTH_SHORT).show() // todo translate
                 navController.navigateUp()
             },
             modifier = Modifier
@@ -128,6 +162,11 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         ) {
             Text(stringResource(R.string.cancel))
         }
+    }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
     }
 }
 

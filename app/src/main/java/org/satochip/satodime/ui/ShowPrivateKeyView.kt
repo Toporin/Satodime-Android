@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,8 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,23 +39,33 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.satochip.satodime.R
+import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.BottomButton
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.NavigationParam
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
+import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.seconds
+
+private const val TAG = "ShowPrivateKeyView"
 
 @Composable
 fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
-    //val satodimeStore = SatodimeStore(LocalContext.current)
-    //val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
+    val context = LocalContext.current
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
 
-    val vaults = sharedViewModel.cardVaults
-    if(selectedVault > vaults.size || vaults[selectedVault - 1] == null) return
+    val vaults = sharedViewModel.cardVaults.value
+    val vaultsSize = vaults?.size ?: 0
+    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
 
     RedGradientBackground()
@@ -72,31 +86,91 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             text = stringResource(R.string.show_private_key)
         )
         VaultCard(index = selectedVault, true, vault = vault)
+
         val privateKeyLabel = stringResource(R.string.private_key)
+
+        // LEGACY FORMAT
         PrivateKeyItem(stringResource(R.string.show_private_key_legacy)) {
-            navController.navigate(
-                SatodimeScreen.ShowPrivateKeyData.name + "/$privateKeyLabel"
-                        + "/$selectedVault"
-                        + "?${NavigationParam.SubLabel.name}=(Legacy)"
-                        + "&${NavigationParam.Data.name}=${vault.privateKey}"
-            )
+
+            var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
+
+            if (privkey == null) {
+                // recover privkey
+                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "ShowPrivateKeyView: successfully unsealed slot ${selectedVault -1}")
+                    // todo something?
+                }
+            }
+
+            // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
+            if (privkey != null){
+                Log.d(TAG, "ShowPrivateKeyView privkey readily available")
+                Log.d(TAG, "ShowPrivateKeyView navigating to UnsealCongrats view")
+                navController.navigate(
+                    SatodimeScreen.ShowPrivateKeyData.name + "/$privateKeyLabel"
+                            + "/$selectedVault"
+                            + "?${NavigationParam.SubLabel.name}=(Legacy)"
+                            + "&${NavigationParam.Data.name}=${privkey.privkeyHex}"
+                )
+            }
         }
+
+        // WIF FORMAT
         PrivateKeyItem(stringResource(R.string.show_private_key_wif)) {
-            navController.navigate(
-                SatodimeScreen.ShowPrivateKeyData.name + "/$privateKeyLabel"
-                        + "/$selectedVault"
-                        + "?${NavigationParam.SubLabel.name}=(Wallet Import Format)"
-                        + "&${NavigationParam.Data.name}=${vault.privateKeyWif}"
-            )
+            var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
+            if (privkey == null) {
+                // recover privkey
+                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "ShowPrivateKeyView: successfully unsealed slot ${selectedVault -1}")
+                    // todo something?
+                }
+            }
+
+            // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
+            if (privkey != null) {
+                navController.navigate(
+                    SatodimeScreen.ShowPrivateKeyData.name + "/$privateKeyLabel"
+                            + "/$selectedVault"
+                            + "?${NavigationParam.SubLabel.name}=(Wallet Import Format)"
+                            + "&${NavigationParam.Data.name}=${privkey.privkeyWif}"
+                )
+            }
         }
+
+        // ENTROPY
         PrivateKeyItem(stringResource(R.string.show_entropy)) {
-            navController.navigate(
-                SatodimeScreen.ShowPrivateKeyData.name
-                        + "/Entropy/$selectedVault" + "?${NavigationParam.Data.name}=${vault.entropy}"
-            )
+            var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
+            if (privkey == null) {
+                // recover privkey
+                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "ShowPrivateKeyView: successfully unsealed slot ${selectedVault -1}")
+                    // todo something?
+                }
+            }
+
+            // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
+            if (privkey != null) {
+                navController.navigate(
+                    SatodimeScreen.ShowPrivateKeyData.name
+                            + "/Entropy/$selectedVault" + "?${NavigationParam.Data.name}=${privkey.entropyHex}"
+                )
+            }
         }
+
+        // HELP LINK
         PrivateKeyHelpItem()
         Spacer(Modifier.weight(1f))
+
+        // BACK TO VAULTS
         BottomButton(
             onClick = {
                 navController.navigate(SatodimeScreen.Vaults.name) {
@@ -106,6 +180,11 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             width = 200.dp,
             text = stringResource(R.string.back_to_my_vaults)
         )
+    }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
     }
 }
 

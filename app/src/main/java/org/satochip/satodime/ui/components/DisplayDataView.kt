@@ -45,6 +45,8 @@ fun DisplayDataView(
     subLabel: String = "",
     data: String
 ) {
+    //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
+
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +20,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,18 +34,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
+import org.satochip.satodime.viewmodels.SharedViewModel
+
+private const val TAG = "TransferOwnershipView"
 
 @Composable
-fun TransferOwnershipView(navController: NavController) {
+fun TransferOwnershipView(navController: NavController, viewModel: SharedViewModel) {
     val context = LocalContext.current
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -97,22 +109,37 @@ fun TransferOwnershipView(navController: NavController) {
         val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         Button(
             onClick = {
-                if (NFCCardService.isConnected.value == true) {
-                    if (NFCCardService.isOwner()) {
-                        if (NFCCardService.isReadingFinished.value != true) {
-                            Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-                        } else if (NFCCardService.transferOwnership()) {
-                            Toast.makeText(context, ownershipTransferredText, Toast.LENGTH_SHORT).show()
-                            navController.navigateUp()
-                        } else {
-                            Toast.makeText(context, ownershipTransferFailedtext, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
-                }
+
+                Log.d(TAG, "Clicked on release button!")
+                // scan card
+                showNfcDialog.value = true // NfcDialog
+                viewModel.releaseOwnership(context as Activity)
+
+//                if (NFCCardService.isReadingFinished.value != true) {
+//                    Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                } else if (viewModel.resultCodeLive == NfcResultCode.Ok) {
+//                    Toast.makeText(context, ownershipTransferredText, Toast.LENGTH_SHORT).show()
+//                    navController.navigateUp()
+//                } else {
+//                    Toast.makeText(context, ownershipTransferFailedtext, Toast.LENGTH_SHORT).show()
+//                }
+
+//                if (NFCCardService.isConnected.value == true) {
+//                    if (NFCCardService.isOwner()) {
+//                        if (NFCCardService.isReadingFinished.value != true) {
+//                            Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                        } else if (NFCCardService.transferOwnership()) {
+//                            Toast.makeText(context, ownershipTransferredText, Toast.LENGTH_SHORT).show()
+//                            navController.navigateUp()
+//                        } else {
+//                            Toast.makeText(context, ownershipTransferFailedtext, Toast.LENGTH_SHORT).show()
+//                        }
+//                    } else {
+//                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+//                }
             },
             modifier = Modifier
                 .padding(10.dp)
@@ -128,6 +155,7 @@ fun TransferOwnershipView(navController: NavController) {
         }
         Button(
             onClick = {
+                Toast.makeText(context, "Action cancelled", Toast.LENGTH_SHORT).show() // todo translate
                 navController.navigateUp()
             },
             modifier = Modifier
@@ -143,12 +171,17 @@ fun TransferOwnershipView(navController: NavController) {
             Text(stringResource(R.string.cancel))
         }
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TransferOwnershipViewPreview() {
     SatodimeTheme {
-        TransferOwnershipView(rememberNavController())
+        TransferOwnershipView(rememberNavController(), viewModel(factory = SharedViewModel.Factory))
     }
 }

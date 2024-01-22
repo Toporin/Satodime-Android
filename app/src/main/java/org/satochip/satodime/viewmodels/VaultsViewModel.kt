@@ -135,8 +135,6 @@ class VaultsViewModel(app: Application) : AndroidViewModel(app) {
             val updatedVaults = mapCardSlotsToCardVaults(cardSlots)
             cardVaults = updatedVaults.toMutableList()
             println("DEBUG SharedViewModel updateVaults postValue START")
-            //CardState.cardVaults.postValue(updatedVaults.toMutableList())
-            //CardState.cardVaults.postValue(updatedVaults)
             println("DEBUG SharedViewModel updateVaults after postValue")
         }
         println("DEBUG SharedViewModel updateVaults END")
@@ -157,7 +155,7 @@ class VaultsViewModel(app: Application) : AndroidViewModel(app) {
 
             println("DEBUG SharedViewModel mapCardSlotsToVaults create cardVault START")
             var cardVault = CardVault(it)
-            println("DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
+            //println("DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
             // get balance from api
             //val balance = cardVault.getBalanceDebug()
             //println("DEBUG SharedViewModel mapCardSlotsToVaults balance: $balance")

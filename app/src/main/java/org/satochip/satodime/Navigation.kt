@@ -4,6 +4,7 @@ import CardInfoView
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,6 +20,8 @@ import org.satochip.satodime.util.SatodimePreferences
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
 import org.satochip.satodime.viewmodels.VaultsViewModel
+
+private const val TAG = "Navigation"
 
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
@@ -40,7 +43,9 @@ fun Navigation() {
     val vaultsViewModel: VaultsViewModel = viewModel(factory = VaultsViewModel.Factory)
     val sharedViewModel: SharedViewModel = viewModel(factory = SharedViewModel.Factory)
 
-    if(sharedViewModel.isAskingForCardOwnership && sharedViewModel.isCardConnected && sharedViewModel.isReadingFinished) {
+    //if(sharedViewModel.isAskingForCardOwnership && sharedViewModel.isCardConnected && sharedViewModel.isReadingFinished) {
+    if(sharedViewModel.isAskingForCardOwnership) {
+        Log.d(TAG, "Navigation: Card needs ownership!")
         AcceptOwnershipView(navController, sharedViewModel)
         return
     }
@@ -83,7 +88,7 @@ fun Navigation() {
         ) {
             val selectedCoin = it.arguments?.getString(NavigationParam.SelectedCoin.name)!!
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            CreateVaultView(navController, selectedCoin, selectedVault)
+            CreateVaultView(navController, sharedViewModel, selectedVault, selectedCoin)
         }
         composable(route = SatodimeScreen.CongratsVaultCreated.name + "/{${NavigationParam.SelectedCoin}}",
             arguments = listOf(
@@ -141,6 +146,8 @@ fun Navigation() {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
             ShowPrivateKeyView(navController, sharedViewModel, selectedVault)
         }
+        // SHOW PRIVKEY DETAILS
+        //todo simplify navigation, only provide vaultIndex & privdata type (legacy, WIF, entropy)
         composable(
             route = SatodimeScreen.ShowPrivateKeyData.name + "/{${NavigationParam.Label.name}}"
                     + "/{${NavigationParam.SelectedVault}}"
@@ -186,7 +193,7 @@ fun Navigation() {
         ) {
             val selectedCoin = it.arguments?.getString(NavigationParam.SelectedCoin.name)!!
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            ExpertModeView(navController, selectedCoin, selectedVault)
+            ExpertModeView(navController, sharedViewModel, selectedVault, selectedCoin)
         }
         // RESET
         composable(route = SatodimeScreen.ResetWarningView.name + "/{${NavigationParam.SelectedVault}}",
@@ -219,7 +226,7 @@ fun Navigation() {
         }
         // TRANSFERT
         composable(route = SatodimeScreen.TransferOwnershipView.name) {
-            TransferOwnershipView(navController)
+            TransferOwnershipView(navController, sharedViewModel)
         }
         // SETTINGS
         composable(route = SatodimeScreen.SettingsView.name) {

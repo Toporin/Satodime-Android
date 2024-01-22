@@ -51,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,10 +72,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
-import org.satochip.satodime.data.CardVault // todo deprecate
-import org.satochip.satodime.models.CardState
+import org.satochip.satodime.data.CardVault
+import org.satochip.satodime.data.SlotState
 import org.satochip.satodime.ui.components.DarkBlueGradientBackground
 import org.satochip.satodime.ui.components.EmptyVaultCard
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.DarkRed
@@ -86,18 +88,21 @@ import org.satochip.satodime.util.getBalance
 import org.satochip.satodime.viewmodels.SharedViewModel
 import org.satochip.satodime.viewmodels.VaultsViewModel
 
+private const val TAG = "VaultsView"
+
 @Composable
 fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedViewModel: SharedViewModel) {
     // TODO: remove viewModel
     val activity = LocalContext.current as Activity
+    var showVaultsOnly by remember{mutableStateOf(false) }
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
 
     //val vaults = viewModel.vaults.collectAsState(initial = listOf(null, null, null)) // TODO deprecate
-    //val cardVaults = CardState.cardVaults.value //mutableListOf<CardVault?>() //CardState.cardVaults.
-    val vaults = sharedViewModel.cardVaults
+    val vaults = sharedViewModel.cardVaults.value
+    val vaultsSize = vaults?.size ?: 0
     val vaultsListState = rememberLazyListState()
     val visibleItems by remember { derivedStateOf { vaultsListState.layoutInfo.visibleItemsInfo } }
     val configuration = LocalConfiguration.current
-    //viewModel.selectedVault = findVaultToSelect(visibleItems, configuration.screenWidthDp)// todo deprecate
     sharedViewModel.selectedVault = findVaultToSelect(visibleItems, configuration.screenWidthDp)
 
 //    if (vaults.value.isEmpty() || vaults.value[viewModel.selectedVault - 1] == null || vaults.value[viewModel.selectedVault - 1]!!.isSealed) {
@@ -105,7 +110,7 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
 //    } else {
 //        RedGradientBackground()
 //    }
-    if (sharedViewModel.selectedVault > vaults.size || vaults[sharedViewModel.selectedVault - 1] == null || vaults[sharedViewModel.selectedVault - 1]!!.isSealed) {
+    if (sharedViewModel.selectedVault > vaultsSize || vaults?.get(sharedViewModel.selectedVault - 1) == null || vaults[sharedViewModel.selectedVault - 1]!!.isSealed) {
         DarkBlueGradientBackground()
     } else {
         RedGradientBackground()
@@ -130,15 +135,18 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
     // RESCAN + SWITCH + MENU
     Row(modifier = Modifier.padding(top = 20.dp, end = 5.dp)) {
         Spacer(modifier = Modifier.weight(1f))
-
+        // RESCAN
         IconButton(onClick = {
-            sharedViewModel.scanCard(activity = activity)
+            showNfcDialog.value = true // NfcDialog
+            sharedViewModel.scanCard(activity)
         }) {
             Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
         }
-        CustomSwitch(checked = sharedViewModel.showVaultsOnly) {
-            sharedViewModel.showVaultsOnly = it
+        // SWITCH VIEW
+        CustomSwitch(checked = showVaultsOnly) {
+            showVaultsOnly = it
         }
+        // MENU
         IconButton(onClick = { navController.navigate(SatodimeScreen.MenuView.name) }) {
             Icon(Icons.Default.MoreVert, "", tint = MaterialTheme.colors.secondary)
         }
@@ -168,30 +176,23 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
             )
         }
         val onAddFunds = {
-//            if(vaults.value[viewModel.selectedVault - 1] != null) {
-//                navController.navigate(
-//                    SatodimeScreen.AddFunds.name + "/${viewModel.selectedVault}"
-//                )
-//            }
-
-            if(sharedViewModel.cardVaults[sharedViewModel.selectedVault - 1] != null) {
+            if(vaults?.get(sharedViewModel.selectedVault - 1) != null) {
                 navController.navigate(
                     SatodimeScreen.AddFunds.name + "/${sharedViewModel.selectedVault}"
                 )
             }
-
         }
         val onUnseal = {
-            if(vaults[sharedViewModel.selectedVault - 1] != null) {
+            if(vaults?.get(sharedViewModel.selectedVault - 1) != null) {
                 navController.navigate(
                     SatodimeScreen.UnsealWarning.name + "/${sharedViewModel.selectedVault}"
                 )
             }
         }
-        val onAddVault = {
+        val onAddVault = { index: Int ->
             navController.navigate(
                 SatodimeScreen.SelectBlockchain.name
-                        + "/${vaults.indexOfFirst { it == null } + 1}"
+                        + "/${index}"
             )
         }
         val onShowKey = {
@@ -205,28 +206,21 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
             )
         }
 
-        //if (CardState.isCardDataAvailable.value == true) {
+//        Text("isVaultDataAvailable: ${sharedViewModel.isVaultDataAvailable.value}")
+//        Text("isVaultDataAvailable2: ${sharedViewModel.isVaultDataAvailable2}")
+//        Text("isVaultDataAvailable3: ${sharedViewModel.isVaultDataAvailable3}")
+
         if (sharedViewModel.isCardDataAvailable) {
+        //if (NFCCardService.isCardDataAvailable.value == true) {
             //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
-            val cardVaultsWithDefaultsValuesIfEmpty = sharedViewModel.cardVaults //?: listOf(null, null, null)
+            val cardVaultsWithDefaultsValuesIfEmpty = vaults?.ifEmpty { listOf(null, null, null) } ?: listOf(null, null, null)
+            //val cardVaultsWithDefaultsValuesIfEmpty = sharedViewModel.cardVaults.value ?: listOf(null, null, null)
             //val cardVaultsWithDefaultsValuesIfEmpty = if (viewModel.cardVaults.isEmpty()) listOf(null, null, null) else {viewModel.cardVaults} //?: listOf(null, null, null)
             //val cardVaultsWithDefaultsValuesIfEmpty = viewModel.cardVaults.ifEmpty { listOf(null, null, null) }
 
-            if (sharedViewModel.showVaultsOnly) {
-
+            if (showVaultsOnly) {
                 VaultsListView(cardVaultsWithDefaultsValuesIfEmpty, sharedViewModel.selectedVault, onAddVault)
-                //VaultsListView(vaultsWithDefaultsValuesIfEmpty, sharedViewModel.selectedVault, onAddVault)
             } else {
-//                DetailedVaultView(
-//                    vaultsListState,
-//                    vaultsWithDefaultsValuesIfEmpty,
-//                    sharedViewModel.selectedVault,
-//                    onAddFunds,
-//                    onUnseal,
-//                    onAddVault,
-//                    onShowKey,
-//                    onReset
-//                )
                 DetailedVaultView(
                     vaultsListState,
                     cardVaultsWithDefaultsValuesIfEmpty,
@@ -242,323 +236,31 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
             // DEBUG
             //val activity = LocalContext.current as Activity
             Button(onClick = {
-                print("Clicked on Scan button!")
                 Log.d("VaultsView", "Clicked on Scan button!")
-                print(CardState.debugValue)
-                Log.d("VaultsView", CardState.debugValue)
                 // scan card
-                sharedViewModel.scanCard(activity = activity)
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.scanCard(activity)
             }) {
                 Text("Click & Scan")
             }
         }
 
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
 }
 
 /// LIST VIEW
 
 @Composable
-fun CardVaultsListView(
-    vaults: List<CardVault?>,
-    selectedCard: Int,
-    onAddVault: () -> Unit
-) {
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        renderCardVaults(vaults, selectedCard, onAddVault)
-    }
-}
-
-fun LazyListScope.renderCardVaults(
-    vaults: List<CardVault?>,
-    selectedCard: Int,
-    onAddVault: () -> Unit
-) {
-    itemsIndexed(vaults) { index, vault ->
-        if(vault != null) {
-            VaultCard(index + 1, selectedCard == index + 1, vault)
-        } else {
-            val isFirstEmptyVault = index == vaults.indexOfFirst { it == null }
-            EmptyVaultCard(index + 1, isFirstEmptyVault, onAddVault)
-        }
-
-    }
-}
-
-/// DETAILED VIEW
-
-//@Composable
-//fun DetailedCardVaultView(
-//    vaultsListState: LazyListState,
-//    vaults: List<CardVault?>,
-//    selectedCard: Int,
-//    onAddFunds: () -> Unit,
-//    onUnseal: () -> Unit,
-//    onAddVault: () -> Unit,
-//    onShowKey: () -> Unit,
-//    onReset: () -> Unit,
-//) {
-//    CardVaultCards(vaultsListState, vaults, selectedCard, onAddVault)
-//    Row(
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.Center,
-//        modifier = Modifier
-//            .padding(10.dp)
-//            .fillMaxWidth()
-//            .height(120.dp)
-//    ) {
-//        Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//        ) {
-//            Box(
-//                modifier = Modifier
-//                    .size(60.dp)
-//                    .aspectRatio(1f)
-//                    .background(LightGreen, shape = CircleShape),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                OutlinedButton(
-//                    onClick = onAddFunds,
-//                    modifier = Modifier.size(30.dp),
-//                    shape = CircleShape,
-//                    border = BorderStroke(2.dp, Color.White),
-//                    contentPadding = PaddingValues(0.dp),  //avoid the little icon
-//                    colors = ButtonDefaults.outlinedButtonColors(
-//                        contentColor = Color.White,
-//                        backgroundColor = LightGreen
-//                    )
-//                ) {
-//                    Icon(Icons.Default.Add, contentDescription = null)
-//                }
-//            }
-//            Text(
-//                modifier = Modifier.padding(5.dp),
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Light,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = stringResource(R.string.add_funds)
-//            )
-//        }
-//        Divider(
-//            modifier = Modifier
-//                .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
-//                .height(30.dp)
-//                .width(2.dp),
-//            color = Color.LightGray,
-//        )
-//        if (vaults.isEmpty() || vaults[selectedCard - 1] == null || vaults[selectedCard - 1]!!.isSealed) {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            ) {
-//                OutlinedButton(
-//                    onClick = onUnseal,
-//                    modifier = Modifier.size(60.dp),
-//                    shape = CircleShape,
-//                    border = BorderStroke(2.dp, Color.Gray),
-//                    contentPadding = PaddingValues(0.dp),  //avoid the little icon
-//                    colors = ButtonDefaults.outlinedButtonColors(
-//                        contentColor = Color.Gray,
-//                        backgroundColor = LightDarkBlue
-//                    )
-//                ) {
-//                    Image(
-//                        painter = painterResource(R.drawable.unlock),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(30.dp),
-//                        contentScale = ContentScale.FillHeight
-//                    )
-//                }
-//                Text(
-//                    modifier = Modifier.padding(5.dp),
-//                    fontSize = 14.sp,
-//                    fontWeight = FontWeight.Light,
-//                    style = MaterialTheme.typography.body1,
-//                    color = Color.Gray,
-//                    text = stringResource(R.string.unseal_cap)
-//                )
-//            }
-//        } else {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            ) {
-//                OutlinedButton(
-//                    onClick = onShowKey,
-//                    modifier = Modifier.size(60.dp),
-//                    shape = CircleShape,
-//                    contentPadding = PaddingValues(0.dp),  //avoid the little icon
-//                    colors = ButtonDefaults.outlinedButtonColors(
-//                        backgroundColor = MaterialTheme.colors.primary
-//                    )
-//                ) {
-//                    Image(
-//                        painter = painterResource(R.drawable.show_key),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(45.dp),
-//                        contentScale = ContentScale.FillHeight
-//                    )
-//                }
-//                Text(
-//                    modifier = Modifier.padding(5.dp),
-//                    fontSize = 14.sp,
-//                    fontWeight = FontWeight.Light,
-//                    style = MaterialTheme.typography.body1,
-//                    color = MaterialTheme.colors.secondary,
-//                    text = stringResource(R.string.show_key)
-//                )
-//            }
-//            Divider(modifier = Modifier
-//                .padding(10.dp)
-//                .size(0.dp))
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            ) {
-//                OutlinedButton(
-//                    onClick = onReset,
-//                    modifier = Modifier.size(60.dp),
-//                    shape = CircleShape,
-//                    border = BorderStroke(1.dp, Color.Red),
-//                    contentPadding = PaddingValues(0.dp),  //avoid the little icon
-//                    colors = ButtonDefaults.outlinedButtonColors(
-//                        contentColor = Color.Red,
-//                        backgroundColor = DarkRed
-//                    )
-//                ) {
-//                    Icon(
-//                        modifier = Modifier.size(20.dp),
-//                        imageVector = Icons.Default.Close, contentDescription = null
-//                    )
-//                }
-//                Text(
-//                    modifier = Modifier.padding(5.dp),
-//                    fontSize = 14.sp,
-//                    fontWeight = FontWeight.Light,
-//                    style = MaterialTheme.typography.body1,
-//                    color = MaterialTheme.colors.secondary,
-//                    text = stringResource(R.string.reset_cap)
-//                )
-//            }
-//        }
-//
-//    }
-//    CardVaultsViewTabScreen(vaults[selectedCard - 1])
-//}
-//
-//@Composable
-//fun CardVaultCards(
-//    vaultsListState: LazyListState,
-//    vaults: List<CardVault?>,
-//    selectedCard: Int,
-//    onAddVault: () -> Unit
-//) {
-//    LazyRow(state = vaultsListState) {
-//        renderCardVaults(vaults, selectedCard, onAddVault)
-//    }
-//}
-//
-//@Composable
-//fun CardVaultsViewTabScreen(vault: CardVault?) {
-//    var tabIndex by remember { mutableIntStateOf(0) }
-//    val tabs = listOf("Token", "NFT")
-//
-//    Column(modifier = Modifier.fillMaxWidth()) {
-//        TabRow(
-//            modifier = Modifier
-//                .clip(
-//                    shape = RoundedCornerShape(20.dp, 20.dp)
-//                ),
-//            selectedTabIndex = tabIndex,
-//            contentColor = MaterialTheme.colors.secondary,
-//        ) {
-//            tabs.forEachIndexed { index, title ->
-//                Tab(
-//                    modifier = Modifier.background(MaterialTheme.colors.primary),
-//                    text = { Text(title, color = MaterialTheme.colors.secondary) },
-//                    selected = tabIndex == index,
-//                    onClick = { tabIndex = index },
-//                )
-//            }
-//        }
-//        when (tabIndex) {
-//            0 -> vault?.let { CardVaultsViewToken(it) }
-//            1 -> Log.d("VaultsView", "1")
-//        }
-//    }
-//}
-//
-//@Composable
-//fun CardVaultsViewToken(vault: CardVault) {
-//    LazyColumn {
-//        items(1) {//TODO add tokens
-//            CardVaultsViewTokenRow(vault)
-//            Divider(
-//                modifier = Modifier
-//                    .background(MaterialTheme.colors.primary)
-//                    .padding(start = 20.dp, end = 20.dp),
-//                thickness = 1.dp,
-//                color = Color.DarkGray
-//            )
-//        }
-//    }
-//}
-//
-//@Composable
-//fun CardVaultsViewTokenRow(vault: CardVault) {
-//    Row(
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.SpaceBetween,
-//        modifier = Modifier
-//            .background(MaterialTheme.colors.primary)
-//            .padding(10.dp)
-//            .fillMaxWidth()
-//            .height(80.dp)
-//    ) {
-//        Image(
-//            painter = painterResource(id = vault.coin.painterResourceId),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(10.dp)
-//                .size(40.dp),
-//            contentScale = ContentScale.Crop
-//        )
-//        Column(modifier = Modifier.padding(20.dp)) {
-//            Text(
-//                fontSize = 18.sp,
-//                fontWeight = FontWeight.Bold,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = vault.displayName
-//            )
-//            Text(
-//                fontSize = 12.sp,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = "${vault.balance}" // TODO //getBalance(vault)
-//            )
-//        }
-//
-//        Spacer(Modifier.weight(1f))
-//        Column(modifier = Modifier.padding(20.dp)) {
-//            Text(
-//                fontSize = 14.sp,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = vault.currencyAmount
-//            )
-//        }
-//    }
-//}
-
-///
-
-@Composable
 fun VaultsListView(
     vaults: List<CardVault?>,
     selectedCard: Int,
-    onAddVault: () -> Unit
+    onAddVault: (Int) -> Unit
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -568,18 +270,23 @@ fun VaultsListView(
     }
 }
 
+/// DETAILED VIEW
+
 @Composable
 fun DetailedVaultView(
     vaultsListState: LazyListState,
     vaults: List<CardVault?>,
     selectedCard: Int,
-    onAddFunds: () -> Unit,
-    onUnseal: () -> Unit,
-    onAddVault: () -> Unit,
-    onShowKey: () -> Unit,
-    onReset: () -> Unit,
+    onAddFunds: () -> Unit, // todo: add Int parameter for vault index?
+    onUnseal: () -> Unit, // todo: add Int parameter for vault index?
+    onAddVault: (Int) -> Unit,
+    onShowKey: () -> Unit, // todo: add Int parameter for vault index?
+    onReset: () -> Unit, // todo: add Int parameter for vault index?
 ) {
+    // VAULT CARD
     VaultCards(vaultsListState, vaults, selectedCard, onAddVault)
+
+    // ACTIONS ROW
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -588,47 +295,57 @@ fun DetailedVaultView(
             .fillMaxWidth()
             .height(120.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .aspectRatio(1f)
-                    .background(LightGreen, shape = CircleShape),
-                contentAlignment = Alignment.Center
+
+        if (selectedCard<=vaults.size
+            && vaults[selectedCard - 1] != null
+            && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED) {
+
+            // ADD FUNDS BUTTON
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                OutlinedButton(
-                    onClick = onAddFunds,
-                    modifier = Modifier.size(30.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(2.dp, Color.White),
-                    contentPadding = PaddingValues(0.dp),  //avoid the little icon
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.White,
-                        backgroundColor = LightGreen
-                    )
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .aspectRatio(1f)
+                        .background(LightGreen, shape = CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
+                    OutlinedButton(
+                        onClick = onAddFunds,
+                        modifier = Modifier.size(30.dp),
+                        shape = CircleShape,
+                        border = BorderStroke(2.dp, Color.White),
+                        contentPadding = PaddingValues(0.dp),  //avoid the little icon
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color.White,
+                            backgroundColor = LightGreen
+                        )
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                    }
                 }
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Light,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = stringResource(R.string.add_funds)
+                )
             }
-            Text(
-                modifier = Modifier.padding(5.dp),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.add_funds)
+            Divider(
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
+                    .height(30.dp)
+                    .width(2.dp),
+                color = Color.LightGray,
             )
         }
-        Divider(
-            modifier = Modifier
-                .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
-                .height(30.dp)
-                .width(2.dp),
-            color = Color.LightGray,
-        )
-        if (vaults.isEmpty() || vaults[selectedCard - 1] == null || vaults[selectedCard - 1]!!.isSealed) {
+        if (selectedCard<=vaults.size
+            && vaults[selectedCard - 1] != null
+            && vaults[selectedCard - 1]!!.state == SlotState.SEALED) {
+            // UNSEAL BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -659,7 +376,11 @@ fun DetailedVaultView(
                     text = stringResource(R.string.unseal_cap)
                 )
             }
-        } else {
+        }
+        if (selectedCard<=vaults.size
+            && vaults[selectedCard - 1] != null
+            && vaults[selectedCard - 1]!!.state == SlotState.UNSEALED) {
+            // SHOW PRIVKEY BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -691,6 +412,7 @@ fun DetailedVaultView(
             Divider(modifier = Modifier
                 .padding(10.dp)
                 .size(0.dp))
+            // RESET BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -722,7 +444,12 @@ fun DetailedVaultView(
         }
 
     }
-    VaultsViewTabScreen(vaults[selectedCard - 1])
+
+    if (selectedCard<=vaults.size
+        && vaults[selectedCard - 1] != null
+        && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED) {
+        VaultsViewTabScreen(vaults[selectedCard - 1])
+    }
 }
 
 @Composable
@@ -730,7 +457,7 @@ fun VaultCards(
     vaultsListState: LazyListState,
     vaults: List<CardVault?>,
     selectedCard: Int,
-    onAddVault: () -> Unit
+    onAddVault: (Int) -> Unit
 ) {
     LazyRow(state = vaultsListState) {
         renderVaults(vaults, selectedCard, onAddVault)
@@ -850,7 +577,7 @@ fun CustomSwitch(modifier: Modifier = Modifier, checked: Boolean, onCheckedChang
 fun LazyListScope.renderVaults(
     vaults: List<CardVault?>,
     selectedCard: Int,
-    onAddVault: () -> Unit
+    onAddVault: (Int) -> Unit
 ) {
     itemsIndexed(vaults) { index, vault ->
         if(vault != null) {

@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGray
@@ -58,7 +59,8 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     var showCertificate by remember { mutableStateOf(false) }
 
-    if (showCertificate && NFCCardService.certificate != null) {
+    //if (showCertificate && NFCCardService.certificate != null) {
+    if (showCertificate && (NFCCardService.certificateList.value?.size ?: 0) > 0) {
         Dialog(
             content = {
                 LazyColumn(
@@ -86,7 +88,23 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.body1,
-                            text = NFCCardService.certificate!!
+                            text = NFCCardService.certificateList.value?.get(1) ?: "" //todo
+                        )
+                        Text(
+                            modifier = Modifier.padding(5.dp),
+                            color = MaterialTheme.colors.secondaryVariant,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.body1,
+                            text = NFCCardService.certificateList.value?.get(2) ?: "" // todo
+                        )
+                        Text(
+                            modifier = Modifier.padding(5.dp),
+                            color = MaterialTheme.colors.secondaryVariant,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.body1,
+                            text = NFCCardService.certificateList.value?.get(3) ?: "" // todo
                         )
                         Row {
                             Spacer(modifier = Modifier.weight(1f))
@@ -103,7 +121,7 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
                                 modifier = Modifier
                                     .size(25.dp)
                                     .clickable {
-                                        clipboardManager.setText(AnnotatedString(NFCCardService.certificate!!))
+                                        clipboardManager.setText(AnnotatedString(NFCCardService.certificateList.value?.get(3) ?: "")) //TODO!
                                         Toast
                                             .makeText(
                                                 context,
@@ -160,6 +178,8 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             text = stringResource(R.string.card_info)
         )
         Spacer(Modifier.weight(1f))
+
+        // CARD OWNERSHIP STATUS
         Text(
             modifier = Modifier.padding(10.dp),
             textAlign = TextAlign.Center,
@@ -169,10 +189,24 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             text = stringResource(R.string.card_ownership_status)
         )
         //val notOwner = if(viewModel.isOwner) "" else " not"
-        val notOwner = if(NFCCardService.isOwner.value == true) "" else " not"
-        val colorOwner = if(NFCCardService.isOwner.value == true) LightGreen else Color.Red
-        CardInfoCard("You are$notOwner the card owner", 300, colorOwner)
+        var ownershipStatusString = "Unknown"
+        var colorOwner = Color.Yellow
+        if (NFCCardService.ownershipStatus.value == OwnershipStatus.Owner) {
+            ownershipStatusString = "You are the card owner"
+            colorOwner = LightGreen
+        } else if (NFCCardService.ownershipStatus.value == OwnershipStatus.NotOwner) {
+            ownershipStatusString = "You are NOT the card owner"
+            colorOwner = Color.Red
+        } else if (NFCCardService.ownershipStatus.value == OwnershipStatus.Unclaimed) {
+            ownershipStatusString = "The card has no owner!"
+            colorOwner = Color.Blue
+        }
+        //val notOwner = if(NFCCardService.isOwner.value == true) "" else " not"
+        //val colorOwner = if(NFCCardService.isOwner.value == true) LightGreen else Color.Red
+        CardInfoCard(ownershipStatusString, 300, colorOwner)
         Spacer(Modifier.weight(1f))
+
+        // CARD VERSION
         Text(
             modifier = Modifier.padding(10.dp),
             textAlign = TextAlign.Center,
@@ -181,8 +215,9 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.card_version)
         )
-        CardInfoCard("Unknown", 225)
+        CardInfoCard(NFCCardService.cardAppletVersion, 225)
         Spacer(Modifier.weight(1f))
+
         Divider(
             modifier = Modifier
                 .padding(20.dp)
@@ -191,6 +226,8 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = Color.DarkGray,
         )
         Spacer(Modifier.weight(1f))
+
+        // CARD AUTHENTICITY
         Text(
             modifier = Modifier.padding(10.dp),
             textAlign = TextAlign.Center,
@@ -199,9 +236,19 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.card_authenticity)
         )
-        val notGeniune = if(NFCCardService.isAuthentic.value == true) "" else " not"
-        val colorGeniune = if(NFCCardService.isAuthentic.value == true) LightGreen else Color.Red
-        CardInfoCard("This card is$notGeniune genuine", 275, colorGeniune) {
+
+        var authenticityStatusString = "Unknown"
+        var authenticityColor = Color.Yellow
+        if(NFCCardService.isAuthentic.value == true) {
+            authenticityStatusString =  "This card is authentic" // todo translate
+            authenticityColor = LightGreen
+        } else {
+            authenticityStatusString =  "Failed to authenticate this card!" // todo translate
+            authenticityColor = Color.Red
+        }
+        //val notGeniune = if(NFCCardService.isAuthentic.value == true) "" else " not"
+        //val colorGeniune = if(NFCCardService.isAuthentic.value == true) LightGreen else Color.Red
+        CardInfoCard(authenticityStatusString, 275, authenticityColor) {
             val authenticScreen = if (NFCCardService.isAuthentic.value == true) {
                 SatodimeScreen.AuthenticCardView
             } else {

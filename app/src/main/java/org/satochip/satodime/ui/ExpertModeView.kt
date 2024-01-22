@@ -1,5 +1,7 @@
 package org.satochip.satodime.ui
 
+import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,24 +41,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.android.awaitFrame
 import org.satochip.satodime.R
 import org.satochip.satodime.data.Coin
+import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.BottomButton
+import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.Network
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
+import java.security.MessageDigest
+import java.security.SecureRandom
+
+private const val TAG = "ExpertModeView"
 
 @Composable
-fun ExpertModeView(navController: NavController, selectedCoinName: String, selectedVault: Int) {
+fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int, selectedCoinName: String) {
+    // todo merge with CreateVaultView
     val context = LocalContext.current
     var selectedNetwork by remember { mutableStateOf(Network.MainNet) }
     var entropy by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+    val selectedCoin = Coin.valueOf(selectedCoinName)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -161,36 +175,81 @@ fun ExpertModeView(navController: NavController, selectedCoinName: String, selec
         val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         BottomButton(
             onClick = {
-                if (NFCCardService.isConnected.value == true) {
-                    if (NFCCardService.isOwner()) {
-                        if (NFCCardService.isReadingFinished.value != true) {
-                            Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-                        } else if (NFCCardService.seal(
-                                selectedVault - 1,
-                                Coin.valueOf(selectedCoinName),
-                                entropy = entropy,
-                                isTestnet = selectedNetwork == Network.TestNet
-                            )
-                        ) {
-                            navController.navigate(
-                                SatodimeScreen.CongratsVaultCreated.name
-                                        + "/$selectedCoinName"
-                            ) {
-                                popUpTo(0)
-                            }
-                        } else {
-                            Toast.makeText(context, sealFailureText, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+
+                // select network
+                var isTestnet = (selectedNetwork == Network.TestNet)
+
+                // generate entropy based on current time
+                //val random = SecureRandom()
+                var entropyBytes = ByteArray(32)
+                var entropyStringToBytes = entropy.toByteArray()
+                if (entropyStringToBytes.size>32){
+                    // compute the hash of it
+                    val sha256 = MessageDigest.getInstance("SHA-256")
+                    entropyStringToBytes = sha256.digest(entropyStringToBytes)
                 }
+                // copy to array
+                entropyStringToBytes.copyInto(
+                    destination= entropyBytes,
+                    destinationOffset= 0,
+                    startIndex= 0,
+                    endIndex= minOf(entropyStringToBytes.size, 32)
+                )
+
+                // scan card
+                Log.d(TAG, "CreateVaultView: clicked on create button!")
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= isTestnet, entropyBytes= entropyBytes)
+                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                    Log.d(TAG, "CreateVaultView: successfully created slot ${selectedVault - 1}")
+                    // wait until NfcDialog has closed
+                    if (showNfcDialog.value == false) {
+                        Log.d(TAG, "CreateVaultView navigating to CreateCongrats view")
+                        navController.navigate(
+                            SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
+                        ) {
+                            popUpTo(0)
+                        }
+                    }
+
+                }
+
+//                if (NFCCardService.isConnected.value == true) {
+//                    if (NFCCardService.isOwner()) {
+//                        if (NFCCardService.isReadingFinished.value != true) {
+//                            Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
+//                        } else if (NFCCardService.sealOld(
+//                                selectedVault - 1,
+//                                Coin.valueOf(selectedCoinName),
+//                                entropy = entropy,
+//                                isTestnet = selectedNetwork == Network.TestNet
+//                            )
+//                        ) {
+//                            navController.navigate(
+//                                SatodimeScreen.CongratsVaultCreated.name
+//                                        + "/$selectedCoinName"
+//                            ) {
+//                                popUpTo(0)
+//                            }
+//                        } else {
+//                            Toast.makeText(context, sealFailureText, Toast.LENGTH_SHORT).show()
+//                        }
+//                    } else {
+//                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
+//                }
             },
             text = stringResource(R.string.create_and_seal)
         )
     }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
 }
 
 @Composable
@@ -231,6 +290,6 @@ fun NetworkDivider() {
 @Composable
 fun ExpertModeViewPreview() {
     SatodimeTheme {
-        ExpertModeView(rememberNavController(), Coin.BTC.name, 1)
+        ExpertModeView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1, Coin.BTC.name)
     }
 }

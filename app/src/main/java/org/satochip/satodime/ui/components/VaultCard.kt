@@ -164,7 +164,7 @@ fun Balance(modifier: Modifier, vault: CardVault) {
 }
 
 @Composable
-fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: () -> Unit) {
+fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .width(300.dp)
@@ -188,9 +188,10 @@ fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: () -> Uni
             val addButtonColor = if(isFirstEmptyVault) Color.White else Color.Gray
             OutlinedButton(
                 onClick = {
-                    if (isFirstEmptyVault) {
-                        onAddVault()
-                    }
+//                    if (isFirstEmptyVault) {
+//                        onAddVault()
+//                    }
+                    onAddVault(index)
                 },
                 modifier = Modifier
                     .align(alignment = Alignment.Center)

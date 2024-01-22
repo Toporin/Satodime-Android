@@ -39,8 +39,11 @@ import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
 
+private const val TAG = "SelectBlockchainView"
+
 @Composable
 fun SelectBlockchainView(navController: NavController, selectedVault: Int) {
+    // todo display vult index in view!
     Box(
         modifier = Modifier
             .fillMaxSize()
