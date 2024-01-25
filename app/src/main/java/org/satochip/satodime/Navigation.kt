@@ -19,7 +19,6 @@ import org.satochip.satodime.util.NavigationParam
 import org.satochip.satodime.util.SatodimePreferences
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
-import org.satochip.satodime.viewmodels.VaultsViewModel
 
 private const val TAG = "Navigation"
 
@@ -40,7 +39,7 @@ fun Navigation() {
         }
 
     val navController = rememberNavController()
-    val vaultsViewModel: VaultsViewModel = viewModel(factory = VaultsViewModel.Factory)
+    //val vaultsViewModel: VaultsViewModel = viewModel(factory = VaultsViewModel.Factory)
     val sharedViewModel: SharedViewModel = viewModel(factory = SharedViewModel.Factory)
 
     //if(sharedViewModel.isAskingForCardOwnership && sharedViewModel.isCardConnected && sharedViewModel.isReadingFinished) {
@@ -102,7 +101,7 @@ fun Navigation() {
         }
         // SHOW VAULTS
         composable(route = SatodimeScreen.Vaults.name) {
-            VaultsView(navController, vaultsViewModel, sharedViewModel)
+            VaultsView(navController, sharedViewModel)
         }
         composable(route = SatodimeScreen.AddFunds.name + "/{${NavigationParam.SelectedVault}}",
             arguments = listOf(

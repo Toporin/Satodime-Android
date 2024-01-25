@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -42,6 +44,7 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -58,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -71,6 +75,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import org.satochip.javacryptotools.coins.Asset
+import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.satodime.R
 import org.satochip.satodime.data.CardVault
 import org.satochip.satodime.data.SlotState
@@ -86,12 +94,11 @@ import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.util.getBalance
 import org.satochip.satodime.viewmodels.SharedViewModel
-import org.satochip.satodime.viewmodels.VaultsViewModel
 
 private const val TAG = "VaultsView"
 
 @Composable
-fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedViewModel: SharedViewModel) {
+fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     // TODO: remove viewModel
     val activity = LocalContext.current as Activity
     var showVaultsOnly by remember{mutableStateOf(false) }
@@ -116,22 +123,66 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
         RedGradientBackground()
     }
 
-    // RED/GREEN DOT (TO REMOVE!)
-    Canvas(modifier = Modifier
-        .padding(15.dp)
-        .size(5.dp), onDraw = {
-        drawCircle(color = if (sharedViewModel.isCardConnected) Color.Green else Color.Red)
-    })
+    // RED/GREEN DOT (TODO REMOVE!)
+//    Canvas(modifier = Modifier
+//        .padding(15.dp)
+//        .size(5.dp), onDraw = {
+//        drawCircle(color = if (sharedViewModel.isCardConnected) Color.Green else Color.Red)
+//    })
     // LOGO
     // TODO: BUTTON to CardAuth + color
-    Image(
-        painter = painterResource(if (isSystemInDarkTheme()) R.drawable.top_left_logo else R.drawable.top_left_logo_light),
-        contentDescription = null,
-        modifier = Modifier
-            .size(45.dp)
-            .offset(x = 20.dp, y = 20.dp),
-        contentScale = ContentScale.Crop
-    )
+//    Image(
+//        painter = painterResource(R.drawable.ic_sato_small),
+//        //painter = painterResource(if (isSystemInDarkTheme()) R.drawable.top_left_logo else R.drawable.top_left_logo_light),
+//        contentDescription = null,
+//        modifier = Modifier
+//            .size(45.dp)
+//            .offset(x = 20.dp, y = 20.dp),
+//        contentScale = ContentScale.Crop
+//    )
+
+    if (sharedViewModel.isAuthentic) {
+        IconButton(
+            onClick = {
+                navController.navigate(
+                    SatodimeScreen.AuthenticCardView.name
+                )
+            },
+        )
+        {
+            Image(
+                painter = painterResource(R.drawable.ic_sato_small),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(45.dp) //.size(45.dp)
+                    .offset(x = 20.dp, y = 20.dp),
+                //.padding(all = 0.dp),
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(Color.Green)
+            )
+        }
+    } else {
+        IconButton(
+            onClick = {
+                navController.navigate(
+                    SatodimeScreen.FakeCardView.name
+                )
+            },
+        )
+        {
+            Image(
+                painter = painterResource(R.drawable.ic_sato_small),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(45.dp) //.size(45.dp)
+                    .offset(x = 20.dp, y = 20.dp),
+                //.padding(all = 0.dp),
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(Color.Red)
+            )
+        }
+    }
+
     // RESCAN + SWITCH + MENU
     Row(modifier = Modifier.padding(top = 20.dp, end = 5.dp)) {
         Spacer(modifier = Modifier.weight(1f))
@@ -233,8 +284,8 @@ fun VaultsView(navController: NavController, viewModel: VaultsViewModel, sharedV
                 )
             }
         } else {
-            // DEBUG
-            //val activity = LocalContext.current as Activity
+            // SCAN BUTTON
+            //Todo improve UI
             Button(onClick = {
                 Log.d("VaultsView", "Clicked on Scan button!")
                 // scan card
@@ -490,7 +541,7 @@ fun VaultsViewTabScreen(vault: CardVault?) {
         }
         when (tabIndex) {
             0 -> vault?.let { VaultsViewToken(it) }
-            1 -> Log.d("VaultsView", "1")
+            1 -> vault?.let { VaultsViewNft(it) }
 //            2 -> VaultsViewHistory()
         }
     }
@@ -499,8 +550,47 @@ fun VaultsViewTabScreen(vault: CardVault?) {
 @Composable
 fun VaultsViewToken(vault: CardVault) {
     LazyColumn {
+        items(vault.tokenList) {asset ->//TODO add tokens
+            // only show Token, not NFTs
+            if (asset.type == AssetType.Token) {
+                VaultsViewTokenRow(asset)
+                Divider(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary)
+                        .padding(start = 20.dp, end = 20.dp),
+                    thickness = 1.dp,
+                    color = Color.DarkGray
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VaultsViewNft(vault: CardVault) {
+    LazyColumn {
+        items(vault.nftList) {asset ->//TODO add tokens
+            // todo only show NFTs?
+            //if (asset.type == AssetType.NFT) {
+                VaultsViewNftRow(asset)
+                Divider(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary)
+                        .padding(start = 20.dp, end = 20.dp),
+                    thickness = 1.dp,
+                    color = Color.DarkGray
+                )
+            //}
+        }
+    }
+}
+
+// todo remove
+@Composable
+fun VaultsViewTokenOld(vault: CardVault) {
+    LazyColumn {
         items(1) {//TODO add tokens
-            VaultsViewTokenRow(vault)
+            VaultsViewTokenRowOld(vault)
             Divider(
                 modifier = Modifier
                     .background(MaterialTheme.colors.primary)
@@ -513,7 +603,134 @@ fun VaultsViewToken(vault: CardVault) {
 }
 
 @Composable
-fun VaultsViewTokenRow(vault: CardVault) {
+fun VaultsViewTokenRow(asset: Asset) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .background(MaterialTheme.colors.primary)
+            .padding(10.dp)
+            .fillMaxWidth()
+            .height(80.dp)
+    ) {
+        // todo add explorer link
+//        Image(
+//            painter = painterResource(id = R.drawable.ic_sato_small), //todo!
+//            //painter =  painterResource(id = vault.coin.painterResourceId),
+//            contentDescription = null,
+//            modifier = Modifier
+//                .padding(10.dp)
+//                .size(40.dp),
+//            contentScale = ContentScale.Crop
+//        )
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(asset.iconUrl ?: "")
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_sato_small),
+            error = painterResource(R.drawable.ic_sato_small),
+            contentDescription = (asset.name ?: asset.contract ?: ""),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .padding(10.dp)
+                .size(40.dp),
+            //colorFilter = ColorFilter.tint(Color.Blue)
+        )
+
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = asset.name,// vault.displayName
+            )
+            Text(
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = "${asset.balance}/${asset.decimals}" // todo format //getBalance(vault)
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
+            )
+        }
+    }
+}
+
+@Composable
+fun VaultsViewNftRow(asset: Asset) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .background(MaterialTheme.colors.primary)
+            .padding(10.dp)
+            .fillMaxWidth()
+            .height(80.dp)
+    ) {
+        // todo add link
+        // todo show big image
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(asset.nftImageLink ?: "")
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_sato_small),
+            error = painterResource(R.drawable.ic_sato_small),
+            contentDescription = (asset.nftName ?: asset.contract ?: ""),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(40.dp),
+            //colorFilter = ColorFilter.tint(Color.Blue)
+        )
+//        Image(
+//            painter = painterResource(id = R.drawable.ic_sato_small), //todo!
+//            //painter =  painterResource(id = vault.coin.painterResourceId),
+//            contentDescription = null,
+//            modifier = Modifier
+//                .padding(10.dp)
+//                .size(40.dp),
+//            contentScale = ContentScale.Crop
+//        )
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = "${asset.nftName ?: asset.contract}",// todo format
+            )
+            Text(
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = "${asset.nftDescription ?: asset.tokenid}" // todo format //getBalance(vault)
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
+            )
+        }
+    }
+}
+
+// todo remove
+@Composable
+fun VaultsViewTokenRowOld(vault: CardVault) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -612,7 +829,6 @@ fun VaultsViewPreview() {
     SatodimeTheme {
         VaultsView(
             rememberNavController(),
-            viewModel(factory = VaultsViewModel.Factory),
             viewModel(factory = SharedViewModel.Factory)
         )
     }

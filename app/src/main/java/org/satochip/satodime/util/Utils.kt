@@ -2,13 +2,13 @@ package org.satochip.satodime.util
 
 import android.icu.text.NumberFormat
 import android.util.Log
-import org.satochip.javacryptotools.BaseCoin
-import org.satochip.javacryptotools.Bitcoin
-import org.satochip.javacryptotools.BitcoinCash
-import org.satochip.javacryptotools.Counterparty
-import org.satochip.javacryptotools.Ethereum
-import org.satochip.javacryptotools.Litecoin
-import org.satochip.javacryptotools.UnsupportedCoin
+import org.satochip.javacryptotools.coins.BaseCoin
+import org.satochip.javacryptotools.coins.Bitcoin
+import org.satochip.javacryptotools.coins.BitcoinCash
+import org.satochip.javacryptotools.coins.Counterparty
+import org.satochip.javacryptotools.coins.Ethereum
+import org.satochip.javacryptotools.coins.Litecoin
+import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.javacryptotools.coins.Constants
 import org.satochip.satodime.BuildConfig
 import org.satochip.satodime.data.Coin
@@ -22,6 +22,7 @@ val apiKeys = hashMapOf(
     Pair("API_KEY_ETHERSCAN", BuildConfig.API_KEY_ETHERSCAN),
     Pair("API_KEY_ETHPLORER", BuildConfig.API_KEY_ETHPLORER),
     Pair("API_KEY_BSCSCAN", BuildConfig.API_KEY_BSCSCAN),
+    Pair("API_KEY_RARIBLE", BuildConfig.API_KEY_RARIBLE),
 )
 
 fun getCurrencyAmount(coin: Coin, isTestnet: Boolean, balance: Double, currency: Currency) : String {

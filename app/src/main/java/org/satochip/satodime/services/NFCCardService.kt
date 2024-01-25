@@ -20,7 +20,7 @@ import org.satochip.client.SatodimeKeyslotStatus
 import org.satochip.client.SatodimeStatus
 import org.satochip.io.APDUResponse
 import org.satochip.satodime.BuildConfig.DEBUG
-import org.satochip.satodime.data.Asset
+//import org.satochip.satodime.data.Asset
 import org.satochip.satodime.data.CardPrivkey
 import org.satochip.satodime.data.CardSlot
 import org.satochip.satodime.data.Coin
@@ -925,12 +925,8 @@ object NFCCardService {
                 Log.d(TAG, "privateKeyBytes : ------- ${cardSlot.privateKeyBytes}") // todo remove
                 Log.d(TAG, "privateKeyHex : ------- ${cardSlot.privateKeyHex}") // todo remove
                 Log.d(TAG, "privateKeyWif : ------- ${cardSlot.privateKeyWif}") // todo remove
-                Log.d(
-                    TAG,
-                    "Asset : " + cardSlot.assetName
-                            + ", Public key : " + cardSlot.publicKeyHexString
-                            + ", Address: " + cardSlot.address
-                )
+                Log.d(TAG, "Public key : " + cardSlot.publicKeyHexString)
+                Log.d(TAG, "Address: " + cardSlot.address)
             } catch (e: Exception) {
                 Log.e(TAG, "An exception has been thrown while getting key slot status.")
                 Log.e(TAG, Log.getStackTraceString(e))

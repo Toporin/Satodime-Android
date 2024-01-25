@@ -253,32 +253,15 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
             var cardVault = CardVault(it)
             println("DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
             // get balance from api
-            //val balance = cardVault.getBalanceDebug()
+            val balance = cardVault.getBalanceDebug()
             //println("DEBUG SharedViewModel mapCardSlotsToVaults balance: $balance")
             //println("DEBUG SharedViewModel mapCardSlotsToVaults balance END")
             // TODO: get Tokens & NFTs
+            cardVault.fetchTokenList()
+            cardVault.fetchNftList()
 
             return@map cardVault
         }
     }
 
-//    // TODO debug remove??
-//    fun getActivity(context: Context?): Activity? {
-//        Log.d(TAG, "In getActivity START")
-//        if (context == null) {
-//            Log.d(TAG, "In getActivity context null")
-//            return null
-//        } else if (context is ContextWrapper) {
-//            return if (context is Activity) {
-//                Log.d(TAG, "In getActivity context is activity")
-//                context
-//            } else {
-//                Log.d(TAG, "In getActivity context is ContextWrapper")
-//                getActivity(context.baseContext)
-//            }
-//        }
-//        Log.d(TAG, "In getActivity context is something else")
-//        Log.d(TAG, "In getActivity context is type ${context::class.qualifiedName}")
-//        return null
-//    }
 }

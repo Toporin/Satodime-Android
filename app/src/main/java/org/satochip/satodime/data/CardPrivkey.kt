@@ -2,13 +2,13 @@ package org.satochip.satodime.data
 
 import org.satochip.client.SatochipParser
 import org.satochip.client.SatodimeKeyslotStatus
-import org.satochip.javacryptotools.BaseCoin
-import org.satochip.javacryptotools.Bitcoin
-import org.satochip.javacryptotools.BitcoinCash
-import org.satochip.javacryptotools.Counterparty
-import org.satochip.javacryptotools.Ethereum
-import org.satochip.javacryptotools.Litecoin
-import org.satochip.javacryptotools.UnsupportedCoin
+import org.satochip.javacryptotools.coins.BaseCoin
+import org.satochip.javacryptotools.coins.Bitcoin
+import org.satochip.javacryptotools.coins.BitcoinCash
+import org.satochip.javacryptotools.coins.Counterparty
+import org.satochip.javacryptotools.coins.Ethereum
+import org.satochip.javacryptotools.coins.Litecoin
+import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.javacryptotools.coins.Constants
 import org.satochip.satodime.util.apiKeys
 import java.nio.ByteBuffer

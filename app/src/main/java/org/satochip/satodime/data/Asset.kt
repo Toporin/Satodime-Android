@@ -1,6 +1,6 @@
 package org.satochip.satodime.data
 
-//TODO: needed?
-enum class Asset {
+//TODO: remove (see javacryptotools.coins.AssetType & Asset
+enum class AssetOld {
     Coin, Token, NFT
 }
