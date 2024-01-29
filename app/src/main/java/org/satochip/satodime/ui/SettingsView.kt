@@ -1,6 +1,7 @@
 package org.satochip.satodime.ui
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ import kotlinx.coroutines.launch
 import org.satochip.satodime.R
 import org.satochip.satodime.data.Currency
 import org.satochip.satodime.data.defaultCurrency
+import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGreen
@@ -59,16 +61,24 @@ import org.satochip.satodime.util.SatodimePreferences
 
 @Composable
 fun SettingsView(navController: NavController) {
-    val couroutineScope = rememberCoroutineScope()
+    val couroutineScope = rememberCoroutineScope() // todo remove
     val context = LocalContext.current as Activity
-    val settings = context.getSharedPreferences(SatodimePreferences::class.simpleName, 0)
-    val satodimeStore = SatodimeStore(context)
+    //val settings = context.getSharedPreferences(SatodimePreferences::class.simpleName, 0)
+    val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
+    val satodimeStore = SatodimeStore(context) // todo remove
     var showCurrenciesMenu by remember { mutableStateOf(false) }
     var starterIntro by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,false))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,true))
     }
-    val savedCurrency = satodimeStore.selectedCurrency.collectAsState(initial = defaultCurrency.name)
-    var selectedCurrency = savedCurrency.value
+    var debugMode by remember {
+        mutableStateOf(settings.getBoolean(SatodimePreferences.DEBUG_MODE.name,false))
+    }
+    //val savedCurrency = satodimeStore.selectedCurrency.collectAsState(initial = defaultCurrency.name)
+    val savedCurrency by remember {
+        mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name,"USD"))
+    }
+    var selectedCurrency = savedCurrency //savedCurrency.value
+
 
     Box(
         modifier = Modifier
@@ -83,6 +93,7 @@ fun SettingsView(navController: NavController) {
             .fillMaxWidth()
             .padding(20.dp)
     ) {
+        // TITLE
         Text(
             modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
             textAlign = TextAlign.Center,
@@ -100,6 +111,7 @@ fun SettingsView(navController: NavController) {
                 .height(200.dp),
             contentScale = ContentScale.FillHeight
         )
+        // CURRENCY SELECTOR
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,7 +137,7 @@ fun SettingsView(navController: NavController) {
                     color = LightGreen,
                     fontSize = 18.sp,
                     style = MaterialTheme.typography.body1,
-                    text = Currency.valueOf(selectedCurrency).name
+                    text = Currency.valueOf(selectedCurrency ?: "USD").name
                 )
                 Box {
                     IconButton(
@@ -148,6 +160,7 @@ fun SettingsView(navController: NavController) {
                 }
             }
         }
+        // STARTER INTRO
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -180,6 +193,40 @@ fun SettingsView(navController: NavController) {
             }
         }
         Spacer(modifier = Modifier.weight(1f))
+        // DEBUG MODE
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(75.dp)
+                .padding(10.dp),
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Row(Modifier.background(MaterialTheme.colors.primary)) {
+                Text(
+                    modifier = Modifier
+                        .padding(15.dp),
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colors.secondary,
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.body1,
+                    text = "Debug mode"// todo i18n
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    modifier = Modifier.padding(10.dp),
+                    checked = debugMode,
+                    onCheckedChange = { debugMode = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color.White,
+                        uncheckedThumbColor = Color.LightGray,// todo more visible
+                        uncheckedTrackColor = Color.Gray,
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        // SHOW LOGS BUTTON
         Button(
             onClick = { },
             modifier = Modifier
@@ -194,13 +241,19 @@ fun SettingsView(navController: NavController) {
             Text(stringResource(R.string.show_logs), color = MaterialTheme.colors.secondary)
         }
         Spacer(modifier = Modifier.weight(1f))
+        // APPLY BUTTON
         Button(
             onClick = {
-                couroutineScope.launch {
-                    satodimeStore.saveSelectedCurrency(selectedCurrency)
-                }
+//                couroutineScope.launch {
+//                    satodimeStore.saveSelectedCurrency(selectedCurrency)
+//                }
                 settings.edit()
                     .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro).apply()
+                settings.edit()
+                    .putBoolean(SatodimePreferences.DEBUG_MODE.name, debugMode).apply()
+                settings.edit()
+                    .putString(SatodimePreferences.SELECTED_CURRENCY.name, selectedCurrency ?: "USD").apply()
+
                 navController.navigateUp()
             },
             modifier = Modifier

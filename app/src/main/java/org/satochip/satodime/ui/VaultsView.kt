@@ -65,6 +65,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,10 +81,14 @@ import coil.request.ImageRequest
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.satodime.R
+import org.satochip.satodime.data.AuthenticityStatus
 import org.satochip.satodime.data.CardVault
+import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.data.SlotState
+import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.DarkBlueGradientBackground
 import org.satochip.satodime.ui.components.EmptyVaultCard
+import org.satochip.satodime.ui.components.InfoDialog
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.VaultCard
@@ -92,7 +97,9 @@ import org.satochip.satodime.ui.theme.LightDarkBlue
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.util.formatBalance
 import org.satochip.satodime.util.getBalance
+import org.satochip.satodime.util.sanitizeNftImageUrlString
 import org.satochip.satodime.viewmodels.SharedViewModel
 
 private const val TAG = "VaultsView"
@@ -101,8 +108,13 @@ private const val TAG = "VaultsView"
 fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     // TODO: remove viewModel
     val activity = LocalContext.current as Activity
+    val uriHandler = LocalUriHandler.current
     var showVaultsOnly by remember{mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+    val showNoCardScannedDialog = remember { mutableStateOf(false)}// for NoCardScannedDialog
+//    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
+//    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
+
 
     //val vaults = viewModel.vaults.collectAsState(initial = listOf(null, null, null)) // TODO deprecate
     val vaults = sharedViewModel.cardVaults.value
@@ -141,7 +153,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
 //        contentScale = ContentScale.Crop
 //    )
 
-    if (sharedViewModel.isAuthentic) {
+    if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
         IconButton(
             onClick = {
                 navController.navigate(
@@ -152,7 +164,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         {
             Image(
                 painter = painterResource(R.drawable.ic_sato_small),
-                contentDescription = null,
+                contentDescription = "logo",
                 modifier = Modifier
                     .size(45.dp) //.size(45.dp)
                     .offset(x = 20.dp, y = 20.dp),
@@ -161,7 +173,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 colorFilter = ColorFilter.tint(Color.Green)
             )
         }
-    } else {
+    } else if (sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic){
         IconButton(
             onClick = {
                 navController.navigate(
@@ -172,13 +184,31 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         {
             Image(
                 painter = painterResource(R.drawable.ic_sato_small),
-                contentDescription = null,
+                contentDescription = "logo",
                 modifier = Modifier
                     .size(45.dp) //.size(45.dp)
                     .offset(x = 20.dp, y = 20.dp),
                 //.padding(all = 0.dp),
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(Color.Red)
+            )
+        }
+    } else { // no card scanned
+        IconButton(
+            onClick = {
+                showNoCardScannedDialog.value = true
+            },
+        )
+        {
+            Image(
+                painter = painterResource(R.drawable.ic_sato_small),
+                contentDescription = "logo",
+                modifier = Modifier
+                    .size(45.dp) //.size(45.dp)
+                    .offset(x = 20.dp, y = 20.dp),
+                //.padding(all = 0.dp),
+                contentScale = ContentScale.Crop,
+                //colorFilter = ColorFilter.tint(Color.Yellow)
             )
         }
     }
@@ -190,6 +220,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         IconButton(onClick = {
             showNfcDialog.value = true // NfcDialog
             sharedViewModel.scanCard(activity)
+//            sharedViewModel.showAuthenticityDialog.value = true // reenable dialog
+//            sharedViewModel.showOwnershipDialog.value = true // reenable dialog
         }) {
             Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
         }
@@ -257,10 +289,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             )
         }
 
-//        Text("isVaultDataAvailable: ${sharedViewModel.isVaultDataAvailable.value}")
-//        Text("isVaultDataAvailable2: ${sharedViewModel.isVaultDataAvailable2}")
-//        Text("isVaultDataAvailable3: ${sharedViewModel.isVaultDataAvailable3}")
-
         if (sharedViewModel.isCardDataAvailable) {
         //if (NFCCardService.isCardDataAvailable.value == true) {
             //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
@@ -296,6 +324,56 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             }
         }
 
+    }
+
+    // no card scanned dialog
+    if (showNoCardScannedDialog.value
+        && !sharedViewModel.isCardDataAvailable
+        && !showNfcDialog.value){
+        InfoDialog(
+            openDialogCustom = showNoCardScannedDialog,
+            title = stringResource(R.string.nocardscannedtitle),
+            message = stringResource(R.string.noCardScannedText),
+            isActionButtonVisible = false,
+            buttonTitle = "",
+            buttonAction = {},
+        )
+    }
+
+    // Authenticity dialog
+    if (sharedViewModel.showAuthenticityDialog.value
+        //&& sharedViewModel.authenticityStatusDelayed == AuthenticityStatus.NotAuthentic
+        && sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic
+        && !showNfcDialog.value){
+        InfoDialog(
+            openDialogCustom = sharedViewModel.showAuthenticityDialog,
+            title = stringResource(R.string.notAuthenticTitle),
+            message = stringResource(R.string.notAuthenticText),
+            isActionButtonVisible = true,
+            buttonTitle = stringResource(R.string.moreInfo),
+            buttonAction =
+            {
+                navController.navigate(
+                    SatodimeScreen.FakeCardView.name
+                )
+            },)
+    }
+
+    // Ownership dialog
+    //if (showOwnershipDialog.value && NFCCardService.ownershipStatus.value == OwnershipStatus.NotOwner){
+    if (sharedViewModel.showOwnershipDialog.value
+        && sharedViewModel.ownershipStatusDelayed == OwnershipStatus.NotOwner
+        && !showNfcDialog.value){
+        InfoDialog(
+            openDialogCustom = sharedViewModel.showOwnershipDialog,
+            title = stringResource(R.string.ownershipTitle),
+            message = stringResource(R.string.ownershipText),
+            isActionButtonVisible = true,
+            buttonTitle = stringResource(R.string.moreInfo),
+            buttonAction =
+            {
+                uriHandler.openUri("https://satochip.io/satodime-ownership-explained/")
+            },)
     }
 
     // NfcDialog
@@ -519,7 +597,6 @@ fun VaultCards(
 fun VaultsViewTabScreen(vault: CardVault?) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Token", "NFT")
-//    val tabs = listOf("Token", "NFT", "History")
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(
@@ -542,7 +619,6 @@ fun VaultsViewTabScreen(vault: CardVault?) {
         when (tabIndex) {
             0 -> vault?.let { VaultsViewToken(it) }
             1 -> vault?.let { VaultsViewNft(it) }
-//            2 -> VaultsViewHistory()
         }
     }
 }
@@ -585,44 +661,18 @@ fun VaultsViewNft(vault: CardVault) {
     }
 }
 
-// todo remove
-@Composable
-fun VaultsViewTokenOld(vault: CardVault) {
-    LazyColumn {
-        items(1) {//TODO add tokens
-            VaultsViewTokenRowOld(vault)
-            Divider(
-                modifier = Modifier
-                    .background(MaterialTheme.colors.primary)
-                    .padding(start = 20.dp, end = 20.dp),
-                thickness = 1.dp,
-                color = Color.DarkGray
-            )
-        }
-    }
-}
-
 @Composable
 fun VaultsViewTokenRow(asset: Asset) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
-            .padding(10.dp)
+            .padding(5.dp)
             .fillMaxWidth()
             .height(80.dp)
     ) {
         // todo add explorer link
-//        Image(
-//            painter = painterResource(id = R.drawable.ic_sato_small), //todo!
-//            //painter =  painterResource(id = vault.coin.painterResourceId),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(10.dp)
-//                .size(40.dp),
-//            contentScale = ContentScale.Crop
-//        )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(asset.iconUrl ?: "")
@@ -634,35 +684,35 @@ fun VaultsViewTokenRow(asset: Asset) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .padding(10.dp)
-                .size(40.dp),
+                .size(60.dp),
             //colorFilter = ColorFilter.tint(Color.Blue)
         )
 
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Text(
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = asset.name,// vault.displayName
+                text = "${asset.name}",// vault.displayName
             )
+            // TOKEN BALANCE
             Text(
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = "${asset.balance}/${asset.decimals}" // todo format //getBalance(vault)
+                text = formatBalance(balanceString = asset.balance, decimalsString = asset.decimals, symbol = asset.symbol)
+            )
+            // VALUE IN SECOND CURRENCY
+            Text(
+                fontSize = 10.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
+                //text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
             )
         }
 
-        Spacer(Modifier.weight(1f))
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
-            )
-        }
     }
 }
 
@@ -670,10 +720,10 @@ fun VaultsViewTokenRow(asset: Asset) {
 fun VaultsViewNftRow(asset: Asset) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
-            .padding(10.dp)
+            .padding(5.dp)
             .fillMaxWidth()
             .height(80.dp)
     ) {
@@ -681,98 +731,56 @@ fun VaultsViewNftRow(asset: Asset) {
         // todo show big image
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(asset.nftImageLink ?: "")
+                .data(sanitizeNftImageUrlString(asset.nftImageLink ?: "")) //.data(asset.nftImageLink ?: "")
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_sato_small),
             error = painterResource(R.drawable.ic_sato_small),
             contentDescription = (asset.nftName ?: asset.contract ?: ""),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(60.dp),
             //colorFilter = ColorFilter.tint(Color.Blue)
         )
-//        Image(
-//            painter = painterResource(id = R.drawable.ic_sato_small), //todo!
-//            //painter =  painterResource(id = vault.coin.painterResourceId),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(10.dp)
-//                .size(40.dp),
-//            contentScale = ContentScale.Crop
-//        )
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Text(
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
                 text = "${asset.nftName ?: asset.contract}",// todo format
             )
+            // NFT BALANCE
             Text(
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = "${asset.nftDescription ?: asset.tokenid}" // todo format //getBalance(vault)
+                text = formatBalance(balanceString = asset.balance, decimalsString = asset.decimals, symbol = asset.symbol)
             )
+            // VALUE IN SECOND CURRENCY
+            Text(
+                fontSize = 10.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
+            )
+            // DESCRIPTION
+//            Text(
+//                fontSize = 10.sp,
+//                style = MaterialTheme.typography.body1,
+//                color = MaterialTheme.colors.secondary,
+//                text = "${asset.nftDescription ?: asset.tokenid}"
+//            )
         }
 
-        Spacer(Modifier.weight(1f))
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
-            )
-        }
-    }
-}
-
-// todo remove
-@Composable
-fun VaultsViewTokenRowOld(vault: CardVault) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .background(MaterialTheme.colors.primary)
-            .padding(10.dp)
-            .fillMaxWidth()
-            .height(80.dp)
-    ) {
-        Image(
-            painter = painterResource(id = vault.coin.painterResourceId),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(10.dp)
-                .size(40.dp),
-            contentScale = ContentScale.Crop
-        )
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = vault.displayName
-            )
-            Text(
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = getBalance(vault)
-            )
-        }
-
-        Spacer(Modifier.weight(1f))
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = vault.currencyAmount
-            )
-        }
+//        Spacer(Modifier.weight(1f))
+//        Column(modifier = Modifier.padding(20.dp)) {
+//            Text(
+//                fontSize = 14.sp,
+//                style = MaterialTheme.typography.body1,
+//                color = MaterialTheme.colors.secondary,
+//                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
+//            )
+//        }
     }
 }
 

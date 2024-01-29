@@ -108,4 +108,21 @@
     <string name="your_vault_has_been_successfully_created_and_sealed">Your vault has been successfully created and sealed.</string>
     <string name="create_your_vault">Create your vault</string>
     <string name="you_are_about_to_create_and_seal_a_vault">You are about to create and seal a vault. A new key pair will be generated automatically.</string>
+    <string name="nocardscannedtitle">No card scanned</string>
+    <string name="noCardScannedText">You need to scan a card to display its information</string>
+    <string name="notAuthenticTitle">Warning</string>
+    <string name="notAuthenticText">Could not authenticate this card. \nGo to the card info screen to get more details.</string>
+    <string name="moreDetails">More details</string>
+    <string name="moreInfo">More info</string>
+    <string name="ownershipTitle">Warning</string>
+    <string name="ownershipText">You are not the owner of this card, so you cannot perform sensitive operations on the vaults such as: \n- Create and Seal \n- Unseal \n- Delete \n\nGet more information on how the get the ownership by cliking here.</string>
+    <string name="close">Close</string>
+    <string name="cardInfo">Card information</string>
+    <string name="transferOwnershipButton">Transfer ownership</string>
+    <string name="howToUseButton">How to use Satodime</string>
+    <string name="settingsButton">Settings</string>
+    <string name="termsOfServiceButton">Terms of service</string>
+    <string name="privacyPolicyButton">Privacy policy</string>
+    <string name="readyToScan">Ready to Scan</string>
+    <string name="holdYourSatodimeNearPhone">Hold your Satodime near your iPhone</string>
 </resources>

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.satochip.satodime.R
 import org.satochip.satodime.data.CardVault
+import org.satochip.satodime.util.formatBalance
 import org.satochip.satodime.util.getBalance
 
 @Composable
@@ -128,7 +129,14 @@ fun VaultCard(
                 color = Color.LightGray,
                 text = if (vault.isTestnet) "Testnet" else ""
             )
-            Balance(modifier = Modifier.offset(130.dp, 70.dp), vault)
+            Balance(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd), //.padding(10.dp),
+                    //.offset(130.dp, 70.dp),
+//                    .padding(top = 45.dp)
+//                    .padding(end = 20.dp),
+                vault
+            )
         }
     }
 }
@@ -144,27 +152,34 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.body1,
             color = Color.LightGray,
-            text = stringResource(R.string.total_balance)
+            text = stringResource(R.string.total_balance) // todo change
         )
         Text(
-            fontSize = 24.sp,
+            fontSize = 18.sp, //24.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.body1,
             color = Color.White,
-            text = vault.currencyAmount
+            text = formatBalance(
+                balanceString = vault.nativeAsset.balance,
+                decimalsString = vault.nativeAsset.decimals,
+                symbol = vault.nativeAsset.symbol)//vault.currencyAmount
         )
         Text(
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.body1,
             color = Color.LightGray,
-            text = getBalance(vault)
+            text = formatBalance(
+                balanceString = vault.nativeAsset.valueInSecondCurrency,
+                decimalsString = "0",
+                symbol = vault.nativeAsset.secondCurrency)//getBalance(vault)
         )
     }
 }
 
 @Composable
 fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> Unit) {
+    //todo: remove isFirstEmptyVault
     Card(
         modifier = Modifier
             .width(300.dp)

@@ -17,6 +17,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ private const val TAG = "UnsealWarningView"
 fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
     val context = LocalContext.current
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
     val vaults = sharedViewModel.cardVaults.value
     val vaultsSize = vaults?.size ?: 0
@@ -156,27 +158,28 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
                 // scan card
                 Log.d(TAG, "UnsealWarningView: clicked on unseal button!")
                 showNfcDialog.value = true // NfcDialog
+                isReadyToNavigate.value = true
                 sharedViewModel.unsealSlot(context as Activity, selectedVault - 1)
-                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-                    Log.d(TAG, "UnsealWarningView: successfully unsealed slot ${selectedVault -1}")
-                    // wait until NfcDialog has closed
-                    if (showNfcDialog.value == false){
-                        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
-                        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
-                            popUpTo(0)
-                        }
-                    }
-                    // add a delay to not display immediately the unsealCongrats view
-                    // TODO: test if correct behavior
-//                    thread {
-//                        runBlocking {
-//                            delay(5000)
-//                            navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
-//                                popUpTo(0)
-//                            }
+//                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+//                    Log.d(TAG, "UnsealWarningView: successfully unsealed slot ${selectedVault -1}")
+//                    // wait until NfcDialog has closed
+//                    if (showNfcDialog.value == false){
+//                        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
+//                        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+//                            popUpTo(0)
 //                        }
 //                    }
-                }
+//                    // add a delay to not display immediately the unsealCongrats view
+//                    // TODO: test if correct behavior
+////                    thread {
+////                        runBlocking {
+////                            delay(5000)
+////                            navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+////                                popUpTo(0)
+////                            }
+////                        }
+////                    }
+//                }
 
 //                if (NFCCardService.isConnected.value == true) {
 //                    if (NFCCardService.isOwner()) {
@@ -208,6 +211,35 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
     }
 
+//    if (sharedViewModel.resultCodeLive == NfcResultCode.Ok
+//        && isReadyToNavigate.value
+//        && !showNfcDialog.value) {
+//        // navigate
+//        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats for $selectedVault")
+//        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault")
+////        {
+////            popUpTo(0)
+////        }
+//    }
+
+    // auto-navigate when action is performed successfully
+    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
+        Log.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        //delay(1.seconds)
+        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+            || isReadyToNavigate.value == false
+            || showNfcDialog.value) {
+            Log.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            delay(1.seconds)
+        }
+        //Log.d(TAG, "UnsealWarningView LaunchedEffect after while delay 1s ${sharedViewModel.resultCodeLive}")
+        //delay(1.seconds)
+        // navigate
+        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
+        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
+            popUpTo(0)
+        }
+    }
 }
 
 @Preview(showBackground = true)

@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.Coin
 import org.satochip.satodime.data.NfcResultCode
@@ -58,6 +59,7 @@ import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
 import java.security.MessageDigest
 import java.security.SecureRandom
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "ExpertModeView"
 
@@ -69,7 +71,8 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
     var entropy by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
-    val selectedCoin = Coin.valueOf(selectedCoinName)
+    val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
+    //val selectedCoin = Coin.valueOf(selectedCoinName)
 
     Box(
         modifier = Modifier
@@ -197,22 +200,24 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                 )
 
                 // scan card
-                Log.d(TAG, "CreateVaultView: clicked on create button!")
+                Log.d(TAG, "ExpertModeView: clicked on create button!")
                 showNfcDialog.value = true // NfcDialog
+                isReadyToNavigate.value = true
                 sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= isTestnet, entropyBytes= entropyBytes)
-                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-                    Log.d(TAG, "CreateVaultView: successfully created slot ${selectedVault - 1}")
-                    // wait until NfcDialog has closed
-                    if (showNfcDialog.value == false) {
-                        Log.d(TAG, "CreateVaultView navigating to CreateCongrats view")
-                        navController.navigate(
-                            SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
-                        ) {
-                            popUpTo(0)
-                        }
-                    }
 
-                }
+//                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+//                    Log.d(TAG, "ExpertModeView: successfully created slot ${selectedVault - 1}")
+//                    // wait until NfcDialog has closed
+//                    if (showNfcDialog.value == false) {
+//                        Log.d(TAG, "ExpertModeView navigating to CreateCongrats view")
+//                        navController.navigate(
+//                            SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName"
+//                        ) {
+//                            popUpTo(0)
+//                        }
+//                    }
+//
+//                }
 
 //                if (NFCCardService.isConnected.value == true) {
 //                    if (NFCCardService.isOwner()) {
@@ -248,6 +253,22 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
     // NfcDialog
     if (showNfcDialog.value){
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
+    // auto-navigate when action is performed successfully
+    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
+        Log.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+            || isReadyToNavigate.value == false
+            || showNfcDialog.value) {
+            Log.d(TAG, "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            delay(1.seconds)
+        }
+        // navigate
+        Log.d(TAG, "ExpertModeView navigating to CongratsVaultCreated view")
+        navController.navigate(SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName") {
+            popUpTo(0)
+        }
     }
 
 }

@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.ui.components.InfoDialog
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGray
@@ -52,6 +53,7 @@ private const val TAG = "TransferOwnershipView"
 @Composable
 fun TransferOwnershipView(navController: NavController, viewModel: SharedViewModel) {
     val context = LocalContext.current
+    val showNoCardScannedDialog = remember { mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
 
     Box(
@@ -111,10 +113,13 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
             onClick = {
 
                 Log.d(TAG, "Clicked on release button!")
-                // scan card
-                showNfcDialog.value = true // NfcDialog
-                viewModel.releaseOwnership(context as Activity)
-
+                if (viewModel.isCardDataAvailable) {
+                    // scan card
+                    showNfcDialog.value = true // NfcDialog
+                    viewModel.releaseOwnership(context as Activity)
+                } else {
+                    showNoCardScannedDialog.value = true
+                }
 //                if (NFCCardService.isReadingFinished.value != true) {
 //                    Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
 //                } else if (viewModel.resultCodeLive == NfcResultCode.Ok) {
@@ -153,6 +158,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         ) {
             Text(stringResource(R.string.transfer))
         }
+        // CANCEL BUTTON
         Button(
             onClick = {
                 Toast.makeText(context, "Action cancelled", Toast.LENGTH_SHORT).show() // todo translate
@@ -170,6 +176,19 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         ) {
             Text(stringResource(R.string.cancel))
         }
+    }
+
+    // no card scanned dialog
+    if (showNoCardScannedDialog.value
+        && !viewModel.isCardDataAvailable
+        && !showNfcDialog.value){
+        InfoDialog(
+            openDialogCustom = showNoCardScannedDialog,
+            title = "noCardScannedTitle",
+            message = "noCardScannedText",
+            isActionButtonVisible = false,
+            buttonTitle = "",
+            buttonAction = {},)
     }
 
     // NfcDialog

@@ -20,6 +20,7 @@ import org.satochip.client.SatodimeKeyslotStatus
 import org.satochip.client.SatodimeStatus
 import org.satochip.io.APDUResponse
 import org.satochip.satodime.BuildConfig.DEBUG
+import org.satochip.satodime.data.AuthenticityStatus
 //import org.satochip.satodime.data.Asset
 import org.satochip.satodime.data.CardPrivkey
 import org.satochip.satodime.data.CardSlot
@@ -54,8 +55,8 @@ object NFCCardService {
 
     // cards require setup
     var waitForSetup = MutableLiveData(false) // TODO: rename to isSetupDone?
-    var isOwner = MutableLiveData(false)
-    var isAuthentic = MutableLiveData(false)
+    var isOwner = MutableLiveData(false) // toodo deprecate use ownershipStatus instead
+    var isAuthentic = MutableLiveData(false) // todo deprecate use authenticityStatus
     var cardSlots = MutableLiveData<List<CardSlot>>()
     var authenticationKeyHex: String? = null
     var unlockSecret: String? = null
@@ -65,6 +66,7 @@ object NFCCardService {
 
     // added
     var ownershipStatus = MutableLiveData<OwnershipStatus>(OwnershipStatus.Unknown)
+    var authenticityStatus = MutableLiveData<AuthenticityStatus>(AuthenticityStatus.Unknown)
     var isCardDataAvailable = MutableLiveData(false)
     var cardStatus = MutableLiveData<ApplicationStatus>()
     var satodimeStatusNew = MutableLiveData<SatodimeStatus>()
@@ -152,6 +154,11 @@ object NFCCardService {
     fun readCard() {
         Log.d(TAG, "In NFCCardService readCard START")
         try {
+            // reinitialize card state
+            ownershipStatus.postValue(OwnershipStatus.Unknown)
+            authenticityStatus.postValue(AuthenticityStatus.Unknown)
+            isCardDataAvailable.postValue(false)
+
             val rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             Log.d(TAG, "In NFCCardService readCard card selected!")
             // cardStatus
@@ -194,8 +201,13 @@ object NFCCardService {
             // authenticity
             var authResults = cmdSet.cardVerifyAuthenticity()
             if (authResults != null) {
-                var isAuthenticBool: Boolean = (authResults[0].compareTo("OK") == 0)
-                isAuthentic.postValue(isAuthenticBool)
+                var isAuthenticBool: Boolean = (authResults[0].compareTo("OK") == 0) // todo remove
+                isAuthentic.postValue(isAuthenticBool) // todo remove
+                if (authResults[0].compareTo("OK") == 0){
+                    authenticityStatus.postValue(AuthenticityStatus.Authentic)
+                } else {
+                    authenticityStatus.postValue(AuthenticityStatus.NotAuthentic)
+                }
                 certificateList.postValue(authResults.toMutableList())
             }
             if (DEBUG) {
@@ -520,7 +532,7 @@ object NFCCardService {
             Log.e(TAG, "Failed to seal vault with error: ${e.localizedMessage}")
             Log.e(TAG, Log.getStackTraceString(e))
             resultCode = NfcResultCode.FailedToSealVault // todo deprecate
-            resultCodeLive.postValue(NfcResultCode.FailedToResetVault)
+            resultCodeLive.postValue(NfcResultCode.FailedToSealVault)
             resultMsg = "Failed to seal vault with error: ${e.localizedMessage}"
         }
     }
@@ -705,6 +717,7 @@ object NFCCardService {
 
             // update just cardSlot for specific vault
             //satodimeStatus = cmdSet.satodimeStatus // todo: update satodimeStatus?
+            Log.d(TAG, "NFCCardService reset update slots after reset START")
             val updatedCardSlots = cardSlots.value?.toMutableList() //mutableListOf<CardSlot>()
             if (updatedCardSlots != null && slotIndex<updatedCardSlots.size && updatedCardSlots[slotIndex] != null){
                 var oldCardSlot = updatedCardSlots[slotIndex]
@@ -717,12 +730,14 @@ object NFCCardService {
                 )
                 updatedCardSlots[slotIndex] = newCardSlot
             }
+            Log.d(TAG, "NFCCardService reset update slots after reset END")
             cardSlots.postValue(updatedCardSlots)
+            Log.d(TAG, "NFCCardService reset update slots after reset UPDATED!")
 
             resultCode = NfcResultCode.Ok // todo remove
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault reset successfully for $authentikeyHex!"
-            Log.e(TAG, "Vault reset successfully for $authentikeyHex!")
+            Log.i(TAG, "Vault reset successfully for $authentikeyHex!")
 
         } catch (e: Exception) {
             Log.e(TAG, "Failed to reset vault with error: ${e.localizedMessage}")

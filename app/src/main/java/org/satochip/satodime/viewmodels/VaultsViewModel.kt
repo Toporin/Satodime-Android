@@ -154,7 +154,7 @@ class VaultsViewModel(app: Application) : AndroidViewModel(app) {
 //            return@map null
 
             println("DEBUG SharedViewModel mapCardSlotsToVaults create cardVault START")
-            var cardVault = CardVault(it)
+            var cardVault = CardVault(it, context)
             //println("DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
             // get balance from api
             //val balance = cardVault.getBalanceDebug()

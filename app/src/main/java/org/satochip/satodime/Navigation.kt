@@ -3,6 +3,7 @@ package org.satochip.satodime
 import CardInfoView
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -29,12 +30,15 @@ fun Navigation() {
     //Lock screen orientation to portrait
     context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-    val settings = context.getSharedPreferences(SatodimePreferences::class.simpleName, 0)
+    //val settings = context.getSharedPreferences(SatodimePreferences::class.simpleName, 0)
+    val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
     val startDestination =
         if (settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, true)) {
+            Log.d(TAG, "Navigation: Start onboarding screens!")
             settings.edit().putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, false).apply()
             SatodimeScreen.FirstWelcome.name
         } else {
+            Log.d(TAG, "Navigation: Skip onboarding screens!")
             SatodimeScreen.Vaults.name
         }
 
@@ -148,21 +152,16 @@ fun Navigation() {
         // SHOW PRIVKEY DETAILS
         //todo simplify navigation, only provide vaultIndex & privdata type (legacy, WIF, entropy)
         composable(
-            route = SatodimeScreen.ShowPrivateKeyData.name + "/{${NavigationParam.Label.name}}"
-                    + "/{${NavigationParam.SelectedVault}}"
-                    + "?${NavigationParam.SubLabel.name}={${NavigationParam.SubLabel.name}}"
-                    + "&${NavigationParam.Data.name}={${NavigationParam.Data.name}}",
+            route = SatodimeScreen.ShowPrivateKeyData.name
+                    + "/{${NavigationParam.SelectedVault.name}}"
+                    + "/{${NavigationParam.Label.name}}" // specify format legacy/wif/entropy
+                    + "?${NavigationParam.Data.name}={${NavigationParam.Data.name}}",
             arguments = listOf(
-                navArgument(NavigationParam.Label.name) {
-                    type = NavType.StringType
-                },
                 navArgument(NavigationParam.SelectedVault.name) {
                     type = NavType.IntType
                 },
-                navArgument(NavigationParam.SubLabel.name) {
+                navArgument(NavigationParam.Label.name) {
                     type = NavType.StringType
-                    nullable = true
-                    defaultValue = ""
                 },
                 navArgument(NavigationParam.Data.name) {
                     type = NavType.StringType
@@ -172,11 +171,42 @@ fun Navigation() {
             )
         ) {
             val label = it.arguments?.getString(NavigationParam.Label.name) ?: ""
-            val subLabel = it.arguments?.getString(NavigationParam.SubLabel.name) ?: ""
             val data = it.arguments?.getString(NavigationParam.Data.name) ?: ""
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            ShowPrivateKeyDataView(navController, sharedViewModel, selectedVault, label, data, subLabel)
+            ShowPrivateKeyDataView(navController, sharedViewModel, selectedVault, label, data)
         }
+
+        //OLD
+//        composable(
+//            route = SatodimeScreen.ShowPrivateKeyData.name + "/{${NavigationParam.Label.name}}"
+//                    + "/{${NavigationParam.SelectedVault}}"
+//                    + "?${NavigationParam.SubLabel.name}={${NavigationParam.SubLabel.name}}"
+//                    + "&${NavigationParam.Data.name}={${NavigationParam.Data.name}}",
+//            arguments = listOf(
+//                navArgument(NavigationParam.Label.name) {
+//                    type = NavType.StringType
+//                },
+//                navArgument(NavigationParam.SelectedVault.name) {
+//                    type = NavType.IntType
+//                },
+//                navArgument(NavigationParam.SubLabel.name) {
+//                    type = NavType.StringType
+//                    nullable = true
+//                    defaultValue = ""
+//                },
+//                navArgument(NavigationParam.Data.name) {
+//                    type = NavType.StringType
+//                    nullable = true
+//                    defaultValue = ""
+//                },
+//            )
+//        ) {
+//            val label = it.arguments?.getString(NavigationParam.Label.name) ?: ""
+//            val subLabel = it.arguments?.getString(NavigationParam.SubLabel.name) ?: ""
+//            val data = it.arguments?.getString(NavigationParam.Data.name) ?: ""
+//            val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
+//            ShowPrivateKeyDataView(navController, sharedViewModel, selectedVault, label, data, subLabel)
+//        }
         // EXPERT MODE 
         // TODO: merge with create Vault
         composable(route = SatodimeScreen.ExpertMode.name + "/{${NavigationParam.SelectedCoin.name}}"
@@ -217,7 +247,7 @@ fun Navigation() {
         }
         // MENU
         composable(route = SatodimeScreen.MenuView.name) {
-            MenuView(navController)
+            MenuView(navController, sharedViewModel)
         }
         // CARDINFO
         composable(route = SatodimeScreen.CardInfoView.name) {

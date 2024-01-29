@@ -21,6 +21,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,17 +34,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.ui.components.InfoDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.DarkBlue
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
+import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun MenuView(navController: NavController) {
+fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
+    val showNoCardScannedDialog = remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     Box(
         modifier = Modifier
@@ -73,17 +79,23 @@ fun MenuView(navController: NavController) {
                 .fillMaxWidth()
                 .height(110.dp)
         ) {
+            // CARD INFO
             MenuCard(
-                "Card's information",
+                stringResource(R.string.cardInfo),
                 TextAlign.Left,
                 180,
                 110, Color(0xFF67889B),
                 R.drawable.cards_info
             ) {
-                navController.navigate(SatodimeScreen.CardInfoView.name)
+                if (sharedViewModel.isCardDataAvailable){
+                    navController.navigate(SatodimeScreen.CardInfoView.name)
+                } else {
+                    showNoCardScannedDialog.value = true
+                }
             }
+            // RELEASE OWNERSHIP
             MenuCard(
-                "Transfer ownership",
+                stringResource(R.string.transferOwnershipButton),
                 TextAlign.Left,
                 180,
                 110,
@@ -102,13 +114,20 @@ fun MenuView(navController: NavController) {
                 .height(120.dp)
         ) {
             MenuCard(
-                "How to use Satodime",
+                stringResource(R.string.howToUseButton),
                 TextAlign.Left,
                 220, 110,
                 Color(0xFF64B3B3),
                 R.drawable.how_to
             ) { uriHandler.openUri("https://satochip.io/setup-use-satodime-on-mobile/") }
-            MenuCard("Settings", TextAlign.Left, 150, 110, LightGray, R.drawable.settings) {
+            MenuCard(
+                stringResource(R.string.settingsButton),
+                TextAlign.Left,
+                150,
+                110,
+                LightGray,
+                R.drawable.settings
+            ) {
                 navController.navigate(SatodimeScreen.SettingsView.name)
             }
         }
@@ -120,10 +139,10 @@ fun MenuView(navController: NavController) {
                 .fillMaxWidth()
                 .height(75.dp)
         ) {
-            MenuCard("Terms of service", TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.termsOfServiceButton), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/terms-of-service/")
             }
-            MenuCard("Privacy policy", TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.privacyPolicyButton), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/privacy-policy/")
             }
         }
@@ -164,6 +183,17 @@ fun MenuView(navController: NavController) {
             )
         }
         Spacer(Modifier.weight(1f))
+    }
+
+    if (showNoCardScannedDialog.value
+        && !sharedViewModel.isCardDataAvailable){
+        InfoDialog(
+            openDialogCustom = showNoCardScannedDialog,
+            title = stringResource(R.string.nocardscannedtitle),
+            message = stringResource(R.string.noCardScannedText),
+            isActionButtonVisible = false,
+            buttonTitle = "",
+            buttonAction = {},)
     }
 }
 
@@ -216,6 +246,6 @@ fun MenuCard(
 @Composable
 fun MenuViewPreview() {
     SatodimeTheme {
-        MenuView(rememberNavController())
+        MenuView(rememberNavController(), viewModel(factory = SharedViewModel.Factory))
     }
 }
