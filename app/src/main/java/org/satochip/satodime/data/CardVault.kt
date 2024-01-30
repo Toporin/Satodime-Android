@@ -69,7 +69,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
-            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol)
+            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             Log.w(TAG, "Using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
 
@@ -170,7 +170,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
-            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol)
+            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             Log.w(TAG, "CardVault getAssetList using mockup address $addressCopy instead of ${nativeAsset}")
         }
 
@@ -197,7 +197,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
-            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol)
+            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             Log.w(TAG, "CardVault fetchNftList using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
 
@@ -220,9 +220,9 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
 }
 
-private fun getMockupAddressForDebug(coin_symbol: String): String {
+private fun getMockupAddressForDebug(coin_symbol: String): String? {
     //for debug purpose only
-    var addressCopy = ""
+    var addressCopy : String?= null
     if (coin_symbol == "XCP") {
         addressCopy = "1Do5kUZrTyZyoPJKtk4wCuXBkt5BDRhQJ4"
     } else if (coin_symbol == "ETH") {
@@ -236,6 +236,10 @@ private fun getMockupAddressForDebug(coin_symbol: String): String {
         addressCopy = "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2" // whale
     } else if (coin_symbol == "BNB") {
         addressCopy = "0x560eE56e87256E69AC6CC7aA00c54361fFe9af94" // usdc
+    } else if (coin_symbol == "BCH") {
+        addressCopy = "bitcoincash:pqtdjp63swypep62kyfxzh2k6kpq5weydvfqs9wpk2"
+    } else if (coin_symbol == "LTC") {
+        addressCopy = "ltc1qr07zu594qf63xm7l7x6pu3a2v39m2z6hh5pp4t"
     }
     return addressCopy
 }
