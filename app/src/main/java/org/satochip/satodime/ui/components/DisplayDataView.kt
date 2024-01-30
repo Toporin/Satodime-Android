@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.satochip.satodime.R
 import org.satochip.satodime.data.CardVault
+import org.satochip.satodime.data.SlotState
 
 private val topBoxHeight = 225.dp
 
@@ -52,7 +53,7 @@ fun DisplayDataView(
             .fillMaxWidth()
             .height(topBoxHeight)
             .paint(
-                painterResource(if (vault.isSealed) R.drawable.background_for_card1 else R.drawable.unsealed_card),
+                painterResource(if (vault.state == SlotState.SEALED) R.drawable.background_for_card1 else R.drawable.unsealed_card),
                 contentScale = ContentScale.FillBounds
             )
     ) {
@@ -78,8 +79,8 @@ fun DisplayDataView(
                 text = "0$index"
             )
             SealedIndicator(
-                modifier = Modifier.width(if (vault.isSealed) 60.dp else 80.dp),
-                isSealed = vault.isSealed
+                modifier = Modifier.width(if (vault.state == SlotState.SEALED) 60.dp else 80.dp),
+                isSealed = (vault.state == SlotState.SEALED)
             )
         }
         Image(
@@ -138,7 +139,7 @@ fun DisplayDataView(
                 text = data
             )
             DataAsQrCode(data)
-            if(vault.isSealed) {
+            if(vault.state == SlotState.SEALED) {
                 Text(
                     modifier = Modifier
                         .padding(20.dp),

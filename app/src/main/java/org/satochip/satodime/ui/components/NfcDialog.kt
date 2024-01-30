@@ -114,20 +114,6 @@ fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Bo
                 }
             }
 
-            //.......................................................................
-//            Image(
-//                painter = painterResource(id = R.drawable.ethereum), // todo
-//                contentDescription = null, // decorative
-//                contentScale = ContentScale.Fit,
-////                colorFilter  = ColorFilter.tint(
-////                    color = Color.Green // todo
-////                ),
-//                modifier = Modifier
-//                    .padding(top = 35.dp)
-//                    .height(70.dp)
-//                    .fillMaxWidth(),
-//                )
-
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = stringResource(id = R.string.readyToScan),
@@ -158,18 +144,6 @@ fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Bo
                         .padding(top = 10.dp, start = 25.dp, end = 25.dp)
                         .fillMaxWidth(),
                 )
-
-//                TextButton(onClick = {
-//                    openDialogCustom.value = false
-//                }) {
-//
-//                    Text(
-//                        "Cancel",
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color.Blue, // todo
-//                        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
-//                    )
-//                }
             }
             //.......................................................................
             Row(

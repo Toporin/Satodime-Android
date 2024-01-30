@@ -23,7 +23,6 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,11 +40,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
-import org.satochip.satodime.services.NFCCardService
-import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
@@ -54,7 +50,6 @@ import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.NavigationParam
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
-import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "ShowPrivateKeyView"
@@ -104,15 +99,6 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                 requestedPrivkeyType.value = RequestedPrivkeyType.LEGACY
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
-                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-                    Log.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
-//                    navController.navigate(
-//                        SatodimeScreen.ShowPrivateKeyData.name
-//                                + "/$selectedVault"
-//                                + "/legacy"
-//                                + "?${NavigationParam.Data.name}=${privkey?.privkeyHex}"
-//                    )
-                }
             }
 
             // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
@@ -200,25 +186,19 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
 
     // auto-navigate to privkey when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, requestedPrivkeyType) {
-    //LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${showNfcDialog.value}")
         Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${requestedPrivkeyType.value}")
-        //sharedViewModel.resultCodeLive = NfcResultCode.Busy // avoid to trigger launch effect directly
-        //delay(1.seconds)
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || requestedPrivkeyType.value == RequestedPrivkeyType.NONE
             || showNfcDialog.value) {
             Log.d(TAG, "ShowPrivateKeyView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
-        //Log.d(TAG, "ShowPrivateKeyView LaunchedEffect after while delay 1s ${sharedViewModel.resultCodeLive}")
-        //delay(1.seconds)
         // navigate
         Log.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view ${sharedViewModel.resultCodeLive}")
         Log.d(TAG, "ShowPrivateKeyView selectedVault: $selectedVault")
         Log.d(TAG, "ShowPrivateKeyView requestedPrivkeyType: ${requestedPrivkeyType.value}")
-        Log.d(TAG, "ShowPrivateKeyView data: ${sharedViewModel.cardPrivkeys[selectedVault - 1]?.privkeyHex}")
         when (requestedPrivkeyType.value){
             RequestedPrivkeyType.LEGACY -> {
                 navController.navigate(
@@ -250,56 +230,6 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
     }
 
-//    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, requestedPrivkeyType) {
-//        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-//        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${showNfcDialog.value}")
-//        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${requestedPrivkeyType.value}")
-//        delay(1.seconds)
-//        if (sharedViewModel.resultCodeLive == NfcResultCode.Ok
-//            && requestedPrivkeyType.value != RequestedPrivkeyType.NONE
-//            && showNfcDialog.value == false) {
-//            Log.d(TAG,"ShowPrivateKeyView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
-//
-//            delay(1.seconds)
-//            // navigate
-//            Log.d(TAG,"ShowPrivateKeyView navigating to ShowPrivateKeyData view ${sharedViewModel.resultCodeLive}")
-//            Log.d(TAG, "ShowPrivateKeyView selectedVault: $selectedVault")
-//            Log.d(TAG, "ShowPrivateKeyView requestedPrivkeyType: ${requestedPrivkeyType.value}")
-//            Log.d(TAG, "ShowPrivateKeyView data: ${sharedViewModel.cardPrivkeys[selectedVault - 1]?.privkeyHex}")
-//            when (requestedPrivkeyType.value) {
-//                RequestedPrivkeyType.LEGACY -> {
-//                    navController.navigate(
-//                        SatodimeScreen.ShowPrivateKeyData.name
-//                                + "/$selectedVault"
-//                                + "/legacy"
-//                                + "?${NavigationParam.Data.name}=${sharedViewModel.cardPrivkeys[selectedVault - 1]?.privkeyHex}"
-//                    )
-//                }
-//
-//                RequestedPrivkeyType.WIF -> {
-//                    navController.navigate(
-//                        SatodimeScreen.ShowPrivateKeyData.name
-//                                + "/$selectedVault"
-//                                + "/wif"
-//                                + "?${NavigationParam.Data.name}=${sharedViewModel.cardPrivkeys[selectedVault - 1]?.privkeyWif}"
-//                    )
-//                }
-//
-//                RequestedPrivkeyType.ENTROPY -> {
-//                    navController.navigate(
-//                        SatodimeScreen.ShowPrivateKeyData.name
-//                                + "/$selectedVault"
-//                                + "/entropy"
-//                                + "?${NavigationParam.Data.name}=${sharedViewModel.cardPrivkeys[selectedVault - 1]?.entropyHex}"
-//                    )
-//                }
-//
-//                RequestedPrivkeyType.NONE -> {
-//                    // do nothing...
-//                }
-//            }
-//        }
-//    }
 }
 
 @Composable

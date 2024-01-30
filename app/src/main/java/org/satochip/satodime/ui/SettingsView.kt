@@ -53,7 +53,6 @@ import org.satochip.satodime.R
 import org.satochip.satodime.data.Currency
 import org.satochip.satodime.data.defaultCurrency
 import org.satochip.satodime.services.NFCCardService
-import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
@@ -61,11 +60,8 @@ import org.satochip.satodime.util.SatodimePreferences
 
 @Composable
 fun SettingsView(navController: NavController) {
-    val couroutineScope = rememberCoroutineScope() // todo remove
     val context = LocalContext.current as Activity
-    //val settings = context.getSharedPreferences(SatodimePreferences::class.simpleName, 0)
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
-    val satodimeStore = SatodimeStore(context) // todo remove
     var showCurrenciesMenu by remember { mutableStateOf(false) }
     var starterIntro by remember {
         mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,true))
@@ -73,12 +69,10 @@ fun SettingsView(navController: NavController) {
     var debugMode by remember {
         mutableStateOf(settings.getBoolean(SatodimePreferences.DEBUG_MODE.name,false))
     }
-    //val savedCurrency = satodimeStore.selectedCurrency.collectAsState(initial = defaultCurrency.name)
     val savedCurrency by remember {
         mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name,"USD"))
     }
     var selectedCurrency = savedCurrency //savedCurrency.value
-
 
     Box(
         modifier = Modifier

@@ -9,7 +9,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
-import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.DisplayDataView
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.viewmodels.SharedViewModel
@@ -33,7 +32,7 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
         index = selectedVault,
         title = stringResource(R.string.add_funds),
         label = stringResource(R.string.deposit_address),
-        data = cardVault.address
+        data = cardVault.nativeAsset.address
     )
 }
 

@@ -40,8 +40,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
-import org.satochip.satodime.services.NFCCardService
-import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.EmptyVaultCard
 import org.satochip.satodime.ui.components.NfcDialog
@@ -63,11 +61,10 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
     val vaults = sharedViewModel.cardVaults.value
-    val vaultsSize = vaults?.size ?: 0
-    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
-        Log.e(TAG, "ResetWarningView VAULT IS NULL!!")
-        //return
-    }
+//    val vaultsSize = vaults?.size ?: 0
+//    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
+//        Log.e(TAG, "ResetWarningView VAULT IS NULL!!")
+//    }
 
     RedGradientBackground()
     TopLeftBackButton(navController)
@@ -180,10 +177,9 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             )
         }
         Spacer(Modifier.weight(1f))
-        val resetFailureText = stringResource(R.string.reset_failure)
-        val cardLoadingText = stringResource(R.string.card_loading_please_try_again_in_few_seconds)
-        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
-        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
+//        val resetFailureText = stringResource(R.string.reset_failure)
+//        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
+//        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         val pleaseConfirmBackupText = stringResource(R.string.please_confirm_that_you_have_made_a_backup)
         BottomButton(
             onClick = {
@@ -194,43 +190,10 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                     showNfcDialog.value = true // NfcDialog
                     isReadyToNavigate.value = true // ready to navigate to next view once action is done
                     sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
-//                    if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-//                        Log.d(TAG, "ResetWarningView: successfully reset slot ${selectedVault - 1}")
-//                        // wait until NfcDialog has closed
-//                        if (showNfcDialog.value == false) {
-//                            Log.d(TAG, "ResetWarningView navigating to ResetCongrats view")
-//                            navController.navigate(
-//                                SatodimeScreen.ResetCongratsView.name + "/$selectedVault"
-//                            ) {
-//                                popUpTo(0)
-//                            }
-//                        }
-//                    }
+                } else {
+                    Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
                 }
 
-//                if (isBackupConfirmed.value) {
-//                    if (NFCCardService.isConnected.value == true) {
-//                        if (NFCCardService.isOwner()) {
-//                            if (NFCCardService.isReadingFinished.value != true) {
-//                                Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-//                            } else if (NFCCardService.resetOld(selectedVault - 1)) {
-//                                navController.navigate(
-//                                    SatodimeScreen.ResetCongratsView.name + "/$selectedVault"
-//                                ) {
-//                                    popUpTo(0)
-//                                }
-//                            } else {
-//                                Toast.makeText(context, resetFailureText, Toast.LENGTH_SHORT).show()
-//                            }
-//                        } else {
-//                            Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
-//                        }
-//                    } else {
-//                        Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
-//                }
             },
             color = Color.Red,
             text = stringResource(R.string.reset_the_vault)
@@ -242,32 +205,16 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
     }
 
-//    if (sharedViewModel.resultCodeLive == NfcResultCode.Ok
-//        && isReadyToNavigate.value
-//        && !showNfcDialog.value) {
-//        // navigate
-//        Log.d(TAG, "ResetWarningView navigating to ResetCongratsView!")
-//        navController.navigate(SatodimeScreen.ResetCongratsView.name + "/$selectedVault")
-////        {
-////            popUpTo(0)
-////        }
-//    }
-
-
     // auto-navigate when action is performed successfully
     // todo improve?
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, isReadyToNavigate) {
         Log.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        //delay(1.seconds)
-        //Log.d(TAG, "ResetWarningView LaunchedEffect START after 1s ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             Log.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
-        //Log.d(TAG, "ResetWarningView LaunchedEffect after while delay 1s ${sharedViewModel.resultCodeLive}")
-        //delay(1.seconds)
         // navigate
         Log.d(TAG, "ResetWarningView navigating to ResetCongratsView")
         navController.navigate(SatodimeScreen.ResetCongratsView.name + "/$selectedVault") {

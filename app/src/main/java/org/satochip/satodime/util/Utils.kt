@@ -1,24 +1,16 @@
 package org.satochip.satodime.util
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.text.NumberFormat
 import android.util.Log
 import org.satochip.javacryptotools.coins.BaseCoin
 import org.satochip.javacryptotools.coins.Bitcoin
 import org.satochip.javacryptotools.coins.BitcoinCash
+import org.satochip.javacryptotools.coins.Constants
 import org.satochip.javacryptotools.coins.Counterparty
 import org.satochip.javacryptotools.coins.Ethereum
 import org.satochip.javacryptotools.coins.Litecoin
 import org.satochip.javacryptotools.coins.UnsupportedCoin
-import org.satochip.javacryptotools.coins.Constants
 import org.satochip.satodime.BuildConfig
-import org.satochip.satodime.data.Coin
-import org.satochip.satodime.data.Currency
-import org.satochip.satodime.data.Token
 import java.text.DecimalFormat
-import java.util.Locale
 import kotlin.math.pow
 
 private const val TAG = "Utils"
@@ -67,7 +59,6 @@ fun getBalanceDouble(balanceString: String?, decimalsString: String?): Double?{
     val balanceDouble = balanceString.toDoubleOrNull() ?: return null
 
     //
-    //val balance = balanceDouble / (10.0).pow(decimalsDouble)
     val balance = balanceDouble / (10.0).pow(decimalsDouble)
     return balance
 }
@@ -81,7 +72,7 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
     val symbolString = symbol?:""
 
     if (balanceDouble == null){
-        return ""// "? $symbolString"
+        return "" // "? $symbolString"
     }
 
     // set the number of significant digits depending on coin
@@ -97,60 +88,22 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
     return "$balance $symbolString"
 }
 
-/////
-
-//
-fun getCurrencyAmount(coin: Coin, isTestnet: Boolean, balance: Double, currency: Currency) : String {
-    return try {
-        val rate = getCoinExplorer(coin, isTestnet).get_exchange_rate_between(currency.name.lowercase())
-        val formatter = NumberFormat.getNumberInstance(Locale.getDefault())//TODO platform specific
-        formatter.maximumFractionDigits = 2
-        val amount = formatter.format(balance * rate)
-        when(currency) {
-            Currency.USD -> "$$amount"
-            Currency.EUR -> "$amount€"
-            Currency.BTC -> "₿$amount"
-            Currency.ETH -> "$amount ETH"
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, Log.getStackTraceString(e))
-        "N/A"
-    }
-}
-
-fun getCoinBalance(coin: Coin, isTestnet: Boolean, address: String): Double? {
-    return try {
-        getCoinExplorer(coin, isTestnet).getBalance(address)
-    } catch (e: Exception) {
-        Log.e(TAG, Log.getStackTraceString(e))
-        null
-    }
-}
-
-fun getTokenBalance(coin: Coin, isTestnet: Boolean, token: Token, address: String): Double? {
-    return try {
-        getCoinExplorer(coin, isTestnet).getTokenBalance(address, token.contractAddress)
-    } catch (e: Exception) {
-        Log.e(TAG, Log.getStackTraceString(e))
-        null
-    }
-}
-
-fun getTokenCurrencyAmount(coin: Coin, isTestnet: Boolean, balance: Double, token: Token, currency: Currency) : String {
-    return try {
-        val rate = getCoinExplorer(coin, isTestnet).get_token_exchange_rate_between(
-            token.contractAddress,
-            currency.name.lowercase()
-        )
-        val fiatAmount = balance * rate
-        "$ $fiatAmount"
-    } catch (e: Exception) {
-        Log.e(TAG, Log.getStackTraceString(e))
-        "N/A"
-    }
-}
-
 // todo: move in own file?
+fun newBaseCoin(
+    keySlip44Int: Int,
+    isTestnet: Boolean,
+    apiKeys: Map<String, String>
+): BaseCoin {
+    return when (keySlip44Int or -0x80000000) { // switch first bit (ignore testnet or mainnet)
+        Constants.BTC -> Bitcoin(isTestnet, apiKeys)
+        Constants.LTC -> Litecoin(isTestnet, apiKeys)
+        Constants.BCH -> BitcoinCash(isTestnet, apiKeys)
+        Constants.ETH -> Ethereum(isTestnet, apiKeys)
+        Constants.XCP -> Counterparty(isTestnet, apiKeys)
+        else -> UnsupportedCoin(isTestnet, apiKeys)
+    }
+}
+
 fun coinToSlip44Bytes(coinSymbol: String, isTestnet: Boolean): ByteArray {
     var slip44Int = when (coinSymbol){
         "BTC" -> Constants.BTC
@@ -176,7 +129,6 @@ fun intToBytes(int: Int): ByteArray {
     Log.d(TAG, "Utils intToBytes int: $int")
     var valint = int
     var bytes = ByteArray(4)
-    //for (index in 0..3){
     for (index in 3 downTo 0){ //
         bytes[index] = (valint and 0xff).toByte()
         valint = (valint shr 8 )

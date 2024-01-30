@@ -10,16 +10,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val cardManager = NFCCardManager()
-//        cardManager.setCardListener(SatodimeCardListener)
-//        cardManager.start()
-//        val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-//        nfcAdapter?.enableReaderMode(
-//            this,
-//            cardManager,
-//            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-//            null
-//        )
         setContent {
             SatodimeTheme {
                 Navigation()

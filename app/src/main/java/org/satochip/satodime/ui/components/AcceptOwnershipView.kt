@@ -103,33 +103,17 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
             text = stringResource(R.string.in_order_to_perform_sensitive_operations_on_the_card)
         )
         Spacer(Modifier.weight(1f))
-        //var toastText = stringResource(R.string.you_are_now_the_owner)
-        val cardLoadingText = stringResource(R.string.card_loading_please_try_again_in_few_seconds)
-        val successText = stringResource(R.string.you_are_now_the_owner)
-        val failureText = "Failed To take ownership" // todo
+//        val successText = stringResource(R.string.you_are_now_the_owner)
+//        val failureText = "Failed To take ownership" // todo
         // ACCEPT
         Button(
             onClick = {
-
                 Log.d(TAG, "Clicked on accept button!")
                 // scan card
                 showNfcDialog.value = true // NfcDialog
                 viewModel.takeOwnership(context as Activity)
                 Log.d(TAG, "Action Accept Ownership terminated!")
-
-//                if (NFCCardService.isReadingFinished.value != true) {
-//                    Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-//                } else if (viewModel.resultCodeLive == NfcResultCode.Ok) {
-//                    Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
-//                    navController.navigateUp()
-//                } else {
-//                    Toast.makeText(context, failureText, Toast.LENGTH_SHORT).show()
-//                }
-
-//                val result = viewModel.resultCodeLive
-//                toastText = if (result == NfcResultCode.Ok) {toastText}
-//                            else {"Failed to take ownership $result"}// todo refactor
-//                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                // todo: show confirmation message
             },
             modifier = Modifier
                 .padding(10.dp)

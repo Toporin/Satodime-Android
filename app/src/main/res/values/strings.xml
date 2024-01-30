@@ -125,4 +125,7 @@
     <string name="privacyPolicyButton">Privacy policy</string>
     <string name="readyToScan">Ready to Scan</string>
     <string name="holdYourSatodimeNearPhone">Hold your Satodime near your iPhone</string>
+    <string name="cardAuthenticStatus">This card is authentic</string>
+    <string name="cardNotAuthenticStatus">Card failed to authenticate!</string>
+    <string name="dontHaveASatodime">You don’t have a Satodime yet?\nClick here to buy one.</string>
 </resources>

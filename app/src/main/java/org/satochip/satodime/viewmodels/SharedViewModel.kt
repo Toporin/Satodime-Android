@@ -3,13 +3,10 @@ package org.satochip.satodime.viewmodels
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import android.content.Context
-import android.content.ContextWrapper
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -30,7 +27,6 @@ import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.data.SlotState
 import org.satochip.satodime.services.NFCCardService
-import org.satochip.satodime.services.SatodimeStore
 import org.satochip.satodime.util.coinToSlip44Bytes
 
 private const val TAG = "SharedViewModel"
@@ -52,63 +48,33 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     @SuppressLint("StaticFieldLeak")
     private val context = getApplication<Application>().applicationContext
-    private val satodimeStore = SatodimeStore(context)
 
-    var isActionFinished by mutableStateOf(false)
-    var isListening by mutableStateOf(false)
     var isCardConnected by mutableStateOf(false) // todo deprecate?
     var isAskingForCardOwnership by mutableStateOf(false) // todo: rename waitForSetup //deprecate?
-    var isReadingFinished by mutableStateOf(true)
-    var isOwner by mutableStateOf(false)
-    var isAuthentic by mutableStateOf(false)
 
-    // DEBUG
     var isCardDataAvailable by mutableStateOf(false)
     var cardSlots = mutableListOf<CardSlot>()
-    //var cardVaults: List<CardVault?>? = null
     var cardVaults = MutableLiveData<List<CardVault?>>() //MutableLiveData<MutableList<CardVault?>>() // mutableListOf<CardVault?>()
     var cardPrivkeys = mutableListOf<CardPrivkey?>()
     var selectedVault by mutableIntStateOf(1)
     var resultCodeLive by mutableStateOf(NfcResultCode.Busy)
-    var isVaultDataAvailable by mutableStateOf(false)
     var authenticityStatus by mutableStateOf(AuthenticityStatus.Unknown)
-
-    // delayed values
-    var ownershipStatusDelayed by mutableStateOf(OwnershipStatus.Unknown)
-    var authenticityStatusDelayed by mutableStateOf(AuthenticityStatus.Unknown)
+    var ownershipStatus by mutableStateOf(OwnershipStatus.Unknown)
 
     // dialogs
-    //val showNoCardScannedDialog = mutableStateOf(false) // for NoCardScannedDialog
     val showOwnershipDialog = mutableStateOf(true) // for OwnershipDialog
     val showAuthenticityDialog = mutableStateOf(true) // for AuthenticityDialog
 
     init {
         NFCCardService.context = getApplication<Application>().applicationContext
-        NFCCardService.isActionFinished.observeForever {
-            isActionFinished = it //todo remove
-        }
-        NFCCardService.isListening.observeForever {
-            isListening = it
-        }
         NFCCardService.isConnected.observeForever {
             isCardConnected = it
         }
         NFCCardService.waitForSetup.observeForever {
             isAskingForCardOwnership = it
-            //saveCardAuth()
-        }
-        NFCCardService.isReadingFinished.observeForever { // todo redundant with isConnected
-            isReadingFinished = it
-        }
-        NFCCardService.isAuthentic.observeForever {
-            isAuthentic = it
-        }
-        NFCCardService.isOwner.observeForever {
-            isOwner = it // todo remove?
         }
         NFCCardService.resultCodeLive.observeForever {
             resultCodeLive = it
-
         }
         NFCCardService.isCardDataAvailable.observeForever{
             isCardDataAvailable = it
@@ -117,13 +83,16 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         NFCCardService.cardSlots.observeForever {
             viewModelScope.launch {
                 Log.d(TAG, "DEBUG SharedViewModel cardSlots UPDATE START")
-                updateVaults(it) // TODO uncomment to fetch balance etc
+                updateVaults(it)
                 Log.d(TAG, "DEBUG SharedViewModel cardSlots UPDATE FINISHED")
             }
             cardSlots = it.toMutableList()
         }
         NFCCardService.cardPrivkeys.observeForever {
             cardPrivkeys = it.toMutableList()
+        }
+        NFCCardService.ownershipStatus.observeForever{
+            ownershipStatus = it
         }
         NFCCardService.authenticityStatus.observeForever{
             authenticityStatus = it
@@ -132,9 +101,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
             viewModelScope.launch {
                 Log.d(TAG, "DEBUG SharedViewModel ownershipStatusDelayed UPDATE START")
                 // add delay so that dialogs do not show at same time...
-                delay(5000)
-                ownershipStatusDelayed = it
-                showOwnershipDialog.value = true
+                delay(5000) //remove?
+                if (it == OwnershipStatus.NotOwner){
+                    showOwnershipDialog.value = true
+                }
                 Log.d(TAG, "DEBUG SharedViewModel ownershipStatusDelayed UPDATE FINISHED")
             }
         }
@@ -142,9 +112,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
             viewModelScope.launch {
                 Log.d(TAG, "DEBUG SharedViewModel authenticityStatus UPDATE START")
                 // add delay so that dialogs do not show at same time...
-                delay(5000)
-                authenticityStatusDelayed = it
-                showAuthenticityDialog.value = true
+                delay(5000) // remove?
+                if (it == AuthenticityStatus.NotAuthentic){
+                    showAuthenticityDialog.value = true
+                }
                 Log.d(TAG, "DEBUG SharedViewModel authenticityStatus UPDATE FINISHED")
             }
         }
@@ -152,7 +123,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // Card actions
-
     fun scanCard(activity: Activity) {
         Log.d(TAG, "SharedViewModel scanCard START")
         NFCCardService.actionType = NfcActionType.ScanCard
@@ -221,45 +191,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         Log.d(TAG, "In scanCardForAction END")
     }
 
-//    // todo remove?
-//    fun acceptCardOwnership() {
-//        NFCCardService.acceptOwnership()
-//        saveCardAuth()
-//        viewModelScope.launch {
-//            NFCCardService.readCard()
-//        }
-//    }
-
-//    // TODO: remove?
-//    private fun saveCardAuth() {
-//        viewModelScope.launch {
-//            NFCCardService.authenticationKeyHex?.let { authKey ->
-//                NFCCardService.unlockSecret?.let { unlockSecret ->
-//                    val cardAuth = CardAuth(authKey, unlockSecret)
-//                    val updatedCardsAuth = satodimeStore.cardsAuthFromDataStore.first().filter {
-//                        it.authenticationKey != authKey
-//                    }.toMutableList()
-//                    updatedCardsAuth += cardAuth
-//                    satodimeStore.saveCardAuthToDataStore(updatedCardsAuth)
-//                }
-//            }
-//        }
-//    }
-
-//    // todo: remove?
-//    private fun unlockCard() {
-//        viewModelScope.launch {
-//            satodimeStore.cardsAuthFromDataStore.collect {
-//                if (NFCCardService.waitForSetup.value == false) {
-//                    val unlockSecret = it.firstOrNull { cardAuth ->
-//                        cardAuth.authenticationKey == NFCCardService.authenticationKeyHex
-//                    }?.unlockSecret
-//                    NFCCardService.unlockCard(unlockSecret)
-//                }
-//            }
-//        }
-//    }
-
     /// WEB API
     private suspend fun updateVaults(cardSlots: List<CardSlot>) {
         Log.d(TAG,"DEBUG SharedViewModel updateVaults START")
@@ -277,13 +208,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // asset values
         fetchVaultAssetPrices()
 
-//        withContext(Dispatchers.IO) {
-//            println("DEBUG SharedViewModel updateVaults withContext")
-//            val updatedVaults = mapCardSlotsToVaults(cardSlots)
-//            cardVaults.postValue(updatedVaults) //postValue(updatedVaults.toMutableList())
-//            isVaultDataAvailable = true
-//        }
-//        println("DEBUG SharedViewModel updateVaults END")
     }
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
@@ -301,8 +225,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 return@map cardVault
             }
             cardVaults.postValue(updatedVaults) //postValue(updatedVaults.toMutableList())
-            isVaultDataAvailable = true
-
         }
 
     }
@@ -322,7 +244,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
-            //isVaultDataAvailable = true
         }
     }
 
@@ -342,7 +263,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
-            //isVaultDataAvailable = true
         }
     }
 
@@ -362,7 +282,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
-            //isVaultDataAvailable = true
         }
     }
 
@@ -387,78 +306,6 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
-            //isVaultDataAvailable = true
-        }
-    }
-
-
-    // todo deprecate
-    private fun mapCardSlotsToVaults(cardSlots: List<CardSlot>): List<CardVault?> {
-        Log.d(TAG,"DEBUG SharedViewModel mapCardSlotsToVaults START")
-        return cardSlots.map {
-            if (it.slotState == SlotState.UNINITIALIZED) {
-                Log.d(TAG,"DEBUG SharedViewModel mapCardSlotsToVaults slot uninitialized")
-                return@map null
-            }
-
-            Log.d(TAG,"DEBUG SharedViewModel mapCardSlotsToVaults  it pubkey: ${it.publicKeyHexString}")
-
-//            println("DEBUG SharedViewModel mapCardSlotsToVaults return null vault")
-//            return@map null
-
-            Log.d(TAG,"DEBUG SharedViewModel mapCardSlotsToVaults create cardVault START")
-            var cardVault = CardVault(it, context)
-            Log.d(TAG,"DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
-            // get balance from api
-            val balance = cardVault.fetchBalance()
-            //println("DEBUG SharedViewModel mapCardSlotsToVaults balance: $balance")
-            //println("DEBUG SharedViewModel mapCardSlotsToVaults balance END")
-            // TODO: get Tokens & NFTs
-            cardVault.fetchTokenList()
-            cardVault.fetchNftList()
-
-            return@map cardVault
-        }
-    }
-
-    // todo deprecate
-    private suspend fun updateVaultsOld(cardSlots: List<CardSlot>) {
-        Log.d(TAG,"DEBUG SharedViewModel updateVaults START")
-        withContext(Dispatchers.IO) {
-            println("DEBUG SharedViewModel updateVaults withContext")
-            val updatedVaults = mapCardSlotsToVaults(cardSlots)
-            cardVaults.postValue(updatedVaults) //postValue(updatedVaults.toMutableList())
-            isVaultDataAvailable = true
-        }
-        println("DEBUG SharedViewModel updateVaults END")
-    }
-
-    // todo deprecate?
-    private fun mapCardSlotsToVaultsOld(cardSlots: List<CardSlot>): List<CardVault?> {
-        println("DEBUG SharedViewModel mapCardSlotsToVaults START")
-        return cardSlots.map {
-            if (it.slotState == SlotState.UNINITIALIZED) {
-                println("DEBUG SharedViewModel mapCardSlotsToVaults slot uninitialized")
-                return@map null
-            }
-
-            println("DEBUG SharedViewModel mapCardSlotsToVaults  it pubkey: ${it.publicKeyHexString}")
-
-//            println("DEBUG SharedViewModel mapCardSlotsToVaults return null vault")
-//            return@map null
-
-            println("DEBUG SharedViewModel mapCardSlotsToVaults create cardVault START")
-            var cardVault = CardVault(it, context)
-            println("DEBUG SharedViewModel mapCardSlotsToVaults getBalance START")
-            // get balance from api
-            val balance = cardVault.fetchBalance()
-            //println("DEBUG SharedViewModel mapCardSlotsToVaults balance: $balance")
-            //println("DEBUG SharedViewModel mapCardSlotsToVaults balance END")
-            // TODO: get Tokens & NFTs
-            cardVault.fetchTokenList()
-            cardVault.fetchNftList()
-
-            return@map cardVault
         }
     }
 

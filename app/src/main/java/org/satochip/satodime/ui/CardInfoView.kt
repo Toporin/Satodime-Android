@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
+import org.satochip.satodime.data.AuthenticityStatus
 import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.TopLeftBackButton
@@ -54,12 +55,11 @@ import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
 
 @Composable
-fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
+fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel) {
     val context = LocalContext.current
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     var showCertificate by remember { mutableStateOf(false) }
 
-    //if (showCertificate && NFCCardService.certificate != null) {
     if (showCertificate && (NFCCardService.certificateList.value?.size ?: 0) > 0) {
         Dialog(
             content = {
@@ -188,7 +188,7 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.card_ownership_status)
         )
-        //val notOwner = if(viewModel.isOwner) "" else " not"
+
         var ownershipStatusString = "Unknown"
         var colorOwner = Color.Yellow
         if (NFCCardService.ownershipStatus.value == OwnershipStatus.Owner) {
@@ -201,8 +201,6 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
             ownershipStatusString = "The card has no owner!"
             colorOwner = Color.Blue
         }
-        //val notOwner = if(NFCCardService.isOwner.value == true) "" else " not"
-        //val colorOwner = if(NFCCardService.isOwner.value == true) LightGreen else Color.Red
         CardInfoCard(ownershipStatusString, 300, colorOwner)
         Spacer(Modifier.weight(1f))
 
@@ -239,17 +237,16 @@ fun CardInfoView(navController: NavController, viewModel: SharedViewModel) {
 
         var authenticityStatusString = "Unknown"
         var authenticityColor = Color.Yellow
-        if(NFCCardService.isAuthentic.value == true) {
-            authenticityStatusString =  "This card is authentic" // todo translate
+        //if(NFCCardService.isAuthentic.value == true) {
+        if(NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic) {
+            authenticityStatusString =  stringResource(R.string.cardAuthenticStatus)
             authenticityColor = LightGreen
         } else {
-            authenticityStatusString =  "Failed to authenticate this card!" // todo translate
+            authenticityStatusString = stringResource(R.string.cardNotAuthenticStatus)
             authenticityColor = Color.Red
         }
-        //val notGeniune = if(NFCCardService.isAuthentic.value == true) "" else " not"
-        //val colorGeniune = if(NFCCardService.isAuthentic.value == true) LightGreen else Color.Red
         CardInfoCard(authenticityStatusString, 275, authenticityColor) {
-            val authenticScreen = if (NFCCardService.isAuthentic.value == true) {
+            val authenticScreen = if (NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic) {
                 SatodimeScreen.AuthenticCardView
             } else {
                 SatodimeScreen.FakeCardView

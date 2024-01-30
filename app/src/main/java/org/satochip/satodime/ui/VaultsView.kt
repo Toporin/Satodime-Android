@@ -98,7 +98,6 @@ import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
 import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.util.formatBalance
-import org.satochip.satodime.util.getBalance
 import org.satochip.satodime.util.sanitizeNftImageUrlString
 import org.satochip.satodime.viewmodels.SharedViewModel
 
@@ -124,35 +123,16 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     val configuration = LocalConfiguration.current
     sharedViewModel.selectedVault = findVaultToSelect(visibleItems, configuration.screenWidthDp)
 
-//    if (vaults.value.isEmpty() || vaults.value[viewModel.selectedVault - 1] == null || vaults.value[viewModel.selectedVault - 1]!!.isSealed) {
-//        DarkBlueGradientBackground()
-//    } else {
-//        RedGradientBackground()
-//    }
-    if (sharedViewModel.selectedVault > vaultsSize || vaults?.get(sharedViewModel.selectedVault - 1) == null || vaults[sharedViewModel.selectedVault - 1]!!.isSealed) {
+    if (sharedViewModel.selectedVault > vaultsSize
+        || vaults?.get(sharedViewModel.selectedVault - 1) == null
+        || vaults[sharedViewModel.selectedVault - 1]?.state == SlotState.SEALED
+    ) {
         DarkBlueGradientBackground()
     } else {
         RedGradientBackground()
     }
 
-    // RED/GREEN DOT (TODO REMOVE!)
-//    Canvas(modifier = Modifier
-//        .padding(15.dp)
-//        .size(5.dp), onDraw = {
-//        drawCircle(color = if (sharedViewModel.isCardConnected) Color.Green else Color.Red)
-//    })
     // LOGO
-    // TODO: BUTTON to CardAuth + color
-//    Image(
-//        painter = painterResource(R.drawable.ic_sato_small),
-//        //painter = painterResource(if (isSystemInDarkTheme()) R.drawable.top_left_logo else R.drawable.top_left_logo_light),
-//        contentDescription = null,
-//        modifier = Modifier
-//            .size(45.dp)
-//            .offset(x = 20.dp, y = 20.dp),
-//        contentScale = ContentScale.Crop
-//    )
-
     if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
         IconButton(
             onClick = {
@@ -168,7 +148,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 modifier = Modifier
                     .size(45.dp) //.size(45.dp)
                     .offset(x = 20.dp, y = 20.dp),
-                //.padding(all = 0.dp),
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(Color.Green)
             )
@@ -188,7 +167,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 modifier = Modifier
                     .size(45.dp) //.size(45.dp)
                     .offset(x = 20.dp, y = 20.dp),
-                //.padding(all = 0.dp),
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(Color.Red)
             )
@@ -206,7 +184,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 modifier = Modifier
                     .size(45.dp) //.size(45.dp)
                     .offset(x = 20.dp, y = 20.dp),
-                //.padding(all = 0.dp),
                 contentScale = ContentScale.Crop,
                 //colorFilter = ColorFilter.tint(Color.Yellow)
             )
@@ -220,8 +197,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         IconButton(onClick = {
             showNfcDialog.value = true // NfcDialog
             sharedViewModel.scanCard(activity)
-//            sharedViewModel.showAuthenticityDialog.value = true // reenable dialog
-//            sharedViewModel.showOwnershipDialog.value = true // reenable dialog
         }) {
             Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
         }
@@ -290,7 +265,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         }
 
         if (sharedViewModel.isCardDataAvailable) {
-        //if (NFCCardService.isCardDataAvailable.value == true) {
             //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
             val cardVaultsWithDefaultsValuesIfEmpty = vaults?.ifEmpty { listOf(null, null, null) } ?: listOf(null, null, null)
             //val cardVaultsWithDefaultsValuesIfEmpty = sharedViewModel.cardVaults.value ?: listOf(null, null, null)
@@ -314,13 +288,26 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         } else {
             // SCAN BUTTON
             //Todo improve UI
-            Button(onClick = {
-                Log.d("VaultsView", "Clicked on Scan button!")
-                // scan card
-                showNfcDialog.value = true // NfcDialog
-                sharedViewModel.scanCard(activity)
-            }) {
-                Text("Click & Scan")
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(Modifier.weight(1f))
+                Button(onClick = {
+                    Log.d("VaultsView", "Clicked on Scan button!")
+                    // scan card
+                    showNfcDialog.value = true // NfcDialog
+                    sharedViewModel.scanCard(activity)
+                }) {
+                    Text("Click & Scan")
+                }
+                Spacer(Modifier.weight(1f))
+                Button(
+                    onClick = {
+                    uriHandler.openUri("https://satochip.io/product/satodime/")
+                }) {
+                    Text(stringResource(id = R.string.dontHaveASatodime))
+                }
             }
         }
 
@@ -360,9 +347,9 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     }
 
     // Ownership dialog
-    //if (showOwnershipDialog.value && NFCCardService.ownershipStatus.value == OwnershipStatus.NotOwner){
     if (sharedViewModel.showOwnershipDialog.value
-        && sharedViewModel.ownershipStatusDelayed == OwnershipStatus.NotOwner
+        //&& sharedViewModel.ownershipStatusDelayed == OwnershipStatus.NotOwner
+        && sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = sharedViewModel.showOwnershipDialog,
@@ -685,7 +672,6 @@ fun VaultsViewTokenRow(asset: Asset) {
             modifier = Modifier
                 .padding(10.dp)
                 .size(60.dp),
-            //colorFilter = ColorFilter.tint(Color.Blue)
         )
 
         Column(modifier = Modifier.padding(10.dp)) {
@@ -709,7 +695,6 @@ fun VaultsViewTokenRow(asset: Asset) {
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
                 text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
-                //text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
             )
         }
 
@@ -739,7 +724,6 @@ fun VaultsViewNftRow(asset: Asset) {
             contentDescription = (asset.nftName ?: asset.contract ?: ""),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(60.dp),
-            //colorFilter = ColorFilter.tint(Color.Blue)
         )
         Column(modifier = Modifier.padding(10.dp)) {
             Text(

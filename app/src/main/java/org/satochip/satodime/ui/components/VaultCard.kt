@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.satochip.satodime.R
 import org.satochip.satodime.data.CardVault
+import org.satochip.satodime.data.SlotState
 import org.satochip.satodime.util.formatBalance
-import org.satochip.satodime.util.getBalance
 
 @Composable
 fun VaultCard(
@@ -66,7 +66,7 @@ fun VaultCard(
         shape = RoundedCornerShape(15.dp),
         border = if (isSelected) BorderStroke(2.dp, Color.DarkGray) else null
     ) {
-        val background = if (!vault.isSealed) R.drawable.unsealed_card else when (index) {
+        val background = if (vault.state == SlotState.UNSEALED) R.drawable.unsealed_card else when (index) {
             1 -> R.drawable.card1
             2 -> R.drawable.card2
             3 -> R.drawable.card3
@@ -89,16 +89,19 @@ fun VaultCard(
                 color = Color.White,
                 text = "0$index"
             )
-            SealedIndicator(modifier = Modifier
-                .padding(top = 45.dp)
-                .width(if (vault.isSealed) 60.dp else 80.dp), isSealed = vault.isSealed)
+            SealedIndicator(
+                modifier = Modifier
+                    .padding(top = 45.dp)
+                    .width(if (vault.state == SlotState.SEALED) 60.dp else 80.dp),
+                isSealed = (vault.state == SlotState.SEALED)
+            )
             Text(
                 modifier = Modifier.offset(120.dp, 5.dp),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.body1,
                 color = Color.LightGray,
-                text = vault.address.substring(0, minOf(vault.address.length, 12)) + "..."
+                text = vault.nativeAsset.address.substring(0, minOf(vault.nativeAsset.address.length, 12)) + "..."
             )
             val copiedToClipboardText = stringResource(R.string.copied_to_clipboard)
             Icon(
@@ -106,7 +109,7 @@ fun VaultCard(
                     .size(25.dp)
                     .offset(220.dp)
                     .clickable {
-                        clipboardManager.setText(AnnotatedString(vault.address))
+                        clipboardManager.setText(AnnotatedString(vault.nativeAsset.address))
                         Toast.makeText(context, copiedToClipboardText, Toast.LENGTH_SHORT).show()
                     },
                 imageVector = Icons.Outlined.ContentCopy,
@@ -172,7 +175,7 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             text = formatBalance(
                 balanceString = vault.nativeAsset.valueInSecondCurrency,
                 decimalsString = "0",
-                symbol = vault.nativeAsset.secondCurrency)//getBalance(vault)
+                symbol = vault.nativeAsset.secondCurrency)
         )
     }
 }
@@ -203,9 +206,6 @@ fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> 
             val addButtonColor = if(isFirstEmptyVault) Color.White else Color.Gray
             OutlinedButton(
                 onClick = {
-//                    if (isFirstEmptyVault) {
-//                        onAddVault()
-//                    }
                     onAddVault(index)
                 },
                 modifier = Modifier

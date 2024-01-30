@@ -43,7 +43,7 @@ private const val TAG = "SelectBlockchainView"
 
 @Composable
 fun SelectBlockchainView(navController: NavController, selectedVault: Int) {
-    // todo display vult index in view!
+    // todo display vault index in view!
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -104,15 +104,13 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
             text = stringResource(R.string.please_note)
         )
         Spacer(Modifier.weight(1f))
-        val ownershipTransferredText = stringResource(R.string.ownership_transferred)
-        val ownershipTransferFailedtext = stringResource(R.string.ownership_transfer_failed)
-        val cardLoadingText = stringResource(R.string.card_loading_please_try_again_in_few_seconds)
-        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
-        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
+//        val ownershipTransferredText = stringResource(R.string.ownership_transferred)
+//        val ownershipTransferFailedtext = stringResource(R.string.ownership_transfer_failed)
+//        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
+//        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         Button(
             onClick = {
-
-                Log.d(TAG, "Clicked on release button!")
+                Log.d(TAG, "TransferOwnershipView clicked on release button!")
                 if (viewModel.isCardDataAvailable) {
                     // scan card
                     showNfcDialog.value = true // NfcDialog
@@ -120,31 +118,6 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
                 } else {
                     showNoCardScannedDialog.value = true
                 }
-//                if (NFCCardService.isReadingFinished.value != true) {
-//                    Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-//                } else if (viewModel.resultCodeLive == NfcResultCode.Ok) {
-//                    Toast.makeText(context, ownershipTransferredText, Toast.LENGTH_SHORT).show()
-//                    navController.navigateUp()
-//                } else {
-//                    Toast.makeText(context, ownershipTransferFailedtext, Toast.LENGTH_SHORT).show()
-//                }
-
-//                if (NFCCardService.isConnected.value == true) {
-//                    if (NFCCardService.isOwner()) {
-//                        if (NFCCardService.isReadingFinished.value != true) {
-//                            Toast.makeText(context, cardLoadingText, Toast.LENGTH_SHORT).show()
-//                        } else if (NFCCardService.transferOwnership()) {
-//                            Toast.makeText(context, ownershipTransferredText, Toast.LENGTH_SHORT).show()
-//                            navController.navigateUp()
-//                        } else {
-//                            Toast.makeText(context, ownershipTransferFailedtext, Toast.LENGTH_SHORT).show()
-//                        }
-//                    } else {
-//                        Toast.makeText(context, youreNotTheOwnerText, Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    Toast.makeText(context, pleaseConnectTheCardText, Toast.LENGTH_SHORT).show()
-//                }
             },
             modifier = Modifier
                 .padding(10.dp)
