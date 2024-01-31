@@ -12,6 +12,7 @@ val LightRed = Color(0xFFFFC6C4)
 val LightGray = Color(0xFF495978)
 val PaleGray = Color(0xFFEFF0F5)
 val Orange = Color(0xFFFF9800)
-
 val LightBlue = Color(0xFF65BBE0)
-val InfoDialogBackgroundColor = Color(0xFF525684)
+
+val InfoDialogBackgroundColor = Color(0xFF27273C)
+val MoreInfoButtonColor = Color(0xFF525684)

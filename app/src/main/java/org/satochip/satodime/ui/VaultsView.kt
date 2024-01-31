@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -90,6 +92,7 @@ import org.satochip.satodime.ui.components.DarkBlueGradientBackground
 import org.satochip.satodime.ui.components.EmptyVaultCard
 import org.satochip.satodime.ui.components.InfoDialog
 import org.satochip.satodime.ui.components.NfcDialog
+import org.satochip.satodime.ui.components.NftDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
 import org.satochip.satodime.ui.components.VaultCard
 import org.satochip.satodime.ui.theme.DarkRed
@@ -111,6 +114,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     var showVaultsOnly by remember{mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val showNoCardScannedDialog = remember { mutableStateOf(false)}// for NoCardScannedDialog
+
+
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
 
@@ -650,6 +655,7 @@ fun VaultsViewNft(vault: CardVault) {
 
 @Composable
 fun VaultsViewTokenRow(asset: Asset) {
+    val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
@@ -659,7 +665,7 @@ fun VaultsViewTokenRow(asset: Asset) {
             .fillMaxWidth()
             .height(80.dp)
     ) {
-        // todo add explorer link
+
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(asset.iconUrl ?: "")
@@ -698,11 +704,31 @@ fun VaultsViewTokenRow(asset: Asset) {
             )
         }
 
+        // LINK TO EXPLORER
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            onClick = {
+                uriHandler.openUri(asset.explorerLink ?: "")
+            },
+        )
+        {
+            Icon(
+                painter = painterResource(R.drawable.open_in_new_24px),
+                contentDescription = "link to explorer",
+                modifier = Modifier
+                    .size(30.dp), //.size(45.dp)
+                tint = Color.LightGray,
+            )
+        }
+
     }
 }
 
 @Composable
 fun VaultsViewNftRow(asset: Asset) {
+    val showNftDialog = remember { mutableStateOf(false)}
+    val nftDialogUrl = remember { mutableStateOf("")}
+    val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
@@ -712,8 +738,7 @@ fun VaultsViewNftRow(asset: Asset) {
             .fillMaxWidth()
             .height(80.dp)
     ) {
-        // todo add link
-        // todo show big image
+
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(sanitizeNftImageUrlString(asset.nftImageLink ?: "")) //.data(asset.nftImageLink ?: "")
@@ -721,17 +746,26 @@ fun VaultsViewNftRow(asset: Asset) {
                 .build(),
             placeholder = painterResource(R.drawable.ic_sato_small),
             error = painterResource(R.drawable.ic_sato_small),
-            contentDescription = (asset.nftName ?: asset.contract ?: ""),
+            contentDescription = (asset.nftName ?: asset.contract ?: "NFT"),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(60.dp),
+            modifier = Modifier
+                .size(60.dp)
+                .clickable(
+                    onClick = {
+                        // show bigger image in dialog
+                        showNftDialog.value = true
+                    },
+                    onClickLabel = "open image in dialog"
+                ),
         )
         Column(modifier = Modifier.padding(10.dp)) {
+            // NAME
             Text(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = "${asset.nftName ?: asset.contract}",// todo format
+                text = "${asset.nftName ?: asset.contract ?: "NFT"}",// todo format
             )
             // NFT BALANCE
             Text(
@@ -747,24 +781,31 @@ fun VaultsViewNftRow(asset: Asset) {
                 color = MaterialTheme.colors.secondary,
                 text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
             )
-            // DESCRIPTION
-//            Text(
-//                fontSize = 10.sp,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = "${asset.nftDescription ?: asset.tokenid}"
-//            )
+
         }
 
-//        Spacer(Modifier.weight(1f))
-//        Column(modifier = Modifier.padding(20.dp)) {
-//            Text(
-//                fontSize = 14.sp,
-//                style = MaterialTheme.typography.body1,
-//                color = MaterialTheme.colors.secondary,
-//                text = "${asset.rate}/${asset.rateCurrency}" // todo format //vault.currencyAmount
-//            )
-//        }
+        // LINK TO EXPLORER
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            onClick = {
+                uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
+            },
+        )
+        {
+            Icon(
+                painter = painterResource(R.drawable.open_in_new_24px),
+                contentDescription = "link to NFT explorer",
+                modifier = Modifier
+                    .size(30.dp), //.size(45.dp)
+                tint = Color.LightGray,
+            )
+        }
+        
+    }
+
+    // show bigger image in dialog
+    if (showNftDialog.value){
+        NftDialog(showNftDialog, asset)
     }
 }
 

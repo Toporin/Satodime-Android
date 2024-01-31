@@ -2,10 +2,13 @@ package org.satochip.satodime.ui.components
 
 import android.graphics.drawable.Icon
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -34,6 +37,8 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.ui.theme.LightBlue
+import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.Orange
 import kotlin.time.Duration.Companion.seconds
 
@@ -76,7 +81,6 @@ fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Bo
         Column(
             modifier = modifier
                 .background(Color.LightGray),
-            //.background(MaterialTheme.colors.background),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
@@ -114,59 +118,55 @@ fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Bo
                 }
             }
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(id = R.string.readyToScan),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(top = 5.dp)
-                        .fillMaxWidth(),
-                    style = MaterialTheme.typography.body1,
-                    color = Color.Black, //MaterialTheme.colors.secondary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = stringResource(id = R.string.holdYourSatodimeNearPhone),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .padding(top = 10.dp, start = 25.dp, end = 25.dp)
-                        .fillMaxWidth(),
-                )
-                Text(
-                    text = "Status: ${getScanStatus(isConnected, resultCodeLive)}",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.body1,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .padding(top = 10.dp, start = 25.dp, end = 25.dp)
-                        .fillMaxWidth(),
-                )
-            }
-            //.......................................................................
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-                    .background(Color.Gray), // todo
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
+            Text(
+                text = stringResource(id = R.string.readyToScan),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.body1,
+                color = Color.Black, //MaterialTheme.colors.secondary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = stringResource(id = R.string.holdYourSatodimeNearPhone),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.body1,
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 25.dp, end = 25.dp)
+                    .fillMaxWidth(),
+            )
+            Text(
+                text = "Status: ${getScanStatus(isConnected, resultCodeLive)}",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.body1,
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 25.dp, end = 25.dp)
+                    .fillMaxWidth(),
+            )
 
-                TextButton(onClick = {
+            // CLOSE BUTTON
+            Button(
+                onClick = {
                     openDialogCustom.value = false
-                }) {
-
-                    Text(
-                        stringResource(id = R.string.close),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue, // todo
-                        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
-                    )
-                }
-
+                },
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(40.dp)
+                    .width(160.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = LightBlue,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(stringResource(R.string.close))
             }
+
         }
     }
 }
