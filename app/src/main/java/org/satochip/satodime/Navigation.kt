@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,11 +34,11 @@ fun Navigation() {
     SatoLog.setVerboseMode(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)) // use verbose logs?
     val startDestination =
         if (settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, true)) {
-            Log.d(TAG, "Navigation: Start onboarding screens!")
+            SatoLog.d(TAG, "Navigation: Start onboarding screens!")
             settings.edit().putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, false).apply()
             SatodimeScreen.FirstWelcome.name
         } else {
-            Log.d(TAG, "Navigation: Skip onboarding screens!")
+            SatoLog.d(TAG, "Navigation: Skip onboarding screens!")
             SatodimeScreen.Vaults.name
         }
 
@@ -47,7 +46,7 @@ fun Navigation() {
     val sharedViewModel: SharedViewModel = viewModel(factory = SharedViewModel.Factory)
 
     if(sharedViewModel.isAskingForCardOwnership) {
-        Log.d(TAG, "Navigation: Card needs ownership!")
+        SatoLog.d(TAG, "Navigation: Card needs ownership!")
         AcceptOwnershipView(navController, sharedViewModel)
         return
     }
@@ -236,7 +235,6 @@ fun Navigation() {
             SettingsView(navController)
         }
         // LOGS
-        // SETTINGS
         composable(route = SatodimeScreen.ShowLogsView.name) {
             ShowLogsView(navController)
         }

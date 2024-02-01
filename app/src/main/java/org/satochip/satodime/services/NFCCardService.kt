@@ -67,6 +67,7 @@ object NFCCardService {
     var resultCodeLive = MutableLiveData<NfcResultCode>(NfcResultCode.Busy) //NfcResultCode = NfcResultCode.Ok
 
     fun scanCardForAction(activity: Activity){
+        SatoLog.d(TAG, "scanCardForAction thread START")
         this.activity = activity
         val cardManager = NFCCardManager()
         cardManager.setCardListener(SatodimeCardListenerForAction)
@@ -81,28 +82,28 @@ object NFCCardService {
             NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
             null
         )
-        Log.d(TAG, "NFCcardService scanCardForAction thread END")
+        SatoLog.d(TAG, "scanCardForAction thread END")
     }
 
     fun disableScanForAction(){
-        Log.d(TAG, "NFCCardService disableScanForAction Start")
+        SatoLog.d(TAG, "disableScanForAction Start")
         if (activity != null) {
             if (activity?.isFinishing() == true) {
-                Log.e(TAG, "NFCCardService disableScanForAction activity isFinishing()")
+                SatoLog.e(TAG, "NFCCardService disableScanForAction activity isFinishing()")
                 return;
             }
             val nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
             nfcAdapter?.disableReaderMode(activity)
-            Log.d(TAG, "NFCCardService disableScanForAction disabled disableReaderMode!")
+            SatoLog.d(TAG, "disableScanForAction disableReaderMode!")
         }
     }
 
     fun initialize(cmdSet: SatochipCommandSet) {
-        Log.d(TAG, "In NFCCardService initialize START")
+        SatoLog.d(TAG, "initialize START")
         NFCCardService.cmdSet = cmdSet
         NFCCardService.parser = cmdSet.parser
-        Log.d(TAG, "In NFCCardService initialize action: $actionType")
-        Log.d(TAG, "In NFCCardService initialize index: $actionIndex")
+        SatoLog.d(TAG, "initialize action: $actionType")
+        SatoLog.d(TAG, "initialize index: $actionIndex")
         resultCodeLive.postValue(NfcResultCode.Busy)
         if (actionType == NfcActionType.ScanCard) {
             readCard()
@@ -124,7 +125,7 @@ object NFCCardService {
     }
 
     fun readCard() {
-        Log.d(TAG, "In NFCCardService readCard START")
+        SatoLog.d(TAG, "readCard START")
         try {
             // reinitialize card state
             ownershipStatus.postValue(OwnershipStatus.Unknown)
@@ -132,21 +133,19 @@ object NFCCardService {
             isCardDataAvailable.postValue(false)
 
             val rapduSelect = cmdSet.cardSelect("satodime").checkOK()
-            Log.d(TAG, "In NFCCardService readCard card selected!")
             // cardStatus
             val rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.d(TAG, "In NFCCardService readCard cardStatus: $cardStatus")
+            SatoLog.d(TAG, "readCard cardStatus: $cardStatus")
             //
             val versionInt = getCardVersionInt(rapduStatus)
             val versionString = getCardVersionString(rapduStatus)
-            Log.d(TAG, "CardVersionInt: $versionInt")
-            Log.d(TAG, "CardVersionString: $versionString")
+            SatoLog.d(TAG, "readCard CardVersionString: $versionString")
             cardAppletVersion = versionString
 
             // check if setupDone
             if (!cardStatus.isSetupDone) {
-                Log.d(TAG, "Card needs setup (it has no owner)")
+                SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
                 ownershipStatus.postValue(OwnershipStatus.Unclaimed)
 
                 // check version: v0.1-0.1 cannot proceed further without setup first
@@ -154,12 +153,11 @@ object NFCCardService {
                     waitForSetup.postValue(true) // show accept ownership immediatly
                     resultCodeLive.postValue(NfcResultCode.RequireSetup)
                     resultMsg = "Satodime v0.1-0.1 requires user to claim ownership to continue!"
-                    Log.w(TAG,"Satodime v0.1-0.1 requires user to claim ownership to continue!")
+                    SatoLog.w(TAG,"readCard Satodime v0.1-0.1 requires user to claim ownership to continue!")
                     // return early
                     return
                 } else {
                     // add a delay to not display immediately the accept ownership view
-                    // TODO: test if correct behavior
                     thread {
                         runBlocking {
                             delay(5000)
@@ -176,35 +174,29 @@ object NFCCardService {
                     authenticityStatus.postValue(AuthenticityStatus.Authentic)
                 } else {
                     authenticityStatus.postValue(AuthenticityStatus.NotAuthentic)
+                    SatoLog.w(TAG,"readCard failed to authenticate card!")
                 }
                 certificateList.postValue(authResults.toMutableList())
-            }
-            if (DEBUG) { // todo
-                if (authResults != null) {
-                    for (index in 0 until authResults.size) {
-                        Log.d(TAG, "DEBUGAUTH : " + authResults[index])
-                    }
-                }
             }
 
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "readCard satodimeStatus: $satodimeStatus");
 
             // get authentikey
             authentikeyHex= cmdSet.authentikeyHex
-            Log.d(TAG, "Satodime authentikey: $authentikeyHex");
+            SatoLog.d(TAG, "readCard authentikey: $authentikeyHex");
 
             // check for ownership
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex");
+                SatoLog.d(TAG, "readCard found an unlockSecret for card $authentikeyHex");
                 ownershipStatus.postValue(OwnershipStatus.Owner)
                 unlockSecretHex = prefs.getString(authentikeyHex, "");
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes);
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex");
+                SatoLog.d(TAG, "readCard found no unlockSecret for card $authentikeyHex");
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
             }
 
@@ -214,34 +206,32 @@ object NFCCardService {
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card scan successful!"
             NFCCardService.isCardDataAvailable.postValue(true)
-            Log.i(TAG, "NFCCardService readCard: Card reading finished")
+            SatoLog.d(TAG, "readCard: Card reading successful")
         } catch (e: Exception) {
-            Log.e(TAG, "NFCCardService readCard exception: $e")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "readCard exception: $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.UnknownError)
-            resultMsg = "NFCCardService readCard exception: ${e.localizedMessage}"
+            resultMsg = "readCard exception: ${e.localizedMessage}"
         }
     }
 
     fun takeOwnership() {
-        Log.d(TAG, "In NFCCardService takeOwnership START")
+        SatoLog.d(TAG, "takeOwnership: START")
         try {
             val rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             val rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check authentikey
             // for v0.1-0.1, authentikeyHex is not available until ownership is accepted, so this check cannot be done
             val versionInt = getCardVersionInt(rapduStatus)
-            println("DEBUG CardVersionInt: $versionInt")
             if (versionInt > 0x00010001) {
                 val rapduAuthkey = cmdSet.cardGetAuthentikey()
                 var authentikeyHex2 = cmdSet.authentikeyHex
                 // check that authentikey match with previous tap
                 if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                    Log.e(TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                    SatoLog.e(TAG, "takeOwnership: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                     resultCodeLive.postValue(NfcResultCode.CardMismatch)
                     resultMsg = "Authentikey mismatch"
                     return // throw?
@@ -257,7 +247,6 @@ object NFCCardService {
                     random.nextBytes(pin0)
                     val rapduSetup: APDUResponse = cmdSet.cardSetup(pinTries0, pin0).checkOK()
                     val unlockSecretHex = SatochipParser.toHexString(cmdSet.satodimeUnlockSecret)
-                    Log.d(TAG,"Recovered unlockSecret ${unlockSecretHex}")
 
                     // set authentikey if null (this can happen for card v0.1-0.1)
                     if (authentikeyHex == null){
@@ -266,11 +255,12 @@ object NFCCardService {
                     // save in prefs
                     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
                     prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
-                    Log.d(TAG,"Saved unlockSecret ${unlockSecretHex} for card ${authentikeyHex}")
+                    SatoLog.d(TAG,"takeOwnership: Saved unlockSecret for card ${authentikeyHex}")
                     // update status
                     ownershipStatus.postValue(OwnershipStatus.Owner)
                     resultCodeLive.postValue(NfcResultCode.Ok)
                     resultMsg = "Card ownership claimed successfully for $authentikeyHex!"
+                    SatoLog.d(TAG,"takeOwnership: ownership claimed successfully for ${authentikeyHex}")
                     // add a delay to not leave the view immediately
                     thread {
                         runBlocking {
@@ -280,8 +270,8 @@ object NFCCardService {
                     }
 
                 } catch (e: Exception) {
-                    Log.e(TAG,"Failed to take ownership: ${e.localizedMessage}")
-                    Log.e(TAG, Log.getStackTraceString(e))
+                    SatoLog.e(TAG,"takeOwnership: failed to take ownership: ${e.localizedMessage}")
+                    SatoLog.e(TAG, Log.getStackTraceString(e))
                     ownershipStatus.postValue(OwnershipStatus.NotOwner)
                     resultCodeLive.postValue(NfcResultCode.FailedToTakeOwnership)
                     resultMsg = "Failed to take ownership: ${e.localizedMessage}"
@@ -289,40 +279,38 @@ object NFCCardService {
                 }
             } else {
                 // setup already done on card, so not possible to take ownership
-                Log.w(TAG,"Card ownership already claimed for $authentikeyHex!")
+                SatoLog.w(TAG,"takeOwnership: Card ownership already claimed for $authentikeyHex!")
                 resultCodeLive.postValue(NfcResultCode.OwnershipAlreadyClaimed)
                 resultMsg = "Card ownership already claimed for (authentikeyHex)!"
                 return // throw?
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to take ownership with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "takeOwnership: failed to take ownership with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToTakeOwnership)
             resultMsg = "Failed to take ownership with error: ${e.localizedMessage}"
         }
     }
 
     fun dismissOwnership() {
-        Log.d(TAG, "Dismiss ownership")
+        SatoLog.d(TAG, "dismissOwnership: START")
         waitForSetup.postValue(false)
     }
 
     fun releaseOwnership() {
-        Log.d(TAG, "In NFCCardService releaseOwnership START")
+        SatoLog.d(TAG, "releaseOwnership: START")
         try {
             var rapdu = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check that authentikey match with previous tap
             cmdSet.cardGetAuthentikey()
             var authentikeyHex2 = cmdSet.authentikeyHex
             if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                Log.e(
-                    TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                SatoLog.e(TAG, "releaseOwnership: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.CardMismatch)
                 resultMsg = "Authentikey mismatch"
                 return // throw?
@@ -330,17 +318,17 @@ object NFCCardService {
 
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "releaseOwnership: satodimeStatus: $satodimeStatus");
 
             // get unlockSecret
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "releaseOwnership: found an unlockSecret for card $authentikeyHex")
                 unlockSecretHex = prefs.getString(authentikeyHex, "")
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "releaseOwnership: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
                 resultCodeLive.postValue(NfcResultCode.NotOwner)
                 resultMsg = "Failed to release ownership: found no unlockSecret for card $authentikeyHex"
@@ -349,19 +337,19 @@ object NFCCardService {
 
             // releaseOwnership
             rapdu = cmdSet.satodimeInitiateOwnershipTransfer().checkOK()
-            Log.d(TAG, "Card ownership released successfully for $authentikeyHex!")
+            SatoLog.d(TAG, "releaseOwnership: card ownership released successfully for $authentikeyHex!")
             // TODO: remove unlockSecret from prefs
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Remove unlockSecret for card $authentikeyHex")
                 prefs.edit().remove(authentikeyHex).apply()
+                SatoLog.d(TAG, "releaseOwnership: removed unlockSecret for card $authentikeyHex")
             }
             ownershipStatus.postValue(OwnershipStatus.Unclaimed)
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card ownership released successfully for $authentikeyHex!"
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to release ownership with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "releaseOwnership: failed to release ownership with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToReleaseOwnership)
             resultMsg = "Failed to release ownership with error: ${e.localizedMessage}"
         }
@@ -373,18 +361,18 @@ object NFCCardService {
         slip44Bytes: ByteArray,
         entropyBytes: ByteArray){
 
+        SatoLog.d(TAG, "seal: START")
         try {
             var rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             var rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check that authentikey match with previous tap
             var rapduAuthkey = cmdSet.cardGetAuthentikey()
             var authentikeyHex2 = cmdSet.authentikeyHex
             if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                Log.e(TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                SatoLog.e(TAG, "seal: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.CardMismatch)
                 resultMsg = "Authentikey mismatch"
                 return // throw?
@@ -393,17 +381,17 @@ object NFCCardService {
             // get satodime status (this also sets correct unlock counter)
             // todo check state is uninitialized
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "seal: satodimeStatus: $satodimeStatus");
 
             // get unlockSecret
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "seal: found an unlockSecret for card $authentikeyHex")
                 unlockSecretHex = prefs.getString(authentikeyHex, "")
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "seal: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
                 resultCodeLive.postValue(NfcResultCode.NotOwner)
                 resultMsg = "Failed to release ownership: found no unlockSecret for card $authentikeyHex"
@@ -439,31 +427,29 @@ object NFCCardService {
 
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault sealed successfully for $authentikeyHex!"
-            Log.e(TAG, "Vault sealed successfully for $authentikeyHex!")
+            SatoLog.d(TAG, "seal: vault sealed successfully for $authentikeyHex!")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to seal vault with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "seal: failed to seal vault with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToSealVault)
             resultMsg = "Failed to seal vault with error: ${e.localizedMessage}"
         }
     }
 
     fun unseal(slotIndex: Int){
-
+        SatoLog.d(TAG, "unseal: START");
         try {
             var rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             var rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check that authentikey match with previous tap
             var rapduAuthkey = cmdSet.cardGetAuthentikey()
             var authentikeyHex2 = cmdSet.authentikeyHex
             if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                Log.e(
-                    TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                SatoLog.e(TAG, "unseal: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.CardMismatch)
                 resultMsg = "Authentikey mismatch"
                 return // throw?
@@ -471,17 +457,17 @@ object NFCCardService {
 
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "unseal: satodimeStatus: $satodimeStatus");
 
             // get unlockSecret
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "unseal: found an unlockSecret for card $authentikeyHex")
                 unlockSecretHex = prefs.getString(authentikeyHex, "")
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "unseal: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
                 resultCodeLive.postValue(NfcResultCode.NotOwner)
                 resultMsg = "Failed to release ownership: found no unlockSecret for card $authentikeyHex"
@@ -509,30 +495,29 @@ object NFCCardService {
 
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault unsealed successfully for $authentikeyHex!"
-            Log.e(TAG, "Vault unsealed successfully for $authentikeyHex!")
+            SatoLog.d(TAG, "unseal: vault unsealed successfully for $authentikeyHex!")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to unseal vault with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "unseal: failed to unseal vault with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToUnsealVault)
             resultMsg = "Failed to unseal vault with error: ${e.localizedMessage}"
         }
     }
 
     fun reset(slotIndex: Int){
-
+        SatoLog.d(TAG, "reset: START slot: ${slotIndex}")
         try {
             var rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             var rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check that authentikey match with previous tap
             var rapduAuthkey = cmdSet.cardGetAuthentikey()
             var authentikeyHex2 = cmdSet.authentikeyHex
             if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                Log.e(TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                SatoLog.e(TAG, "reset: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.CardMismatch)
                 resultMsg = "Authentikey mismatch"
                 return // throw?
@@ -540,19 +525,19 @@ object NFCCardService {
 
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "reset: satodimeStatus: $satodimeStatus");
 
             // todo: check slot is unsealed!
 
             // get unlockSecret
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "reset: found an unlockSecret for card $authentikeyHex")
                 unlockSecretHex = prefs.getString(authentikeyHex, "")
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "reset: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
                 resultCodeLive.postValue(NfcResultCode.FailedToResetVault)
                 resultMsg = "Failed to reset vault: found no unlockSecret for card $authentikeyHex"
@@ -563,7 +548,6 @@ object NFCCardService {
             val rapduReset = cmdSet.satodimeResetKey(slotIndex)
 
             // update just cardSlot for specific vault
-            Log.d(TAG, "NFCCardService reset update slots after reset START")
             val updatedCardSlots = cardSlots.value?.toMutableList() //mutableListOf<CardSlot>()
             if (updatedCardSlots != null && slotIndex<updatedCardSlots.size && updatedCardSlots[slotIndex] != null){
                 var oldCardSlot = updatedCardSlots[slotIndex]
@@ -580,30 +564,29 @@ object NFCCardService {
 
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault reset successfully for $authentikeyHex!"
-            Log.i(TAG, "Vault reset successfully for $authentikeyHex!")
+            SatoLog.d(TAG, "reset: vault reset successfully for $authentikeyHex!")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to reset vault with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "reset: failed to reset vault with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToResetVault)
             resultMsg = "Failed to reset vault with error: ${e.localizedMessage}"
         }
     }
 
     fun getPrivkey(slot: Int){
+        SatoLog.d(TAG, "getPrivkey: Start slot: ${slot}")
         try {
             var rapduSelect = cmdSet.cardSelect("satodime").checkOK()
             // cardStatus
             var rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
             val cardStatus = cmdSet.applicationStatus ?: return
-            Log.i(TAG, "")
 
             // check that authentikey match with previous tap
             var rapduAuthkey = cmdSet.cardGetAuthentikey()
             var authentikeyHex2 = cmdSet.authentikeyHex
             if (authentikeyHex2.compareTo(authentikeyHex ?: "") !=0) {
-                Log.e(
-                    TAG, "card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
+                SatoLog.e(TAG, "getPrivkey: card mismatch: authentikey: $authentikeyHex2 expected: $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.CardMismatch)
                 resultMsg = "Authentikey mismatch"
                 return // throw?
@@ -611,11 +594,11 @@ object NFCCardService {
 
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
-            Log.d(TAG, "Satodime satodimeStatus: $satodimeStatus");
+            SatoLog.d(TAG, "getPrivkey: satodimeStatus: $satodimeStatus");
             // check vault status is unsealed
             val keyState = satodimeStatus?.keysState ?: return
             if (SlotState.byteAsSlotState(keyState[slot]) != SlotState.UNSEALED) {
-                if(DEBUG) Log.d(TAG, "Vault is not unsealed for card $authentikeyHex")
+                SatoLog.w(TAG, "getPrivkey: vault is not unsealed for card $authentikeyHex")
                 resultCodeLive.postValue(NfcResultCode.FailedToRecoverPrivkey)
                 resultMsg = "Failed to recover privkey: vault is not unsealed for card $authentikeyHex"
                 return // throw?
@@ -624,12 +607,12 @@ object NFCCardService {
             // get unlockSecret
             val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
             if (prefs.contains(authentikeyHex)) {
-                if(DEBUG) Log.d(TAG, "Found an unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "getPrivkey: found an unlockSecret for card $authentikeyHex")
                 unlockSecretHex = prefs.getString(authentikeyHex, "")
                 unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
                 cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
             } else {
-                if(DEBUG) Log.d(TAG, "Found no unlockSecret for card $authentikeyHex")
+                SatoLog.d(TAG, "getPrivkey: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
                 resultCodeLive.postValue(NfcResultCode.NotOwner)
                 resultMsg = "Failed to reset vault: found no unlockSecret for card $authentikeyHex"
@@ -653,17 +636,18 @@ object NFCCardService {
             cardPrivkeys.postValue(updatedcardPrivkeys)
             resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Privkey recovered successfully for $authentikeyHex!"
-            Log.e(TAG, "Privkey recovered successfully for $authentikeyHex!")
+            SatoLog.d(TAG, "getPrivkey: privkey recovered successfully for $authentikeyHex!")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to recover privkey with error: ${e.localizedMessage}")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "getPrivkey: failed to recover privkey with error: ${e.localizedMessage}")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             resultCodeLive.postValue(NfcResultCode.FailedToRecoverPrivkey)
             resultMsg = "Failed to recover privkey with error: ${e.localizedMessage}"
         }
     }
 
     private fun updateCardSlots() {
+        SatoLog.d(TAG, "updateCardSlots: START")
         val updatedCardSlots = mutableListOf<CardSlot>()
         val keyState = satodimeStatus?.keysState ?: return
         for (i in keyState.indices) {
@@ -681,27 +665,26 @@ object NFCCardService {
     }
 
     fun getCardSlot(index: Int): CardSlot {
-
-        Log.d(TAG, "NFCCardService getCardSlot Slot $index")
+        SatoLog.d(TAG, "getCardSlot: START Slot: $index")
         var pubKey: ByteArray? = null
         try {
             pubKey = cmdSet.parser.parseSatodimeGetPubkey(cmdSet.satodimeGetPubkey(index))
         } catch (e: Exception) {
-            Log.e(TAG, "NFCCardService getCardSlot  an exception has been thrown while reading public keys.")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "getCardSlot: exception thrown while reading public keys: $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
         }
 
         // keysSlotStatus
         val response = cmdSet.satodimeGetKeyslotStatus(index)
         val keySlotStatus = SatodimeKeyslotStatus(response)
         if (keySlotStatus.keySlip44 == null) {
-            Log.e(TAG, "Failed to retrieve slot $index status.")
+            SatoLog.e(TAG, "getCardSlot: failed to retrieve slot $index status")
         }
         val cardSlot = CardSlot(index, keySlotStatus.keySlip44, keySlotStatus.keyStatus, pubKey)
-        Log.d(TAG, "NFCCardService getCardSlot index: $index")
-        Log.d(TAG, "NFCCardService getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
-        Log.d(TAG, "NFCCardService getCardSlot keyStatus: ${cardSlot.slotState}")
-        Log.d(TAG, "NFCCardService getCardSlot pubKey: ${pubKey}")
+        SatoLog.d(TAG, "getCardSlot index: $index")
+        SatoLog.d(TAG, "getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
+        SatoLog.d(TAG, "getCardSlot keyStatus: ${cardSlot.slotState}")
+        SatoLog.d(TAG, "getCardSlot pubKey: ${pubKey}")
         return cardSlot
     }
 

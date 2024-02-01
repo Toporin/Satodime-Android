@@ -49,6 +49,7 @@ import org.satochip.satodime.R
 import org.satochip.satodime.data.Coin
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.Title
@@ -70,8 +71,6 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
     val selectedCoin = Coin.valueOf(selectedCoinName)
-    Log.d(TAG, "CreateVaultView selectedVault: $selectedVault")
-    Log.d(TAG, "CreateVaultView selectedCoinName: $selectedCoinName")
     // todo display vault index in view!
 
     Box(
@@ -164,7 +163,9 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
                 random.nextBytes(entropyBytes)
 
                 // scan card
-                Log.d(TAG, "CreateVaultView: clicked on create button!")
+                SatoLog.d(TAG, "CreateVaultView: clicked on create button!")
+                SatoLog.d(TAG, "CreateVaultView: selectedVault: $selectedVault")
+                SatoLog.d(TAG, "CreateVaultView: selectedCoinName: $selectedCoinName")
                 showNfcDialog.value = true // NfcDialog
                 isReadyToNavigate.value = true
                 sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= false, entropyBytes= entropyBytes)
@@ -182,15 +183,15 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
 
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
-        Log.d(TAG, "CreateVaultView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        SatoLog.d(TAG, "CreateVaultView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
-            Log.d(TAG, "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            SatoLog.d(TAG, "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
         // navigate
-        Log.d(TAG, "CreateVaultView navigating to CongratsVaultCreated view")
+        SatoLog.d(TAG, "CreateVaultView navigating to CongratsVaultCreated view")
         navController.navigate(SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName") {
             popUpTo(0)
         }

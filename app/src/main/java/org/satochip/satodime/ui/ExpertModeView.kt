@@ -50,6 +50,7 @@ import org.satochip.satodime.R
 import org.satochip.satodime.data.Coin
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
@@ -197,7 +198,7 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                 )
 
                 // scan card
-                Log.d(TAG, "ExpertModeView: clicked on create button!")
+                SatoLog.d(TAG, "ExpertModeView: clicked on create button selectedVault: $selectedVault")
                 showNfcDialog.value = true // NfcDialog
                 isReadyToNavigate.value = true
                 sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= isTestnet, entropyBytes= entropyBytes)
@@ -213,15 +214,15 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
 
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
-        Log.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        SatoLog.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
-            Log.d(TAG, "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            SatoLog.d(TAG, "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
         // navigate
-        Log.d(TAG, "ExpertModeView navigating to CongratsVaultCreated view")
+        SatoLog.d(TAG, "ExpertModeView navigating to CongratsVaultCreated view")
         navController.navigate(SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName") {
             popUpTo(0)
         }

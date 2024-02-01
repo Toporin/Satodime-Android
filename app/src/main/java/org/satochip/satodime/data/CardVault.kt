@@ -1,11 +1,12 @@
 package org.satochip.satodime.data
 
+import android.util.Log
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.util.Log
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.javacryptotools.explorers.CoinCombined
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.util.SatodimePreferences
 import org.satochip.satodime.util.apiKeys
 import org.satochip.satodime.util.getBalanceDouble
@@ -35,7 +36,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys)
     init {
         baseCoin.setLoggerLevel(logLevel)
-        Log.d(TAG,"CardVault constructor $keySlip44Int")
+        SatoLog.d(TAG,"CardVault constructor $keySlip44Int")
     }
 
     var nativeAsset: Asset = Asset()
@@ -65,37 +66,36 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     var nftList: List<Asset> = emptyList()
 
     fun fetchBalance(): Double?{
-        Log.d(TAG, "DEBUG CardVault fetchBalance START ${nativeAsset.address}")
+        SatoLog.d(TAG, "fetchBalance: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
-            Log.w(TAG, "Using mockup address $addressCopy instead of ${nativeAsset.address}")
+            SatoLog.w(TAG, "fetchBalance: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
 
         try {
-            Log.d(TAG, "fetchBalance address: $addressCopy")
             var balance = baseCoin.getBalance(addressCopy)
-            Log.d(TAG, "fetchBalance balance: $balance")
+            SatoLog.d(TAG, "fetchBalance balance: $balance")
             nativeAsset.balance = balance.toString()
             nativeAsset.decimals = "0" // no divisor
             return balance
         } catch (e: Exception) {
             nativeAsset.balance = null
             nativeAsset.decimals = null
-            Log.e(TAG, "fetchBalance exception: $e")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "fetchBalance exception: $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             return null
         }
     }
 
     fun fetchAssetValue(asset: Asset){
-        Log.d(TAG, "CardVault fetchAssetValue START $asset")
+        SatoLog.d(TAG, "fetchAssetValue: START $asset")
         // note: valueInFirstCurrency is not used currently
 
         // testnet coins & assets have zero value!
         if (isTestnet){
-            Log.d(TAG, "CardVault fetchAssetValue for a testnet is 0!")
+            SatoLog.d(TAG, "fetchAssetValue: for a testnet is 0!")
             asset.rate = 0.0
             asset.rateCurrency = selectedSecondCurrency
             asset.rateAvailable = true
@@ -111,7 +111,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
             if (asset.type == AssetType.Coin) {
                 // fetch exchange rate
                 val exchangeRate = priceExplorer.get_exchange_rate_between(asset.symbol, selectedSecondCurrency)
-                Log.d(TAG, "CardVault fetchAssetValue exchange rate: ${asset.symbol} = $exchangeRate $selectedSecondCurrency")
+                SatoLog.d(TAG, "fetchAssetValue: exchange rate: ${asset.symbol} = $exchangeRate $selectedSecondCurrency")
                 if (exchangeRate != null && exchangeRate>=0){
                     asset.rate = exchangeRate
                     asset.rateCurrency = selectedSecondCurrency
@@ -133,8 +133,8 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
                     val valueDouble = balanceDouble * asset.rate
                     asset.valueInSecondCurrency = valueDouble.toString()
                     asset.secondCurrency = selectedSecondCurrency
-                    Log.d(TAG, "CardVault fetchAssetValue exchange rate: ${asset.symbol} = ${asset.rate} $selectedSecondCurrency")
-                    Log.d(TAG, "CardVault fetchAssetValue value: ${valueDouble} = ${valueDouble.toString()} $selectedSecondCurrency")
+                    SatoLog.d(TAG, "fetchAssetValue: exchange rate: ${asset.symbol} = ${asset.rate} $selectedSecondCurrency")
+                    SatoLog.d(TAG, "fetchAssetValue: value: ${valueDouble} = ${valueDouble.toString()} $selectedSecondCurrency")
                 } else {
                     asset.valueInSecondCurrency = null
                     asset.secondCurrency = null
@@ -142,14 +142,14 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
             } else {
                 // fetch exchange rate between available rateCurrency and desired selectedSecondCurrency
                 val exchangeRate = priceExplorer.get_exchange_rate_between(asset.rateCurrency, selectedSecondCurrency)
-                Log.d(TAG, "CardVault fetchAssetValue exchange rate: ${asset.rateCurrency} = $exchangeRate $selectedSecondCurrency")
+                SatoLog.d(TAG, "fetchAssetValue: exchange rate: ${asset.rateCurrency} = $exchangeRate $selectedSecondCurrency")
 
                 val balanceDouble = getBalanceDouble(asset.balance, asset.decimals)
                 if (balanceDouble != null && asset.rate != null && exchangeRate != null && exchangeRate >=0) {
                     val valueDouble = balanceDouble * asset.rate / exchangeRate
                     asset.valueInSecondCurrency = valueDouble.toString()
                     asset.secondCurrency = selectedSecondCurrency
-                    Log.d(TAG, "CardVault fetchAssetValue value: ${valueDouble} = ${valueDouble.toString()} $selectedSecondCurrency")
+                    SatoLog.d(TAG, "fetchAssetValue: value: ${valueDouble} = ${valueDouble.toString()} $selectedSecondCurrency")
                 } else {
                     asset.valueInSecondCurrency = null
                     asset.secondCurrency = null
@@ -159,26 +159,23 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         } else {
             asset.valueInSecondCurrency = null
             asset.secondCurrency = null
-            Log.d(TAG, "CardVault fetchAssetValue exchangeRate unavailable!")
+            SatoLog.w(TAG, "fetchAssetValue: exchangeRate unavailable!")
         }
     }
 
-
-    // todo list token + get balance...
     fun fetchTokenList(): List<Asset> {
-        Log.d(TAG, "CardVault getAssetList START ${nativeAsset.address}")
+        SatoLog.d(TAG, "fetchTokenList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
-            Log.w(TAG, "CardVault getAssetList using mockup address $addressCopy instead of ${nativeAsset}")
+            SatoLog.w(TAG, "fetchTokenList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
 
         try {
             //TODO: check if token/NFT supported by blockchain
-            Log.d(TAG, "address to fetch: $addressCopy")
             tokenList = baseCoin.getAssetList(addressCopy)
-            Log.d(TAG, "tokenList: $tokenList")
+            SatoLog.d(TAG, "fetchTokenList: tokenList: $tokenList")
 
             if (tokenList != null) {
                 return tokenList
@@ -186,25 +183,24 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
                 return emptyList()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "CardVault getAssetList exception for $addressCopy: $e")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "fetchTokenList: exception for $addressCopy: $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             return emptyList()
         }
     }
 
     fun fetchNftList(): List<Asset> {
-        Log.d(TAG, "CardVault fetchNftList START ${nativeAsset.address}")
+        SatoLog.d(TAG, "fetchNftList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
         if (DEBUG_EXPLORER) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
-            Log.w(TAG, "CardVault fetchNftList using mockup address $addressCopy instead of ${nativeAsset.address}")
+            SatoLog.w(TAG, "fetchNftList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
 
         try {
-            Log.d(TAG, "CardVault fetchNftList address to fetch: $addressCopy")
             nftList = baseCoin.getNftList(addressCopy)
-            Log.d(TAG, "nftList: $nftList")
+            SatoLog.d(TAG, "fetchNftList: nftList: $nftList")
 
             if (nftList != null) {
                 return nftList
@@ -212,8 +208,8 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
                 return emptyList()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "CardVault fetchNftList exception for $addressCopy + $e")
-            Log.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "fetchNftList: exception for $addressCopy + $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
             return emptyList()
         }
     }

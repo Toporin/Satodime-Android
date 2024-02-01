@@ -1,6 +1,5 @@
 package org.satochip.satodime.ui
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,10 +21,6 @@ fun ShowPrivateKeyDataView(
     label: String,
     data: String,
 ) {
-//    Log.d(TAG, "ShowPrivateKeyDataView START")
-//    Log.d(TAG, "ShowPrivateKeyDataView selectedVault: $selectedVault")
-//    Log.d(TAG, "ShowPrivateKeyDataView label: $label")
-//    Log.d(TAG, "ShowPrivateKeyDataView data: $data")
     val vaults = sharedViewModel.cardVaults.value
     val vaultsSize = vaults?.size ?: 0
     if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return

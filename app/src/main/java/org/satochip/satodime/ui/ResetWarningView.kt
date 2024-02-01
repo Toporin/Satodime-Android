@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.EmptyVaultCard
 import org.satochip.satodime.ui.components.NfcDialog
@@ -63,7 +64,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val vaults = sharedViewModel.cardVaults.value
 //    val vaultsSize = vaults?.size ?: 0
 //    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
-//        Log.e(TAG, "ResetWarningView VAULT IS NULL!!")
+//        SatoLog.e(TAG, "ResetWarningView VAULT IS NULL!!")
 //    }
 
     RedGradientBackground()
@@ -186,7 +187,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
 
                 // scan card
                 if (isBackupConfirmed.value) {
-                    Log.d(TAG, "ResetWarningView: clicked on reset button!")
+                    SatoLog.d(TAG, "ResetWarningView: clicked on reset button for selectedVault $selectedVault")
                     showNfcDialog.value = true // NfcDialog
                     isReadyToNavigate.value = true // ready to navigate to next view once action is done
                     sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
@@ -208,15 +209,15 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     // auto-navigate when action is performed successfully
     // todo improve?
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, isReadyToNavigate) {
-        Log.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        SatoLog.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
-            Log.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            SatoLog.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
         // navigate
-        Log.d(TAG, "ResetWarningView navigating to ResetCongratsView")
+        SatoLog.d(TAG, "ResetWarningView navigating to ResetCongratsView")
         navController.navigate(SatodimeScreen.ResetCongratsView.name + "/$selectedVault") {
             popUpTo(0)
         }

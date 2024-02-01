@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
@@ -95,7 +96,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
 
             if (privkey == null) {
                 // recover privkey
-                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                SatoLog.d(TAG, "ShowPrivateKeyView: privkey NOT available")
                 requestedPrivkeyType.value = RequestedPrivkeyType.LEGACY
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
@@ -103,8 +104,8 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
 
             // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
             if (privkey != null){
-                Log.d(TAG, "ShowPrivateKeyView privkey readily available")
-                Log.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view")
+                SatoLog.d(TAG, "ShowPrivateKeyView privkey readily available")
+                SatoLog.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view")
                 navController.navigate(
                     SatodimeScreen.ShowPrivateKeyData.name
                             + "/$selectedVault"
@@ -119,12 +120,12 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
-                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                SatoLog.d(TAG, "ShowPrivateKeyView: privkey NOT available")
                 requestedPrivkeyType.value = RequestedPrivkeyType.WIF
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
                 if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-                    Log.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
+                    SatoLog.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
                 }
             }
 
@@ -143,12 +144,12 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
-                Log.d(TAG, "ShowPrivateKeyView: privkey NOT available")
+                SatoLog.d(TAG, "ShowPrivateKeyView: privkey NOT available")
                 requestedPrivkeyType.value = RequestedPrivkeyType.ENTROPY
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
                 if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
-                    Log.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
+                    SatoLog.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
                     // todo something?
                 }
             }
@@ -186,19 +187,19 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
 
     // auto-navigate to privkey when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, requestedPrivkeyType) {
-        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${showNfcDialog.value}")
-        Log.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${requestedPrivkeyType.value}")
+        SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+//        SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${showNfcDialog.value}")
+//        SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${requestedPrivkeyType.value}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || requestedPrivkeyType.value == RequestedPrivkeyType.NONE
             || showNfcDialog.value) {
-            Log.d(TAG, "ShowPrivateKeyView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
         // navigate
-        Log.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view ${sharedViewModel.resultCodeLive}")
-        Log.d(TAG, "ShowPrivateKeyView selectedVault: $selectedVault")
-        Log.d(TAG, "ShowPrivateKeyView requestedPrivkeyType: ${requestedPrivkeyType.value}")
+        SatoLog.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view ${sharedViewModel.resultCodeLive}")
+//        SatoLog.d(TAG, "ShowPrivateKeyView selectedVault: $selectedVault")
+//        SatoLog.d(TAG, "ShowPrivateKeyView requestedPrivkeyType: ${requestedPrivkeyType.value}")
         when (requestedPrivkeyType.value){
             RequestedPrivkeyType.LEGACY -> {
                 navController.navigate(

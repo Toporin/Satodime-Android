@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
@@ -108,12 +109,11 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         // ACCEPT
         Button(
             onClick = {
-                Log.d(TAG, "Clicked on accept button!")
+                SatoLog.d(TAG, "Clicked on accept button!")
                 // scan card
                 showNfcDialog.value = true // NfcDialog
                 viewModel.takeOwnership(context as Activity)
-                Log.d(TAG, "Action Accept Ownership terminated!")
-                // todo: show confirmation message
+                // todo show confirmation message
             },
             modifier = Modifier
                 .padding(10.dp)

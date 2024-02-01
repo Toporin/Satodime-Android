@@ -37,14 +37,14 @@ object SatoLog {
         this.addLog(level= Level.WARNING, tag= tag, msg= msg)
     }
 
-    fun i(tag: String, msg: String) {
-        if (DEBUG) {
-            Log.i(tag, msg)
-        }
-        if (useVerboseLog) {
-            this.addLog(level = Level.INFO, tag = tag, msg = msg)
-        }
-    }
+//    fun i(tag: String, msg: String) {
+//        if (DEBUG) {
+//            Log.i(tag, msg)
+//        }
+//        if (useVerboseLog) {
+//            this.addLog(level = Level.INFO, tag = tag, msg = msg)
+//        }
+//    }
 
     fun d(tag: String, msg: String) {
         if (DEBUG) {

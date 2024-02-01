@@ -38,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.BottomButton
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.RedGradientBackground
@@ -148,7 +149,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         BottomButton(
             onClick = {
                 // scan card
-                Log.d(TAG, "UnsealWarningView: clicked on unseal button!")
+                SatoLog.d(TAG, "UnsealWarningView: clicked on unseal button for selectedVault $selectedVault")
                 showNfcDialog.value = true // NfcDialog
                 isReadyToNavigate.value = true
                 sharedViewModel.unsealSlot(context as Activity, selectedVault - 1)
@@ -165,15 +166,15 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
 
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
-        Log.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
+        SatoLog.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
-            Log.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            SatoLog.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
             delay(1.seconds)
         }
         // navigate
-        Log.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
+        SatoLog.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
         navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
             popUpTo(0)
         }

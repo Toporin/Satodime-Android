@@ -10,6 +10,7 @@ import org.satochip.javacryptotools.coins.Ethereum
 import org.satochip.javacryptotools.coins.Litecoin
 import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.satodime.BuildConfig
+import org.satochip.satodime.services.SatoLog
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -44,7 +45,7 @@ fun sanitizeNftImageUrlString(link: String): String {
         // do nothing
         return nftImageUrlString
     }
-    Log.d(TAG, "Converted link: $link to: $nftImageUrlString")
+    SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
     return nftImageUrlString
 }
 
@@ -120,19 +121,19 @@ fun coinToSlip44Bytes(coinSymbol: String, isTestnet: Boolean): ByteArray {
 
     // convert to ByterArray
     var slip44Bytes = intToBytes(slip44Int)
-    Log.d(TAG, "coinToSlip44Bytes: $coinSymbol $slip44Int $slip44Bytes")
+    SatoLog.d(TAG, "coinToSlip44Bytes: $coinSymbol $slip44Int $slip44Bytes")
 
     return slip44Bytes
 }
 
 fun intToBytes(int: Int): ByteArray {
-    Log.d(TAG, "Utils intToBytes int: $int")
+    SatoLog.d(TAG, "intToBytes int: $int")
     var valint = int
     var bytes = ByteArray(4)
     for (index in 3 downTo 0){ //
         bytes[index] = (valint and 0xff).toByte()
         valint = (valint shr 8 )
     }
-    Log.d(TAG, "Utils intToBytes bytes: ${bytes[0]} ${bytes[1]} ${bytes[2]} ${bytes[3]}")
+    SatoLog.d(TAG, "intToBytes bytes: ${bytes[0]} ${bytes[1]} ${bytes[2]} ${bytes[3]}")
     return bytes
 }

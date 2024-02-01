@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.InfoDialog
 import org.satochip.satodime.ui.components.NfcDialog
 import org.satochip.satodime.ui.components.TopLeftBackButton
@@ -110,7 +111,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
 //        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         Button(
             onClick = {
-                Log.d(TAG, "TransferOwnershipView clicked on release button!")
+                SatoLog.d(TAG, "TransferOwnershipView: clicked on release button!")
                 if (viewModel.isCardDataAvailable) {
                     // scan card
                     showNfcDialog.value = true // NfcDialog
@@ -168,6 +169,8 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
     if (showNfcDialog.value){
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
     }
+
+    // todo show result message/toast
 }
 
 @Preview(showBackground = true)

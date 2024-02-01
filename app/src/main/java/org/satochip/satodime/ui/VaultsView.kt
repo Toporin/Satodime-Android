@@ -88,6 +88,7 @@ import org.satochip.satodime.data.CardVault
 import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.data.SlotState
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.components.DarkBlueGradientBackground
 import org.satochip.satodime.ui.components.EmptyVaultCard
 import org.satochip.satodime.ui.components.InfoDialog
@@ -299,7 +300,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             ) {
                 Spacer(Modifier.weight(1f))
                 Button(onClick = {
-                    Log.d("VaultsView", "Clicked on Scan button!")
+                    SatoLog.d("VaultsView", "Clicked on Scan button!")
                     // scan card
                     showNfcDialog.value = true // NfcDialog
                     sharedViewModel.scanCard(activity)
@@ -800,7 +801,7 @@ fun VaultsViewNftRow(asset: Asset) {
                 tint = Color.LightGray,
             )
         }
-        
+
     }
 
     // show bigger image in dialog
