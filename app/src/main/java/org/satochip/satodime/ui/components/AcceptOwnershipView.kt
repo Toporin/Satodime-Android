@@ -20,6 +20,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
@@ -44,7 +46,9 @@ import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
+import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "AcceptOwnershipView"
 
@@ -52,6 +56,7 @@ private const val TAG = "AcceptOwnershipView"
 fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel) {
     val context = LocalContext.current
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember{ mutableStateOf(false) }// to show result
 
     Box(
         modifier = Modifier
@@ -112,8 +117,8 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
                 SatoLog.d(TAG, "Clicked on accept button!")
                 // scan card
                 showNfcDialog.value = true // NfcDialog
+                isReadyToNavigate.value = true
                 viewModel.takeOwnership(context as Activity)
-                // todo show confirmation message
             },
             modifier = Modifier
                 .padding(10.dp)
@@ -151,6 +156,22 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
     // NfcDialog
     if (showNfcDialog.value){
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
+    }
+
+    // auto-navigate when action is performed successfully
+    LaunchedEffect(viewModel.resultCodeLive, showNfcDialog) {
+        SatoLog.d(TAG, "LaunchedEffect START ${viewModel.resultCodeLive}")
+        while (viewModel.resultCodeLive != NfcResultCode.Ok
+            || isReadyToNavigate.value == false
+            || showNfcDialog.value) {
+            SatoLog.d(TAG, "LaunchedEffect in while delay 1s ${viewModel.resultCodeLive}")
+            delay(1.seconds)
+        }
+        // navigate
+        SatoLog.d(TAG, "navigating back to Vaults view")
+        navController.navigate(SatodimeScreen.Vaults.name) {
+            popUpTo(0)
+        }
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import org.satochip.satodime.R
 import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.services.NFCCardService
@@ -47,7 +49,9 @@ import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGray
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
+import org.satochip.satodime.util.SatodimeScreen
 import org.satochip.satodime.viewmodels.SharedViewModel
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "TransferOwnershipView"
 
@@ -56,6 +60,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
     val context = LocalContext.current
     val showNoCardScannedDialog = remember { mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember{ mutableStateOf(false) }// to show result
 
     Box(
         modifier = Modifier
@@ -115,6 +120,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
                 if (viewModel.isCardDataAvailable) {
                     // scan card
                     showNfcDialog.value = true // NfcDialog
+                    isReadyToNavigate.value = true
                     viewModel.releaseOwnership(context as Activity)
                 } else {
                     showNoCardScannedDialog.value = true
@@ -158,8 +164,8 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
-            title = "noCardScannedTitle",
-            message = "noCardScannedText",
+            title = stringResource(R.string.nocardscannedtitle),
+            message = stringResource(R.string.noCardScannedText),
             isActionButtonVisible = false,
             buttonTitle = "",
             buttonAction = {},)
@@ -170,7 +176,22 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
     }
 
-    // todo show result message/toast
+    // auto-navigate when action is performed successfully
+    LaunchedEffect(viewModel.resultCodeLive, showNfcDialog) {
+        SatoLog.d(TAG, "LaunchedEffect START ${viewModel.resultCodeLive}")
+        while (viewModel.resultCodeLive != NfcResultCode.Ok
+            || isReadyToNavigate.value == false
+            || showNfcDialog.value) {
+            SatoLog.d(TAG, "LaunchedEffect in while delay 1s ${viewModel.resultCodeLive}")
+            delay(1.seconds)
+        }
+        // navigate
+        SatoLog.d(TAG, "navigating back to Vaults view")
+        navController.navigate(SatodimeScreen.Vaults.name) {
+            popUpTo(0)
+        }
+    }
+
 }
 
 @Preview(showBackground = true)
