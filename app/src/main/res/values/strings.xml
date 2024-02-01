@@ -115,7 +115,7 @@
     <string name="moreDetails">More details</string>
     <string name="moreInfo">More info</string>
     <string name="ownershipTitle">Warning</string>
-    <string name="ownershipText">You are not the owner of this card, so you cannot perform sensitive operations on the vaults such as: \n- Create and Seal \n- Unseal \n- Delete \n\nGet more information on how to get the ownership by cliking here.</string>
+    <string name="ownershipText">You are not the owner of this card, so you cannot perform sensitive operations on the vaults such as: \n- Create and Seal \n- Unseal \n- Delete \n\nGet more information on how to get the ownership by clicking here.</string>
     <string name="close">Close</string>
     <string name="cardInfo">Card information</string>
     <string name="transferOwnershipButton">Transfer ownership</string>
