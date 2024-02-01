@@ -22,5 +22,4 @@ enum class SatodimeScreen {
     SettingsView,
     ShowLogsView,
     AuthenticCardView,
-    FakeCardView,
 }

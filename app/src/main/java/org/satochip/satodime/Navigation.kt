@@ -242,8 +242,5 @@ fun Navigation() {
         composable(route = SatodimeScreen.AuthenticCardView.name) {
             AuthenticCardView(navController)
         }
-        composable(route = SatodimeScreen.FakeCardView.name) {
-            FakeCardView(navController)
-        }
     }
 }

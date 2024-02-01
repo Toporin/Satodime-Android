@@ -3,7 +3,7 @@
     <string name="take_the_ownership">Take the ownership</string>
     <string name="in_order_to_perform_sensitive_operations_on_the_card">In order to perform sensitive operations on the card (seal - unseal - reset), you need to take the ownership.\n\nThis right is revocable and transferable at any time in the application options. \n\n\nClick Accept to get the ownership right, \nor Cancel to give up.</string>
     <string name="card_authenticated">Card authenticated!</string>
-    <string name="authentic_card">This card has been issued by Satochip S.R.L. You can use it safely.</string>
+    <string name="authentic_card">This card has been issued by Satochip. You can use it safely.</string>
     <string name="certificate_details">Certificate details</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="card_info">Card Info</string>
@@ -24,7 +24,7 @@
     <string name="is_hidden_in_the">" is hidden in the "</string>
     <string name="satodime_chip_s_memory">Satodime chip\'s memory</string>
     <string name="card_authentication_failed">Card authentication failed!</string>
-    <string name="card_authentication_failed_description">Card authentication failed!\n\nImpossible to authenticate the issuer of this card. It has not been issued by Satochip S.R.L. \n\nIf you have not loaded the card yourself, be extremely careful!</string>
+    <string name="card_authentication_failed_description">Impossible to authenticate the issuer of this card. It has not been issued by Satochip. \n\nIf you have not loaded the card yourself, be extremely careful!</string>
     <string name="welcome">Welcome</string>
     <string name="satodime_lets_you_easily_create_vaults">Satodime lets you easily create vaults to store your cryptocurrencies. It supports the most innovative crypto-assets.</string>
     <string name="all_our_products">All our products</string>
@@ -128,4 +128,8 @@
     <string name="cardAuthenticStatus">This card is authentic</string>
     <string name="cardNotAuthenticStatus">Card failed to authenticate!</string>
     <string name="dontHaveASatodime">You don’t have a Satodime yet?\nClick here to buy one.</string>
+    <string name="showCardCert">Show card certificates</string>
+    <string name="cardCert">Card certificate</string>
+    <string name="subCA">Sub-CA certificate</string>
+    <string name="rootCA">Root CA certificate</string>
 </resources>

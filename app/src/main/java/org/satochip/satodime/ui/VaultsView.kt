@@ -143,7 +143,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         IconButton(
             onClick = {
                 navController.navigate(
-                    SatodimeScreen.AuthenticCardView.name
+                    //SatodimeScreen.AuthenticCardView.name
+                    SatodimeScreen.CardInfoView.name
                 )
             },
         )
@@ -162,7 +163,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         IconButton(
             onClick = {
                 navController.navigate(
-                    SatodimeScreen.FakeCardView.name
+                    SatodimeScreen.CardInfoView.name
                 )
             },
         )
@@ -347,7 +348,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             buttonAction =
             {
                 navController.navigate(
-                    SatodimeScreen.FakeCardView.name
+                    SatodimeScreen.CardInfoView.name
                 )
             },)
     }
