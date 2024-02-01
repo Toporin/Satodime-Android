@@ -20,8 +20,8 @@ private const val DEBUG_EXPLORER = true // use mockup address
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-    val debugMode = prefs.getBoolean(SatodimePreferences.DEBUG_MODE.name,false)
-    val logLevel = if (debugMode) {Level.INFO} else {Level.WARNING}
+    val debugMode = prefs.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)
+    val logLevel = if (debugMode) {Level.CONFIG} else {Level.WARNING}
 
     // TODO: clean and remove unnecessary/redundant fields
     private val keySlip44: ByteArray = cardSlot.keySlip44

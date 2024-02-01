@@ -27,6 +27,7 @@ import org.satochip.satodime.data.NfcResultCode
 import org.satochip.satodime.data.OwnershipStatus
 import org.satochip.satodime.data.SlotState
 import org.satochip.satodime.services.NFCCardService
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.util.coinToSlip44Bytes
 
 private const val TAG = "SharedViewModel"
@@ -125,30 +126,31 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     // Card actions
     fun scanCard(activity: Activity) {
         Log.d(TAG, "SharedViewModel scanCard START")
+        SatoLog.d(TAG, "SharedViewModel scanCard START")
         NFCCardService.actionType = NfcActionType.ScanCard
         scanCardForAction(activity)
     }
 
     fun takeOwnership(activity: Activity) {
-        Log.d(TAG, "SharedViewModel takeOwnership START")
+        SatoLog.d(TAG, "takeOwnership START")
         NFCCardService.actionType = NfcActionType.TakeOwnership
         scanCardForAction(activity)
     }
 
     fun dismissCardOwnership() {
-        Log.d(TAG, "SharedViewModel dismissCardOwnership START")
+        SatoLog.d(TAG, "dismissCardOwnership START")
         NFCCardService.dismissOwnership()
     }
 
     fun releaseOwnership(activity: Activity) {
-        Log.d(TAG, "SharedViewModel releaseOwnership START")
+        SatoLog.d(TAG, "releaseOwnership START")
         NFCCardService.actionType = NfcActionType.ReleaseOwnership
         scanCardForAction(activity)
     }
 
     // assert 0 <= index < cardSlots.size
     fun sealSlot(activity: Activity, index: Int, coinSymbol: String, isTestnet: Boolean, entropyBytes: ByteArray) {
-        Log.d(TAG, "SharedViewModel sealSlot START slot: ${index}")
+        SatoLog.d(TAG, "SharedViewModel sealSlot START slot: ${index}")
         NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
@@ -160,7 +162,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun unsealSlot(activity: Activity, index: Int) {
-        Log.d(TAG, "SharedViewModel unsealSlot START slot: ${index}")
+        SatoLog.d(TAG, "SharedViewModel unsealSlot START slot: ${index}")
         NFCCardService.actionType = NfcActionType.UnsealSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
@@ -168,32 +170,32 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun resetSlot(activity: Activity, index: Int) {
-        Log.d(TAG, "SharedViewModel resetSlot START slot: ${index}")
+        SatoLog.d(TAG, "SharedViewModel resetSlot START slot: ${index}")
         NFCCardService.actionType = NfcActionType.ResetSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
     }
 
     fun recoverSlotPrivkey(activity: Activity, index: Int) {
-        Log.d(TAG, "SharedViewModel recoverSlotPrivkey START slot: ${index}")
+        SatoLog.d(TAG, "SharedViewModel recoverSlotPrivkey START slot: ${index}")
         NFCCardService.actionType = NfcActionType.GetPrivkey
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
     }
 
     fun scanCardForAction(activity: Activity) {
-        Log.d(TAG, "SharedViewModel scanCardForAction START")
+        SatoLog.d(TAG, "SharedViewModel scanCardForAction START")
         viewModelScope.launch {
-            Log.d(TAG, "SharedViewModel scanCardForAction START Thread")
+            SatoLog.d(TAG, "SharedViewModel scanCardForAction START Thread")
             NFCCardService.scanCardForAction(activity)
-            Log.d(TAG, "SharedViewModel scanCardForAction END Thread")
+            SatoLog.d(TAG, "SharedViewModel scanCardForAction END Thread")
         }
-        Log.d(TAG, "In scanCardForAction END")
+        SatoLog.d(TAG, "In scanCardForAction END")
     }
 
     /// WEB API
     private suspend fun updateVaults(cardSlots: List<CardSlot>) {
-        Log.d(TAG,"DEBUG SharedViewModel updateVaults START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel updateVaults START")
         fetchVaultInfoFromSlot(cardSlots)
 
         // balance
@@ -211,17 +213,17 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
-        Log.d(TAG,"DEBUG SharedViewModel fetchVaultBalance START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultBalance START")
         withContext(Dispatchers.IO) {
-            Log.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot withContext")
+            SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot withContext")
             val updatedVaults = cardSlots.map {
                 if (it.slotState == SlotState.UNINITIALIZED) {
-                    Log.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
+                    SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
                     return@map null
                 }
 
                 var cardVault = CardVault(it, context)
-                Log.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot created vault ${cardVault.index}")
+                SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultInfoFromSlot created vault ${cardVault.index}")
                 return@map cardVault
             }
             cardVaults.postValue(updatedVaults) //postValue(updatedVaults.toMutableList())
@@ -230,17 +232,17 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultBalance() {
-        Log.d(TAG,"DEBUG SharedViewModel fetchVaultBalance START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultBalance START")
         withContext(Dispatchers.IO) {
-            Log.d(TAG,"DEBUG SharedViewModel fetchVaultBalance withContext")
+            SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultBalance withContext")
             val updatedVaults = cardVaults.value?.map {
                 if (it == null) {
-                    Log.d(TAG,"DEBUG SharedViewModel fetchVaultBalance uninitialized vault")
+                    SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultBalance uninitialized vault")
                     return@map null
                 }
 
                 it.fetchBalance()
-                Log.d(TAG,"DEBUG SharedViewModel fetchVaultBalance updated vault ${it.index}")
+                SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultBalance updated vault ${it.index}")
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
@@ -248,18 +250,18 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultPrice(){
-        Log.d(TAG,"DEBUG SharedViewModel fetchVaultPrice START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultPrice START")
         withContext(Dispatchers.IO) {
-            Log.d(TAG,"DEBUG SharedViewModel fetchVaultPrice withContext")
+            SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultPrice withContext")
             val updatedVaults = cardVaults.value?.map {
                 if (it == null) {
-                    Log.d(TAG,"DEBUG SharedViewModel fetchVaultPrice uninitialized vault")
+                    SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultPrice uninitialized vault")
                     return@map null
                 }
 
                 // update asset value/rate fields
                 it.fetchAssetValue(it.nativeAsset)
-                Log.d(TAG,"DEBUG SharedViewModel fetchVaultPrice updated vault ${it.index}")
+                SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultPrice updated vault ${it.index}")
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
@@ -267,18 +269,18 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultAssets() {
-        Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssets START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssets START")
         withContext(Dispatchers.IO) {
-            Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssets withContext")
+            SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssets withContext")
             val updatedVaults = cardVaults.value?.map {
                 if (it == null) {
-                    Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssets uninitialized vault")
+                    SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssets uninitialized vault")
                     return@map null
                 }
 
                 it.fetchTokenList()
                 it.fetchNftList()
-                Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssets updated vault ${it.index}")
+                SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssets updated vault ${it.index}")
                 return@map it
             }
             cardVaults.postValue(updatedVaults)
@@ -286,12 +288,12 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultAssetPrices() {
-        Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices START")
+        SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices START")
         withContext(Dispatchers.IO) {
-            Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices withContext")
+            SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices withContext")
             val updatedVaults = cardVaults.value?.map {
                 if (it == null) {
-                    Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices uninitialized vault")
+                    SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices uninitialized vault")
                     return@map null
                 }
                 // update asset value/rate fields
@@ -302,7 +304,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 for(asset in it.nftList){
                     it.fetchAssetValue(asset)
                 }
-                Log.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices updated vault ${it.index}")
+                SatoLog.d(TAG,"DEBUG SharedViewModel fetchVaultAssetPrices updated vault ${it.index}")
                 return@map it
             }
             cardVaults.postValue(updatedVaults)

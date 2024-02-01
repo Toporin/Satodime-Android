@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.satochip.satodime.services.SatoLog
 import org.satochip.satodime.ui.*
 import org.satochip.satodime.ui.components.AcceptOwnershipView
 import org.satochip.satodime.util.NavigationParam
@@ -31,6 +32,7 @@ fun Navigation() {
     context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
+    SatoLog.setVerboseMode(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)) // use verbose logs?
     val startDestination =
         if (settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, true)) {
             Log.d(TAG, "Navigation: Start onboarding screens!")
@@ -232,6 +234,11 @@ fun Navigation() {
         // SETTINGS
         composable(route = SatodimeScreen.SettingsView.name) {
             SettingsView(navController)
+        }
+        // LOGS
+        // SETTINGS
+        composable(route = SatodimeScreen.ShowLogsView.name) {
+            ShowLogsView(navController)
         }
         // AUTHENTICITY
         composable(route = SatodimeScreen.AuthenticCardView.name) {

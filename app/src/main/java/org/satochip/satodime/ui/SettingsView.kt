@@ -56,7 +56,9 @@ import org.satochip.satodime.services.NFCCardService
 import org.satochip.satodime.ui.components.TopLeftBackButton
 import org.satochip.satodime.ui.theme.LightGreen
 import org.satochip.satodime.ui.theme.SatodimeTheme
+import org.satochip.satodime.util.NavigationParam
 import org.satochip.satodime.util.SatodimePreferences
+import org.satochip.satodime.util.SatodimeScreen
 
 @Composable
 fun SettingsView(navController: NavController) {
@@ -67,7 +69,7 @@ fun SettingsView(navController: NavController) {
         mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,true))
     }
     var debugMode by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.DEBUG_MODE.name,false))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false))
     }
     val savedCurrency by remember {
         mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name,"USD"))
@@ -222,7 +224,11 @@ fun SettingsView(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
         // SHOW LOGS BUTTON
         Button(
-            onClick = { },
+            onClick = {
+                navController.navigate(
+                    SatodimeScreen.ShowLogsView.name
+                )
+            },
             modifier = Modifier
                 .padding(10.dp)
                 .height(40.dp)
@@ -238,13 +244,10 @@ fun SettingsView(navController: NavController) {
         // APPLY BUTTON
         Button(
             onClick = {
-//                couroutineScope.launch {
-//                    satodimeStore.saveSelectedCurrency(selectedCurrency)
-//                }
                 settings.edit()
                     .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro).apply()
                 settings.edit()
-                    .putBoolean(SatodimePreferences.DEBUG_MODE.name, debugMode).apply()
+                    .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode).apply()
                 settings.edit()
                     .putString(SatodimePreferences.SELECTED_CURRENCY.name, selectedCurrency ?: "USD").apply()
 
