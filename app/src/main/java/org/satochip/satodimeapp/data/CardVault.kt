@@ -16,7 +16,7 @@ import java.nio.ByteBuffer
 import java.util.logging.Level
 
 private const val TAG = "CardVault"
-private const val DEBUG_EXPLORER = true
+private const val DEBUG_EXPLORER = false
 private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup address, only available in DEBUG mode!
 
 // todo: add context?
