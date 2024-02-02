@@ -90,6 +90,7 @@ import org.satochip.satodimeapp.ui.components.NftDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
 import org.satochip.satodimeapp.ui.theme.DarkRed
+import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.ui.theme.LightDarkBlue
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
@@ -264,6 +265,12 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 SatodimeScreen.ResetWarningView.name + "/${sharedViewModel.selectedVault}"
             )
         }
+        val onExplore = {
+            if (vaults != null && sharedViewModel.selectedVault <= vaultsSize && vaults[sharedViewModel.selectedVault - 1] != null){
+                val explorerLink = vaults[sharedViewModel.selectedVault-1]!!.nativeAsset.explorerLink
+                uriHandler.openUri(explorerLink)
+            }
+        }
 
         if (sharedViewModel.isCardDataAvailable) {
             //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
@@ -280,6 +287,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                     cardVaultsWithDefaultsValuesIfEmpty,
                     sharedViewModel.selectedVault,
                     onAddFunds,
+                    onExplore,
                     onUnseal,
                     onAddVault,
                     onShowKey,
@@ -395,6 +403,7 @@ fun DetailedVaultView(
     vaults: List<CardVault?>,
     selectedCard: Int,
     onAddFunds: () -> Unit, // todo: add Int parameter for vault index?
+    onExplore: () -> Unit, // todo: add Int parameter for vault index?
     onUnseal: () -> Unit, // todo: add Int parameter for vault index?
     onAddVault: (Int) -> Unit,
     onShowKey: () -> Unit, // todo: add Int parameter for vault index?
@@ -406,7 +415,8 @@ fun DetailedVaultView(
     // ACTIONS ROW
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        //horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth()
@@ -451,13 +461,54 @@ fun DetailedVaultView(
                     text = stringResource(R.string.addFunds)
                 )
             }
-            Divider(
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
-                    .height(30.dp)
-                    .width(2.dp),
-                color = Color.LightGray,
-            )
+//            Divider(
+//                modifier = Modifier
+//                    .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
+//                    .height(30.dp)
+//                    .width(2.dp),
+//                color = Color.LightGray,
+//            )
+
+            // EXPLORE BUTTON
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .aspectRatio(1f)
+                        .background(LightGreen, shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    OutlinedButton(
+                        onClick = onExplore,
+                        modifier = Modifier.size(60.dp),
+                        shape = CircleShape,
+                        //border = BorderStroke(2.dp, Color.White),
+                        contentPadding = PaddingValues(0.dp),  //avoid the little icon
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color.White,
+                            backgroundColor = LightBlue
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.open_in_new_24px),
+                            contentDescription = "link to explorer",
+                            modifier = Modifier
+                                .size(30.dp), //.size(45.dp)
+                            //tint = Color.LightGray,
+                        )
+                    }
+                }
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Light,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = stringResource(R.string.exploreBlockchain)
+                )
+            }
         }
         if (selectedCard<=vaults.size
             && vaults[selectedCard - 1] != null
@@ -526,9 +577,10 @@ fun DetailedVaultView(
                     text = stringResource(R.string.showKey)
                 )
             }
-            Divider(modifier = Modifier
-                .padding(10.dp)
-                .size(0.dp))
+//            Divider(modifier = Modifier
+//                .padding(10.dp)
+//                .size(0.dp))
+
             // RESET BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
