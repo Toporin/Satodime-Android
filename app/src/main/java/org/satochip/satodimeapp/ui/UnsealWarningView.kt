@@ -110,13 +110,13 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
 //                append(stringResource(R.string.this_crypto_vault_will_reveal_the_corresponding_private_key))
 //            }
         )
-        Divider(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(2.dp)
-                .width(100.dp),
-            color = Color.DarkGray,
-        )
+//        Divider(
+//            modifier = Modifier
+//                .padding(10.dp)
+//                .height(2.dp)
+//                .width(100.dp),
+//            color = Color.DarkGray,
+//        )
         Text(
             modifier = Modifier
                 .padding(10.dp),

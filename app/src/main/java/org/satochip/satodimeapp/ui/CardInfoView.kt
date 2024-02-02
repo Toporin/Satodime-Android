@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -139,9 +140,9 @@ fun CardInfoCard(text: String, width: Int, color: Color = LightGreen, onClick: (
     Card(
         modifier = Modifier
             .clickable { onClick() }
-            .width(width.dp)
-            .height(65.dp)
             .padding(5.dp),
+//            .width(width.dp)
+//            .height(height.dp)
         shape = RoundedCornerShape(15.dp)
     ) {
         Text(

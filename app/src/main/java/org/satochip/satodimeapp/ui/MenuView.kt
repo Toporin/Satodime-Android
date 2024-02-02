@@ -76,8 +76,9 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
+                .padding(10.dp)
                 .fillMaxWidth()
-                .height(110.dp)
+                .height(120.dp)
         ) {
             // CARD INFO
             MenuCard(
@@ -109,7 +110,7 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(5.dp)
+                .padding(10.dp)
                 .fillMaxWidth()
                 .height(120.dp)
         ) {
@@ -135,24 +136,25 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(5.dp)
+                .padding(10.dp)
                 .fillMaxWidth()
-                .height(75.dp)
+                .height(90.dp)
         ) {
-            MenuCard(stringResource(R.string.termsOfService), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.termsOfService), TextAlign.Center, 190, 100, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/terms-of-service/")
             }
-            MenuCard(stringResource(R.string.privacyPolicy), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.privacyPolicy), TextAlign.Center, 190, 100, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/privacy-policy/")
             }
         }
-        Divider(
-            modifier = Modifier
-                .padding(20.dp)
-                .height(2.dp)
-                .width(150.dp),
-            color = Color.DarkGray,
-        )
+
+//        Divider(
+//            modifier = Modifier
+//                .padding(20.dp)
+//                .height(2.dp)
+//                .width(150.dp),
+//            color = Color.DarkGray,
+//        )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -222,7 +224,7 @@ fun MenuCard(
                 .padding(top = 20.dp, start = 15.dp, bottom = 15.dp, end = endTextPadding),
             textAlign = textAlign,
             color = Color.White,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             style = MaterialTheme.typography.body1,
             text = text
         )

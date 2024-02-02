@@ -209,6 +209,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             Icon(Icons.Default.MoreVert, "", tint = MaterialTheme.colors.secondary)
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

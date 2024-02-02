@@ -85,7 +85,7 @@ fun ShowLogsView(
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.showLogs)
+            text = stringResource(R.string.LogsTitle)
         )
         // VERBOSE MODE
         Row {

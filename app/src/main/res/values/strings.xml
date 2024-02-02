@@ -65,7 +65,7 @@ To facilitate maintenance, keep same key name whenever possible
 <!--    <string name="after_that_you_will_be_able_to">"After that you will be able to "</string>-->
 <!--    <string name="create_a_new_crypto_vault">create a new crypto vault</string>-->
     <string name="iConfirmThatBackup">I confirm that I have made a backup of the corresponding private key.</string>
-    <string name="resetTheVault">Reset the vault</string>
+<!--    <string name="resetTheVault">Reset the vault</string>-->
     <string name="createSealGift">Create, Seal, Gift it</string>
     <string name="settings">Settings</string>
     <string name="currency">Currency</string>
@@ -94,7 +94,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="sealed">Sealed</string>
     <string name="unsealed">Unsealed</string>
     <string name="youOrAnybodyCanDepositFunds">You or anybody can deposit funds to this vault by sending crypto tokens to this address.</string>
-    <string name="totalBalance">Total balance</string>
+    <string name="totalBalance">Balance</string>
     <string name="token">Token</string>
     <string name="nft">NFT</string>
     <string name="history">History</string>
@@ -118,7 +118,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="toUseItText">To use it, put the card on top of your phone when prompted and keep it on the reader throughout the operation.</string>
     <string name="usingNFC">Using NFC</string>
     <string name="start">Start</string>
-    <string name="theExpertModeAllowsYou">The expert mode allows you to:\n                            1. Select the network\n                            2. Provide the entropy for key generation</string>
+    <string name="theExpertModeAllowsYou">The expert mode allows you to:\n1. Select the network\n2. Provide entropy for private key generation</string>
     <string name="network">Network:</string>
     <string name="entropy">Entropy:</string>
     <string name="createUpTo3Dfifferent">Create up to 3 different vaults to store crypto and NFTs. Transfer the ownership and give it safely to anyone.</string>

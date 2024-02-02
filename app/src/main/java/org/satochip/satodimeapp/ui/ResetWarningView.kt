@@ -198,8 +198,9 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                 }
 
             },
+            //width = 240.dp,
             color = Color.Red,
-            text = stringResource(R.string.resetTheVault)
+            text = stringResource(R.string.resetBtn)
         )
 
         // CANCEL BUTTON

@@ -106,7 +106,8 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                     modifier = Modifier
                         .background(MaterialTheme.colors.primary)
                         .padding(20.dp),
-                    textAlign = TextAlign.Center,
+                    //textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.secondary,
                     fontSize = 16.sp,
                     style = MaterialTheme.typography.body1,

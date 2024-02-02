@@ -225,8 +225,8 @@ fun SettingsView(navController: NavController) {
             },
             modifier = Modifier
                 .padding(10.dp)
-                .height(40.dp)
-                .width(125.dp),
+                .height(40.dp),
+                //.width(125.dp),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.primary,

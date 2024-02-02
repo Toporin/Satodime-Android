@@ -6,6 +6,7 @@ import android.content.Context.MODE_PRIVATE
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.javacryptotools.explorers.CoinCombined
+import org.satochip.satodimeapp.BuildConfig.DEBUG
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.apiKeys
@@ -15,7 +16,8 @@ import java.nio.ByteBuffer
 import java.util.logging.Level
 
 private const val TAG = "CardVault"
-private const val DEBUG_EXPLORER = false // use mockup address
+private const val DEBUG_EXPLORER = true
+private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup address, only available in DEBUG mode!
 
 // todo: add context?
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
@@ -69,7 +71,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchBalance: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (DEBUG_EXPLORER) {
+        if (USE_MOCKUP_ADDRESSS) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchBalance: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
@@ -167,7 +169,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchTokenList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (DEBUG_EXPLORER) {
+        if (USE_MOCKUP_ADDRESSS) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchTokenList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
@@ -193,7 +195,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchNftList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (DEBUG_EXPLORER) {
+        if (USE_MOCKUP_ADDRESSS) {
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchNftList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }

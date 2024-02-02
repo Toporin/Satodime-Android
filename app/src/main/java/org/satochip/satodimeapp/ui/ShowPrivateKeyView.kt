@@ -174,7 +174,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                     popUpTo(0)
                 }
             },
-            width = 200.dp,
+            width = 240.dp,
             text = stringResource(R.string.backToMyVaults)
         )
     }
