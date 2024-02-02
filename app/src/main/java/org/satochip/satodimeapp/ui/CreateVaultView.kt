@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,11 +32,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,7 +44,6 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -59,7 +54,6 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import java.security.SecureRandom
-import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "CreateVaultView"
@@ -87,8 +81,8 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
             .padding(10.dp)
     ) {
         Title(
-            stringResource(R.string.create_your_vault),
-            stringResource(R.string.you_are_about_to_create_and_seal_a_vault)
+            stringResource(R.string.createYourVault),
+            stringResource(R.string.youAreAboutToCreateAndSeal)
         )
         CoinDisplay(coin = selectedCoin)
         Card(
@@ -105,21 +99,22 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
                 color = MaterialTheme.colors.secondary,
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.body1,
-                text = buildAnnotatedString {
-                    append(stringResource(R.string.once_the))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.vault))
-                    }
-                    append(stringResource(R.string.has_been_generated_the_corresponding))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.private_keys))
-                    }
-                    append(stringResource(R.string.is_hidden_in_the))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.satodime_chip_s_memory))
-                    }
-                    append(".")
-                }
+                text = stringResource(R.string.onceTheVaultHasBeengenerated) // todo support markdown
+//                buildAnnotatedString {
+//                    append(stringResource(R.string.once_the))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.vault))
+//                    }
+//                    append(stringResource(R.string.has_been_generated_the_corresponding))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.private_keys))
+//                    }
+//                    append(stringResource(R.string.is_hidden_in_the))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.satodime_chip_s_memory))
+//                    }
+//                    append(".")
+//                }
             )
         }
         Spacer(Modifier.weight(1f))
@@ -148,7 +143,7 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
                     contentColor = Color.White
                 )
             ) {
-                Text(stringResource(R.string.activate_the_expert_mode))
+                Text(stringResource(R.string.activateTheExpertMode))
             }
         }
         Spacer(Modifier.weight(1f))
@@ -170,10 +165,29 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
                 isReadyToNavigate.value = true
                 sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= false, entropyBytes= entropyBytes)
             },
-            text = stringResource(R.string.create_and_seal)
+            text = stringResource(R.string.createAndSeal)
         )
 
-        // TODO: cancel button?
+        // CANCEL BUTTON
+        val toastMsg = stringResource(R.string.actionCancelled)
+        Button(
+            onClick = {
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                navController.navigateUp()
+            },
+            modifier = Modifier
+                .padding(10.dp)
+                .height(40.dp)
+                .width(100.dp),
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = LightGray,
+                contentColor = Color.White
+            )
+        ) {
+            Text(stringResource(R.string.cancel))
+        }
+
     }
 
     // NfcDialog

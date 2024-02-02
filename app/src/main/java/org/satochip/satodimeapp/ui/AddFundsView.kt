@@ -1,8 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,8 +28,8 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
         navController = navController,
         vault = cardVault,
         index = selectedVault,
-        title = stringResource(R.string.add_funds),
-        label = stringResource(R.string.deposit_address),
+        title = stringResource(R.string.addFunds),
+        label = stringResource(R.string.depositAddress),
         data = cardVault.nativeAsset.address
     )
 }

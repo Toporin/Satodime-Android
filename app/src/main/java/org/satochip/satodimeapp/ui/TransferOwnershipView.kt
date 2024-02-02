@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,7 +40,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.InfoDialog
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -91,7 +89,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.transfer_ownership)
+            text = stringResource(R.string.transferOwner)
         )
         Image(
             painter = painterResource(id = R.drawable.transfer_ownership),
@@ -107,7 +105,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
             fontSize = 16.sp,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.please_note)
+            text = stringResource(R.string.transferOwnershipDescription)
         )
         Spacer(Modifier.weight(1f))
 //        val ownershipTransferredText = stringResource(R.string.ownership_transferred)
@@ -136,12 +134,13 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
                 MaterialTheme.colors.secondary
             )
         ) {
-            Text(stringResource(R.string.transfer))
+            Text(stringResource(R.string.transferBtn))
         }
         // CANCEL BUTTON
+        val toastMsg = stringResource(R.string.actionCancelled)
         Button(
             onClick = {
-                Toast.makeText(context, "Action cancelled", Toast.LENGTH_SHORT).show() // todo translate
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
                 navController.navigateUp()
             },
             modifier = Modifier
@@ -164,8 +163,8 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
-            title = stringResource(R.string.nocardscannedtitle),
-            message = stringResource(R.string.noCardScannedText),
+            title = stringResource(R.string.cardNeedToBeScannedTitle),
+            message = stringResource(R.string.cardNeedToBeScannedMessage),
             isActionButtonVisible = false,
             buttonTitle = "",
             buttonAction = {},)

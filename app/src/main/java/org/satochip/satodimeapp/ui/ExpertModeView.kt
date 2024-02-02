@@ -1,8 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +47,6 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -59,7 +56,6 @@ import org.satochip.satodimeapp.util.Network
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import java.security.MessageDigest
-import java.security.SecureRandom
 import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "ExpertModeView"
@@ -98,7 +94,7 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                 fontWeight = FontWeight.Medium,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.expert_mode)
+                text = stringResource(R.string.expertMode)
             )
             Card(
                 modifier = Modifier
@@ -114,7 +110,7 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                     color = MaterialTheme.colors.secondary,
                     fontSize = 16.sp,
                     style = MaterialTheme.typography.body1,
-                    text = stringResource(R.string.the_expert_mode_allows_you_to)
+                    text = stringResource(R.string.theExpertModeAllowsYou)
                 )
             }
         }
@@ -203,7 +199,7 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                 isReadyToNavigate.value = true
                 sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= isTestnet, entropyBytes= entropyBytes)
             },
-            text = stringResource(R.string.create_and_seal)
+            text = stringResource(R.string.createAndSeal)
         )
     }
 

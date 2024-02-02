@@ -1,6 +1,5 @@
 package org.satochip.satodimeapp.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -123,7 +122,7 @@ fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Bo
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = R.string.holdYourSatodimeNearPhone),
+                text = stringResource(id = R.string.nfcHoldSatodime),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.body1,
                 color = Color.Black,

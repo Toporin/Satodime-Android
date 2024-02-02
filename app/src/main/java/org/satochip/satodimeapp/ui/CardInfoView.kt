@@ -61,7 +61,7 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.card_info)
+            text = stringResource(R.string.cardInfo)
         )
         Spacer(Modifier.weight(1f))
 
@@ -72,19 +72,19 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
             fontSize = 18.sp,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.card_ownership_status)
+            text = stringResource(R.string.cardOwnershipStatus)
         )
 
         var ownershipStatusString = "Unknown"
         var colorOwner = Color.Yellow
         if (NFCCardService.ownershipStatus.value == OwnershipStatus.Owner) {
-            ownershipStatusString = "You are the card owner"
+            ownershipStatusString = stringResource(R.string.youAreTheCardOwner)
             colorOwner = LightGreen
         } else if (NFCCardService.ownershipStatus.value == OwnershipStatus.NotOwner) {
-            ownershipStatusString = "You are NOT the card owner"
+            ownershipStatusString = stringResource(R.string.youAreNotTheCardOwner)
             colorOwner = Color.Red
         } else if (NFCCardService.ownershipStatus.value == OwnershipStatus.Unclaimed) {
-            ownershipStatusString = "The card has no owner!"
+            ownershipStatusString = stringResource(R.string.cardHasNoOwner)
             colorOwner = Color.Blue
         }
         CardInfoCard(ownershipStatusString, 300, colorOwner){
@@ -100,7 +100,7 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
             fontSize = 18.sp,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.card_version)
+            text = stringResource(R.string.cardVersion)
         )
         CardInfoCard(NFCCardService.cardAppletVersion, 225)
 
@@ -113,17 +113,17 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
             fontSize = 18.sp,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.card_authenticity)
+            text = stringResource(R.string.cardAuthenticity)
         )
 
         var authenticityStatusString = "Unknown"
         var authenticityColor = Color.Yellow
         //if(NFCCardService.isAuthentic.value == true) {
         if(NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic) {
-            authenticityStatusString =  stringResource(R.string.cardAuthenticStatus)
+            authenticityStatusString =  stringResource(R.string.thisCardIsGenuine)
             authenticityColor = LightGreen
         } else {
-            authenticityStatusString = stringResource(R.string.cardNotAuthenticStatus)
+            authenticityStatusString = stringResource(R.string.thisCardIsNotGenuine)
             authenticityColor = Color.Red
         }
         CardInfoCard(authenticityStatusString, 275, authenticityColor) {

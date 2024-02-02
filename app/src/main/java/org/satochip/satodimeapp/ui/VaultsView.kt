@@ -1,13 +1,10 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,13 +41,11 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -87,7 +81,6 @@ import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.data.SlotState
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.DarkBlueGradientBackground
 import org.satochip.satodimeapp.ui.components.EmptyVaultCard
@@ -326,8 +319,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
-            title = stringResource(R.string.nocardscannedtitle),
-            message = stringResource(R.string.noCardScannedText),
+            title = stringResource(R.string.cardNeedToBeScannedTitle),
+            message = stringResource(R.string.cardNeedToBeScannedMessage),
             isActionButtonVisible = false,
             buttonTitle = "",
             buttonAction = {},
@@ -341,7 +334,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = sharedViewModel.showAuthenticityDialog,
-            title = stringResource(R.string.notAuthenticTitle),
+            title = stringResource(R.string.warning),
             message = stringResource(R.string.notAuthenticText),
             isActionButtonVisible = true,
             buttonTitle = stringResource(R.string.moreInfo),
@@ -360,7 +353,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         && !showNfcDialog.value){
         InfoDialog(
             openDialogCustom = sharedViewModel.showOwnershipDialog,
-            title = stringResource(R.string.ownershipTitle),
+            title = stringResource(R.string.warning),
             message = stringResource(R.string.ownershipText),
             isActionButtonVisible = true,
             buttonTitle = stringResource(R.string.moreInfo),
@@ -454,7 +447,7 @@ fun DetailedVaultView(
                     fontWeight = FontWeight.Light,
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.secondary,
-                    text = stringResource(R.string.add_funds)
+                    text = stringResource(R.string.addFunds)
                 )
             }
             Divider(
@@ -496,7 +489,7 @@ fun DetailedVaultView(
                     fontWeight = FontWeight.Light,
                     style = MaterialTheme.typography.body1,
                     color = Color.Gray,
-                    text = stringResource(R.string.unseal_cap)
+                    text = stringResource(R.string.unseal)
                 )
             }
         }
@@ -529,7 +522,7 @@ fun DetailedVaultView(
                     fontWeight = FontWeight.Light,
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.secondary,
-                    text = stringResource(R.string.show_key)
+                    text = stringResource(R.string.showKey)
                 )
             }
             Divider(modifier = Modifier
@@ -561,7 +554,7 @@ fun DetailedVaultView(
                     fontWeight = FontWeight.Light,
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.secondary,
-                    text = stringResource(R.string.reset_cap)
+                    text = stringResource(R.string.resetBtn)
                 )
             }
         }

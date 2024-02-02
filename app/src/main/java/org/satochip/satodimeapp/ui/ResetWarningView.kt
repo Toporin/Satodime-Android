@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -18,7 +20,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,11 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +45,7 @@ import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
@@ -93,7 +92,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.you_are_about_to_reset_the_following_crypto_vault)
+            text = stringResource(R.string.youAreAboutToReset)
         )
         if (vaults?.get(selectedVault - 1) != null) {
             VaultCard(
@@ -113,24 +112,26 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             color = MaterialTheme.colors.secondaryVariant,
             fontSize = 14.sp,
             style = MaterialTheme.typography.body1,
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.reset_cap))
-                }
-                append(stringResource(R.string.this_vault_will_completely_and_irrevocably))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.delete))
-                }
-                append(stringResource(R.string.the_corresponding))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.private_keys))
-                }
-                append(stringResource(R.string.from_your))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.satodime_device))
-                }
-                append(".")
-            }
+            text = stringResource(R.string.resettingThisCryptoVaultWill)
+            // TODO add markdown support
+//            buildAnnotatedString {
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.reset_cap))
+//                }
+//                append(stringResource(R.string.this_vault_will_completely_and_irrevocably))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.delete))
+//                }
+//                append(stringResource(R.string.the_corresponding))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.private_keys))
+//                }
+//                append(stringResource(R.string.from_your))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.satodime_device))
+//                }
+//                append(".")
+//            }
         )
         Divider(
             modifier = Modifier
@@ -146,13 +147,14 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             color = MaterialTheme.colors.secondaryVariant,
             fontSize = 14.sp,
             style = MaterialTheme.typography.body1,
-            text = buildAnnotatedString {
-                append(stringResource(R.string.after_that_you_will_be_able_to))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.create_a_new_crypto_vault))
-                }
-                append(".")
-            }
+            text = stringResource(R.string.afterThatYouWillBeAbleTo) // todo markdown support
+//            buildAnnotatedString {
+//                append(stringResource(R.string.after_that_you_will_be_able_to))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.create_a_new_crypto_vault))
+//                }
+//                append(".")
+//            }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -174,14 +176,14 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                 color = MaterialTheme.colors.secondaryVariant,
                 fontSize = 14.sp,
                 style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.i_confirm_that_i_have_made_a_backup_of_the_corresponding_private_key)
+                text = stringResource(R.string.iConfirmThatBackup)
             )
         }
         Spacer(Modifier.weight(1f))
 //        val resetFailureText = stringResource(R.string.reset_failure)
 //        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
 //        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
-        val pleaseConfirmBackupText = stringResource(R.string.please_confirm_that_you_have_made_a_backup)
+        val pleaseConfirmBackupText = stringResource(R.string.pleaseConfirmYouHaveMadeBackup)
         BottomButton(
             onClick = {
 
@@ -197,8 +199,28 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
 
             },
             color = Color.Red,
-            text = stringResource(R.string.reset_the_vault)
+            text = stringResource(R.string.resetTheVault)
         )
+
+        // CANCEL BUTTON
+        val toastMsg = stringResource(R.string.actionCancelled)
+        Button(
+            onClick = {
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                navController.navigateUp()
+            },
+            modifier = Modifier
+                .padding(10.dp)
+                .height(40.dp)
+                .width(100.dp),
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = LightGray,
+                contentColor = Color.White
+            )
+        ) {
+            Text(stringResource(R.string.cancel))
+        }
     }
 
     // NfcDialog

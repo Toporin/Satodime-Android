@@ -12,10 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.ui.theme.Teal200
 
 @Composable
@@ -37,7 +39,7 @@ fun SealedIndicator(modifier: Modifier, isSealed: Boolean) {
             fontWeight = FontWeight.Light,
             fontFamily = FontFamily.SansSerif,
             color = color,
-            text = if (isSealed) "Sealed" else "Unsealed"
+            text = if (isSealed) stringResource(R.string.sealed) else stringResource(R.string.unsealed)
         )
     }
 }

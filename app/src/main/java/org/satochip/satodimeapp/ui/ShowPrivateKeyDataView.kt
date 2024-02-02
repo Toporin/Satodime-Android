@@ -28,8 +28,8 @@ fun ShowPrivateKeyDataView(
 
     // labels
     val labelString = when(label){
-        "legacy" -> stringResource(R.string.private_key)
-        "wif" -> stringResource(R.string.private_key)
+        "legacy" -> stringResource(R.string.privateKey)
+        "wif" -> stringResource(R.string.privateKey)
         "entropy" -> stringResource(R.string.entropy)
         else -> label
     }
@@ -44,7 +44,7 @@ fun ShowPrivateKeyDataView(
         navController = navController,
         vault = vault,
         index = selectedVault,
-        title = stringResource(R.string.show_private_key),
+        title = stringResource(R.string.showPrivateKey),
         label = labelString,
         subLabel = subLabelString,
         data = data

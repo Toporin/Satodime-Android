@@ -1,7 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -24,11 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +43,7 @@ import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
@@ -88,7 +88,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondaryVariant,
-            text = stringResource(R.string.you_are_about_to_unseal_the_following_crypto_vault)
+            text = stringResource(R.string.youAreAboutToUnseal)
         )
         VaultCard(
             index = selectedVault,
@@ -102,12 +102,13 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
             color = MaterialTheme.colors.secondaryVariant,
             fontSize = 14.sp,
             style = MaterialTheme.typography.body1,
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.unsealing))
-                }
-                append(stringResource(R.string.this_crypto_vault_will_reveal_the_corresponding_private_key))
-            }
+            text = stringResource(R.string.unsealingThisCryptoVaultWillReveal) // todo markdown
+//            buildAnnotatedString {
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.unsealing))
+//                }
+//                append(stringResource(R.string.this_crypto_vault_will_reveal_the_corresponding_private_key))
+//            }
         )
         Divider(
             modifier = Modifier
@@ -123,7 +124,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
             color = MaterialTheme.colors.secondaryVariant,
             fontSize = 14.sp,
             style = MaterialTheme.typography.body1,
-            text = stringResource(R.string.you_can_then_transfer_the_entire_balance)
+            text = stringResource(R.string.youCanThenTransferTheEntireBalance)
         )
         Card(
             modifier = Modifier
@@ -139,7 +140,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
                 color = MaterialTheme.colors.secondaryVariant,
                 fontSize = 14.sp,
                 style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.this_action_is_irreversible)
+                text = stringResource(R.string.thisActionIsIrreversible)
             )
         }
         Spacer(Modifier.weight(1f))
@@ -157,6 +158,27 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
             color = Color.Red,
             text = stringResource(R.string.unseal)
         )
+
+        // CANCEL BUTTON
+        val toastMsg = stringResource(R.string.actionCancelled)
+        Button(
+            onClick = {
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                navController.navigateUp()
+            },
+            modifier = Modifier
+                .padding(10.dp)
+                .height(40.dp)
+                .width(100.dp),
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = LightGray,
+                contentColor = Color.White
+            )
+        ) {
+            Text(stringResource(R.string.cancel))
+        }
+
     }
 
     // NfcDialog

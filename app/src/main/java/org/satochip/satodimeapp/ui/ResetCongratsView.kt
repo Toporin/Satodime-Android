@@ -58,15 +58,17 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.vault_cap))
-                }
-                append(stringResource(R.string.successfully))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.reset))
-                }
-            }
+            text = stringResource(R.string.vaultSuccessfullyReset)
+
+//            buildAnnotatedString {
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.vault_cap))
+//                }
+//                append(stringResource(R.string.successfully))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.reset))
+//                }
+//            }
         )
         EmptyVaultCard(index = selectedVault, isFirstEmptyVault = true) {
             navController.navigate(SatodimeScreen.SelectBlockchain.name + "/$selectedVault")
@@ -85,21 +87,23 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
                 color = MaterialTheme.colors.secondaryVariant,
                 fontSize = 14.sp,
                 style = MaterialTheme.typography.body1,
-                text = buildAnnotatedString {
-                    append(stringResource(R.string.you_can_now))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.create))
-                    }
-                    append(stringResource(R.string.and))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.seal))
-                    }
-                    append(stringResource(R.string.a_new))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.vault))
-                    }
-                    append(".")
-                }
+                text = stringResource(R.string.youCanNowCreateAndSeal)
+
+//                buildAnnotatedString {
+//                    append(stringResource(R.string.you_can_now))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.create))
+//                    }
+//                    append(stringResource(R.string.and))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.seal))
+//                    }
+//                    append(stringResource(R.string.a_new))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.vault))
+//                    }
+//                    append(".")
+//                }
             )
         }
         Spacer(Modifier.weight(1f))
@@ -110,7 +114,7 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
                 }
             },
             width = 200.dp,
-            text = stringResource(R.string.back_to_my_vaults)
+            text = stringResource(R.string.backToMyVaults)
         )
     }
 }

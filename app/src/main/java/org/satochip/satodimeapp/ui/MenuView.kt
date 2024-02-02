@@ -95,7 +95,7 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
             }
             // RELEASE OWNERSHIP
             MenuCard(
-                stringResource(R.string.transferOwnershipButton),
+                stringResource(R.string.transferOwner),
                 TextAlign.Left,
                 180,
                 110,
@@ -114,14 +114,14 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 .height(120.dp)
         ) {
             MenuCard(
-                stringResource(R.string.howToUseButton),
+                stringResource(R.string.howToUse),
                 TextAlign.Left,
                 220, 110,
                 Color(0xFF64B3B3),
                 R.drawable.how_to
             ) { uriHandler.openUri("https://satochip.io/setup-use-satodime-on-mobile/") }
             MenuCard(
-                stringResource(R.string.settingsButton),
+                stringResource(R.string.settings),
                 TextAlign.Left,
                 150,
                 110,
@@ -139,10 +139,10 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 .fillMaxWidth()
                 .height(75.dp)
         ) {
-            MenuCard(stringResource(R.string.termsOfServiceButton), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.termsOfService), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/terms-of-service/")
             }
-            MenuCard(stringResource(R.string.privacyPolicyButton), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
+            MenuCard(stringResource(R.string.privacyPolicy), TextAlign.Center, 190, 75, Color(0xFF2D2F45)) {
                 uriHandler.openUri("https://satochip.io/privacy-policy/")
             }
         }
@@ -172,7 +172,7 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 color = Color.White,
                 fontSize = 22.sp,
                 style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.all_our_products)
+                text = stringResource(R.string.allOurProducts)
             )
             Image(
                 painter = painterResource(id = R.drawable.all_our_products),
@@ -189,8 +189,8 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
         && !sharedViewModel.isCardDataAvailable){
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
-            title = stringResource(R.string.nocardscannedtitle),
-            message = stringResource(R.string.noCardScannedText),
+            title = stringResource(R.string.cardNeedToBeScannedTitle),
+            message = stringResource(R.string.cardNeedToBeScannedMessage),
             isActionButtonVisible = false,
             buttonTitle = "",
             buttonAction = {},)

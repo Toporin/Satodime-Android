@@ -79,14 +79,14 @@ fun ThirdWelcomeViewContent() {
     Text(
         fontSize = 36.sp,
         style = MaterialTheme.typography.body1,
-        text = stringResource(R.string.using_nfc)
+        text = stringResource(R.string.usingNFC)
     )
     Text(
         modifier = Modifier.padding(PaddingValues(start = 28.dp, end = 28.dp, top = 20.dp)),
         fontSize = 18.sp,
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.body1,
-        text = stringResource(R.string.to_use_it_put_the_card_on_top_of_your_phone)
+        text = stringResource(R.string.toUseItText)
     )
     Button(
         onClick = {
@@ -102,7 +102,7 @@ fun ThirdWelcomeViewContent() {
             contentColor = Color.White
         )
     ) {
-        Text(stringResource(R.string.more_info))
+        Text(stringResource(R.string.moreInfo))
     }
 }
 

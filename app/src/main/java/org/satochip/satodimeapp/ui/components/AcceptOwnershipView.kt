@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui.components
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,7 +40,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.LightGreen
@@ -89,7 +87,7 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.take_the_ownership)
+            text = stringResource(R.string.takeTheOwnershipTitle)
         )
         Image(
             painter = painterResource(id = R.drawable.transfer_ownership),
@@ -106,7 +104,7 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
             fontSize = 16.sp,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.in_order_to_perform_sensitive_operations_on_the_card)
+            text = stringResource(R.string.takeTheOwnershipDescription)
         )
         Spacer(Modifier.weight(1f))
 //        val successText = stringResource(R.string.you_are_now_the_owner)
@@ -132,11 +130,12 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         ) {
             Text(stringResource(R.string.accept))
         }
-        // CANCEL
+        // CANCEL BUTTON
+        val toastMsg = stringResource(R.string.actionCancelled)
         Button(
             onClick = {
                 viewModel.dismissCardOwnership()
-                Toast.makeText(context, "Action cancelled", Toast.LENGTH_SHORT).show() // todo translate
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
                 navController.navigateUp()
             },
             modifier = Modifier

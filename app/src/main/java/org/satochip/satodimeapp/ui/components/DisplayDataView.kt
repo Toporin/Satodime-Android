@@ -147,7 +147,7 @@ fun DisplayDataView(
                     color = MaterialTheme.colors.secondaryVariant,
                     fontSize = 16.sp,
                     style = MaterialTheme.typography.body1,
-                    text = stringResource(R.string.you_or_anybody_can_deposit_funds)
+                    text = stringResource(R.string.youOrAnybodyCanDepositFunds)
                 )
             } else {
                 Spacer(Modifier.weight(1f))

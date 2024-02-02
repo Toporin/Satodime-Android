@@ -10,11 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,16 +59,28 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondaryVariant,
-            text = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.vault_cap))
-                }
-                append(stringResource(R.string.successfully))
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(stringResource(R.string.unseal))
-                }
-            }
+            text = stringResource(R.string.vaultSuccessfullyUnseal)
+//            buildAnnotatedString {
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.vault_cap))
+//                }
+//                append(stringResource(R.string.successfully))
+//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                    append(stringResource(R.string.unseal))
+//                }
+//            }
         )
+        Text(
+            modifier = Modifier
+                .padding(20.dp),
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondaryVariant,
+            text = stringResource(R.string.youCanNowCreateAndSeal)
+        )
+
         VaultCard(index = selectedVault, isSelected = true, vault = vault)
         Text(
             modifier = Modifier
@@ -80,7 +89,7 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
             color = MaterialTheme.colors.secondaryVariant,
             fontSize = 14.sp,
             style = MaterialTheme.typography.body1,
-            text = stringResource(R.string.you_can_now_view_the_private_key)
+            text = stringResource(R.string.youCanNowViewThePrivateKey)
         )
         Spacer(Modifier.weight(1f))
         BottomButton(
@@ -90,7 +99,7 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
                 }
             },
             width = 200.dp,
-            text = stringResource(R.string.show_the_private_key)
+            text = stringResource(R.string.showThePrivateKey)
         )
     }
 }

@@ -18,11 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,8 +47,8 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
         ) {
             Spacer(Modifier.weight(1f))
             Title(
-                stringResource(R.string.congrats_cap),
-                stringResource(R.string.your_vault_has_been_successfully_created_and_sealed)
+                stringResource(R.string.congrats),
+                stringResource(R.string.yourVaultsHasBeenCreated)
             )
             VaultDisplay(coin = selectedCoin)
             Text(
@@ -63,21 +59,23 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
                 color = MaterialTheme.colors.secondary,
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.body1,
-                text = buildAnnotatedString {
-                    append(stringResource(R.string.remember_that_your))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.private_keys))
-                    }
-                    append(stringResource(R.string.will_be_accessible_once_you_ve))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.unsealed))
-                    }
-                    append(stringResource(R.string.your))
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.vault))
-                    }
-                    append(".")
-                }
+                text = stringResource(R.string.rememberPrivateKeys)
+                // TODO support bold markdown
+//                buildAnnotatedString {
+//                    append(stringResource(R.string.remember_that_your))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.private_keys))
+//                    }
+//                    append(stringResource(R.string.will_be_accessible_once_you_ve))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.unsealed))
+//                    }
+//                    append(stringResource(R.string.your))
+//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+//                        append(stringResource(R.string.vault))
+//                    }
+//                    append(".")
+//                }
             )
             Spacer(Modifier.weight(1f))
             BottomButton(
@@ -86,7 +84,7 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
                         popUpTo(0)
                     }
                 },
-                text = stringResource(R.string.show_my_vault)
+                text = stringResource(R.string.showMyVault)
             )
         }
     }

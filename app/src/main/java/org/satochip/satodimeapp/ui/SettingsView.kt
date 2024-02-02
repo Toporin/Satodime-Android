@@ -28,11 +28,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,15 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
-import org.satochip.satodimeapp.data.defaultCurrency
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
-import org.satochip.satodimeapp.util.NavigationParam
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
 
@@ -172,7 +166,7 @@ fun SettingsView(navController: NavController) {
                     color = MaterialTheme.colors.secondary,
                     fontSize = 18.sp,
                     style = MaterialTheme.typography.body1,
-                    text = stringResource(R.string.starter_intro)
+                    text = stringResource(R.string.starterIntro)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
@@ -238,7 +232,7 @@ fun SettingsView(navController: NavController) {
                 backgroundColor = MaterialTheme.colors.primary,
             )
         ) {
-            Text(stringResource(R.string.show_logs), color = MaterialTheme.colors.secondary)
+            Text(stringResource(R.string.showLogs), color = MaterialTheme.colors.secondary)
         }
         Spacer(modifier = Modifier.weight(1f))
         // APPLY BUTTON

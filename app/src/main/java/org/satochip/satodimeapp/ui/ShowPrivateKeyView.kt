@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -85,12 +84,12 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.show_private_key)
+            text = stringResource(R.string.showPrivateKey)
         )
         VaultCard(index = selectedVault, true, vault = vault)
 
         // LEGACY FORMAT
-        PrivateKeyItem(stringResource(R.string.show_private_key_legacy)) {
+        PrivateKeyItem(stringResource(R.string.showPrivateKeyLegacy)) {
 
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
 
@@ -116,7 +115,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
 
         // WIF FORMAT
-        PrivateKeyItem(stringResource(R.string.show_private_key_wif)) {
+        PrivateKeyItem(stringResource(R.string.showPrivateKeyWIF)) {
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
@@ -140,7 +139,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
 
         // ENTROPY
-        PrivateKeyItem(stringResource(R.string.show_entropy)) {
+        PrivateKeyItem(stringResource(R.string.showEntropy)) {
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
@@ -176,7 +175,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                 }
             },
             width = 200.dp,
-            text = stringResource(R.string.back_to_my_vaults)
+            text = stringResource(R.string.backToMyVaults)
         )
     }
 
@@ -297,7 +296,7 @@ fun PrivateKeyHelpItem() {
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.how_do_i_export_my_private_key)
+                text = stringResource(R.string.howDoiExportPrivateKey)
             )
             Spacer(Modifier.weight(1f))
             IconButton(

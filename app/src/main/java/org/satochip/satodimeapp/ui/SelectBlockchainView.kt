@@ -57,7 +57,7 @@ fun SelectBlockchainView(navController: NavController, selectedVault: Int) {
             .fillMaxSize()
             .padding(10.dp)
     ) {
-        Title(stringResource(R.string.select_the_blockchain), stringResource(R.string.select_the_cryptocurrency))
+        Title(stringResource(R.string.selectTheBlockchain), stringResource(R.string.selectTheCrypto))
         SelectBlockchainList(navController, selectedVault)
     }
 }

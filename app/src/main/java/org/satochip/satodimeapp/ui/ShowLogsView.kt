@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.satochip.satodimeapp.R
-import org.satochip.satodimeapp.data.LogItem
-import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.theme.LightBlue
@@ -87,7 +85,7 @@ fun ShowLogsView(
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.show_logs)
+            text = stringResource(R.string.showLogs)
         )
         // VERBOSE MODE
         Row {

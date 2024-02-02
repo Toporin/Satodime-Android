@@ -77,14 +77,14 @@ fun SecondWelcomeViewContent() {
     Text(
         fontSize = 32.sp,
         style = MaterialTheme.typography.body1,
-        text = stringResource(R.string.create_seal_gift_it)
+        text = stringResource(R.string.createSealGift)
     )
     Text(
         modifier = Modifier.padding(PaddingValues(start = 28.dp, end = 28.dp, top = 20.dp)),
         fontSize = 16.sp,
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.body1,
-        text = stringResource(R.string.create_up_to_3_different_vaults)
+        text = stringResource(R.string.createUpTo3Dfifferent)
     )
 }
 

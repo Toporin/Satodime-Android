@@ -84,7 +84,7 @@ fun FirstWelcomeViewContent() {
         fontSize = 16.sp,
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.body1,
-        text = stringResource(R.string.satodime_lets_you_easily_create_vaults)
+        text = stringResource(R.string.satodimeLetsYou)
     )
 }
 

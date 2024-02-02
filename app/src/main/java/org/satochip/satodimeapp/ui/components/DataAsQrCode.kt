@@ -59,7 +59,7 @@ fun DataAsQrCode(data: String) {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.copy_to_clipboard)
+                text = stringResource(R.string.copyToClipboard)
             )
             val copiedToClipboardText = stringResource(R.string.copied_to_clipboard)
             Icon(

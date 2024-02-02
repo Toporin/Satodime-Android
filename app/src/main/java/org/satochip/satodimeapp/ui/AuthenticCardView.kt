@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -52,12 +50,10 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.services.NFCCardService
-import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.theme.DarkBlue
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
-import org.satochip.satodimeapp.util.SatodimeScreen
 
 @Composable
 fun AuthenticCardView(navController: NavController) {
@@ -68,14 +64,14 @@ fun AuthenticCardView(navController: NavController) {
 
 
     val shortStatusText = if (NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic){
-        stringResource(R.string.card_authenticated)
+        stringResource(R.string.authenticationSuccessTitle)
     } else {
-        stringResource(R.string.card_authentication_failed)
+        stringResource(R.string.authenticationFailedTitle)
     }
     val longStatusText = if (NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic){
-        stringResource(R.string.authentic_card)
+        stringResource(R.string.authenticationSuccessText)
     } else {
-        stringResource(R.string.card_authentication_failed_description)
+        stringResource(R.string.authenticationFailedText)
     }
     val authenticityColor = if (NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic){
         LightGreen
@@ -139,12 +135,18 @@ fun AuthenticCardView(navController: NavController) {
             text = longStatusText
         )
 
-        val showCardCertText =  stringResource(R.string.showCardCert)
-        CardInfoCard(showCardCertText, 275, authenticityColor) {
-            showCardCert = showCardCert.not() // toggle display
+        val showCardCertText =  stringResource(R.string.showDeviceCert)
+        val hideCardCertText =  stringResource(R.string.hideDeviceCert)
+        if (!showCardCert){
+            CardInfoCard(showCardCertText, 275, authenticityColor) {
+                showCardCert = showCardCert.not() // toggle display
+            }
         }
         // SHOW CERTIFICATE DETAILS
         if (showCardCert && (NFCCardService.certificateList.value?.size ?: 0) > 0){
+            CardInfoCard(hideCardCertText, 275, authenticityColor) {
+                showCardCert = showCardCert.not() // toggle display
+            }
             Column(modifier = Modifier
                 .border(width = 4.dp, color = authenticityColor, shape = RoundedCornerShape(15.dp))
                 .padding(10.dp),
@@ -159,7 +161,7 @@ fun AuthenticCardView(navController: NavController) {
                         fontWeight = FontWeight.Normal,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondary,
-                        text = stringResource(R.string.copy_to_clipboard)
+                        text = stringResource(R.string.copyToClipboard)
                     )
                     val toastText = stringResource(R.string.copied_to_clipboard)
                     Icon(
@@ -188,7 +190,7 @@ fun AuthenticCardView(navController: NavController) {
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.rootCA),
+                        text = stringResource(R.string.rootCaInfo),
                         fontSize = 16.sp,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondary,
@@ -210,7 +212,7 @@ fun AuthenticCardView(navController: NavController) {
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.subCA),
+                        text = stringResource(R.string.subcaInfo),
                         fontSize = 16.sp,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondary,
@@ -232,7 +234,7 @@ fun AuthenticCardView(navController: NavController) {
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.cardCert),
+                        text = stringResource(R.string.deviceInfo),
                         fontSize = 16.sp,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondary,
