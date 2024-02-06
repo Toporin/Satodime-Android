@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -48,6 +50,7 @@ import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
 fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
+    val scrollState = rememberScrollState()
     val showNoCardScannedDialog = remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     Box(
@@ -62,6 +65,7 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 75.dp)
+            .verticalScroll(state = scrollState)
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_settings),
