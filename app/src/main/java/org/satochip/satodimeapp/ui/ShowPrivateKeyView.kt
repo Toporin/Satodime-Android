@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -61,11 +63,12 @@ private enum class RequestedPrivkeyType {
 @Composable
 fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
 
     val vaults = sharedViewModel.cardVaults.value
     val vaultsSize = vaults?.size ?: 0
-    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
+    if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
     val requestedPrivkeyType = remember{ mutableStateOf(RequestedPrivkeyType.NONE) }
 
@@ -75,12 +78,15 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
+            .verticalScroll(state = scrollState)
     ) {
+
+        // TITLE
         Text(
             modifier = Modifier
                 .padding(20.dp),
             textAlign = TextAlign.Center,
-            fontSize = 20.sp,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
@@ -264,7 +270,8 @@ fun PrivateKeyItem(title: String, onSelect: () -> Unit) {
                 Icon(
                     modifier = Modifier.size(40.dp),
                     imageVector = Icons.Outlined.Add,
-                    tint = Color.LightGray,
+                    //tint = Color.LightGray, // todo: does not show in lightmode
+                    tint = MaterialTheme.colors.secondary,
                     contentDescription = null
                 )
             }
