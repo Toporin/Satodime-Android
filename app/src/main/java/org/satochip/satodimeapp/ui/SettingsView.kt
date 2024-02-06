@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -56,6 +59,7 @@ import org.satochip.satodimeapp.util.SatodimeScreen
 
 @Composable
 fun SettingsView(navController: NavController) {
+    val scrollState = rememberScrollState()
     val context = LocalContext.current as Activity
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
     var showCurrenciesMenu by remember { mutableStateOf(false) }
@@ -70,37 +74,58 @@ fun SettingsView(navController: NavController) {
     }
     var selectedCurrency = savedCurrency //savedCurrency.value
 
+    // todo show list of ownership card
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
         TopLeftBackButton(navController)
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-    ) {
-        // TITLE
+
         Text(
-            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
-            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = 40.dp),
             fontSize = 30.sp,
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.settings)
         )
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 75.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)// start just below TopLeftButton
+            //.padding(75.dp)//.padding(20.dp)
+            .verticalScroll(state = scrollState)
+    ) {
+
+//        // TITLE => in box above (better scrolling ui)
+//        Text(
+//            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
+//            textAlign = TextAlign.Center,
+//            fontSize = 30.sp,
+//            fontWeight = FontWeight.Medium,
+//            style = MaterialTheme.typography.body1,
+//            color = MaterialTheme.colors.secondary,
+//            text = stringResource(R.string.settings)
+//        )
+
+        // IMAGE
         Image(
             painter = painterResource(id = R.drawable.tools),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 40.dp, bottom = 20.dp)
                 .height(200.dp),
             contentScale = ContentScale.FillHeight
         )
+
         // CURRENCY SELECTOR
         Card(
             modifier = Modifier
@@ -150,6 +175,7 @@ fun SettingsView(navController: NavController) {
                 }
             }
         }
+
         // STARTER INTRO
         Card(
             modifier = Modifier
@@ -183,6 +209,7 @@ fun SettingsView(navController: NavController) {
             }
         }
         Spacer(modifier = Modifier.weight(1f))
+
         // DEBUG MODE
         Card(
             modifier = Modifier
@@ -216,6 +243,7 @@ fun SettingsView(navController: NavController) {
             }
         }
         Spacer(modifier = Modifier.weight(1f))
+
         // SHOW LOGS BUTTON
         Button(
             onClick = {
@@ -226,7 +254,7 @@ fun SettingsView(navController: NavController) {
             modifier = Modifier
                 .padding(10.dp)
                 .height(40.dp),
-                //.width(125.dp),
+            //.width(125.dp),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.primary,
@@ -239,11 +267,15 @@ fun SettingsView(navController: NavController) {
         Button(
             onClick = {
                 settings.edit()
-                    .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro).apply()
+                    .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro)
+                    .apply()
                 settings.edit()
                     .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode).apply()
                 settings.edit()
-                    .putString(SatodimePreferences.SELECTED_CURRENCY.name, selectedCurrency ?: "USD").apply()
+                    .putString(
+                        SatodimePreferences.SELECTED_CURRENCY.name,
+                        selectedCurrency ?: "USD"
+                    ).apply()
 
                 navController.navigateUp()
             },
@@ -260,6 +292,7 @@ fun SettingsView(navController: NavController) {
             Text(stringResource(R.string.apply))
         }
         Spacer(modifier = Modifier.weight(1f))
+
     }
 }
 
