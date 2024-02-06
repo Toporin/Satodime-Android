@@ -103,17 +103,14 @@ private const val TAG = "VaultsView"
 
 @Composable
 fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
-    // TODO: remove viewModel
     val activity = LocalContext.current as Activity
     val uriHandler = LocalUriHandler.current
     var showVaultsOnly by remember{mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val showNoCardScannedDialog = remember { mutableStateOf(false)}// for NoCardScannedDialog
 
-
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
-
 
     //val vaults = viewModel.vaults.collectAsState(initial = listOf(null, null, null)) // TODO deprecate
     val vaults = sharedViewModel.cardVaults.value
@@ -132,109 +129,116 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         RedGradientBackground()
     }
 
-    // LOGO
-    if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
-        IconButton(
-            onClick = {
-                navController.navigate(
-                    //SatodimeScreen.AuthenticCardView.name
-                    SatodimeScreen.CardInfoView.name
-                )
-            },
-        )
-        {
-            Image(
-                painter = painterResource(R.drawable.ic_sato_small),
-                contentDescription = "logo",
-                modifier = Modifier
-                    .size(45.dp) //.size(45.dp)
-                    .offset(x = 20.dp, y = 20.dp),
-                contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(Color.Green)
-            )
-        }
-    } else if (sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic){
-        IconButton(
-            onClick = {
-                navController.navigate(
-                    SatodimeScreen.CardInfoView.name
-                )
-            },
-        )
-        {
-            Image(
-                painter = painterResource(R.drawable.ic_sato_small),
-                contentDescription = "logo",
-                modifier = Modifier
-                    .size(45.dp) //.size(45.dp)
-                    .offset(x = 20.dp, y = 20.dp),
-                contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(Color.Red)
-            )
-        }
-    } else { // no card scanned
-        IconButton(
-            onClick = {
-                showNoCardScannedDialog.value = true
-            },
-        )
-        {
-            Image(
-                painter = painterResource(R.drawable.ic_sato_small),
-                contentDescription = "logo",
-                modifier = Modifier
-                    .size(45.dp) //.size(45.dp)
-                    .offset(x = 20.dp, y = 20.dp),
-                contentScale = ContentScale.Crop,
-                //colorFilter = ColorFilter.tint(Color.Yellow)
-            )
-        }
-    }
+    // HEADER ROW (LOGO - TITLE - ACTION BUTTONS)
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 20.dp, bottom = 5.dp, start = 20.dp, end = 5.dp)
+        .height(50.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ){
 
-    // RESCAN + SWITCH + MENU
-    Row(modifier = Modifier.padding(top = 20.dp, end = 5.dp)) {
+        // LOGO
+        if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
+            IconButton(
+                onClick = {
+                    navController.navigate(
+                        //SatodimeScreen.AuthenticCardView.name
+                        SatodimeScreen.CardInfoView.name
+                    )
+                },
+            )
+            {
+                Image(
+                    painter = painterResource(R.drawable.ic_sato_small),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .size(45.dp), //.size(45.dp)
+                        //.offset(x = 20.dp, y = 20.dp),
+                    contentScale = ContentScale.Crop,
+                    colorFilter = ColorFilter.tint(Color.Green)
+                )
+            }
+        } else if (sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic){
+            IconButton(
+                onClick = {
+                    navController.navigate(
+                        SatodimeScreen.CardInfoView.name
+                    )
+                },
+            )
+            {
+                Image(
+                    painter = painterResource(R.drawable.ic_sato_small),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .size(45.dp), //.size(45.dp)
+                        //.offset(x = 20.dp, y = 20.dp),
+                    contentScale = ContentScale.Crop,
+                    colorFilter = ColorFilter.tint(Color.Red)
+                )
+            }
+        } else { // no card scanned
+            IconButton(
+                onClick = {
+                    showNoCardScannedDialog.value = true
+                },
+            )
+            {
+                Image(
+                    painter = painterResource(R.drawable.ic_sato_small),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .size(45.dp), //.size(45.dp)
+                        //.offset(x = 20.dp, y = 20.dp),
+                    contentScale = ContentScale.Crop,
+                    //colorFilter = ColorFilter.tint(Color.Yellow)
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.weight(1f))
-        // RESCAN
-        IconButton(onClick = {
-            showNfcDialog.value = true // NfcDialog
-            sharedViewModel.scanCard(activity)
-        }) {
-            Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
-        }
-        // SWITCH VIEW
-        CustomSwitch(checked = showVaultsOnly) {
-            showVaultsOnly = it
-        }
-        // MENU
-        IconButton(onClick = { navController.navigate(SatodimeScreen.MenuView.name) }) {
-            Icon(Icons.Default.MoreVert, "", tint = MaterialTheme.colors.secondary)
+
+        // TITLE
+        Text(
+            //modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 38.sp,
+            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondary,
+            text = stringResource(R.string.vaults),
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // ICONS
+        Row(modifier = Modifier
+                //.padding(top = 20.dp, end = 5.dp)
+        ) {
+            // RESCAN BUTTON
+            IconButton(onClick = {
+                showNfcDialog.value = true // NfcDialog
+                sharedViewModel.scanCard(activity)
+            }) {
+                Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
+            }
+            // SWITCH VIEW
+            CustomSwitch(checked = showVaultsOnly) {
+                showVaultsOnly = it
+            }
+            // MENU BUTTON
+            IconButton(onClick = { navController.navigate(SatodimeScreen.MenuView.name) }) {
+                Icon(Icons.Default.MoreVert, "", tint = MaterialTheme.colors.secondary)
+            }
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(5.dp)
+            //.padding(5.dp)
+            .padding(top = 75.dp, bottom = 5.dp, start = 5.dp, end = 5.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            // TITLE
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = 38.sp,
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.vaults),
-            )
-        }
         val onAddFunds = {
             if(vaults?.get(sharedViewModel.selectedVault - 1) != null) {
                 navController.navigate(
@@ -338,7 +342,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
 
     // Authenticity dialog
     if (sharedViewModel.showAuthenticityDialog.value
-        //&& sharedViewModel.authenticityStatusDelayed == AuthenticityStatus.NotAuthentic
         && sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic
         && !showNfcDialog.value){
         InfoDialog(
@@ -349,15 +352,12 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             buttonTitle = stringResource(R.string.moreInfo),
             buttonAction =
             {
-                navController.navigate(
-                    SatodimeScreen.CardInfoView.name
-                )
+                navController.navigate(SatodimeScreen.CardInfoView.name)
             },)
     }
 
     // Ownership dialog
     if (sharedViewModel.showOwnershipDialog.value
-        //&& sharedViewModel.ownershipStatusDelayed == OwnershipStatus.NotOwner
         && sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner
         && !showNfcDialog.value){
         InfoDialog(
@@ -864,9 +864,9 @@ fun CustomSwitch(modifier: Modifier = Modifier, checked: Boolean, onCheckedChang
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
-            checkedThumbColor = Color.White,
+            checkedThumbColor = MaterialTheme.colors.secondary, //Color.White,
             checkedTrackColor = Color.White,
-            uncheckedThumbColor = Color.White,
+            uncheckedThumbColor = MaterialTheme.colors.secondary, //Color.White,
             uncheckedTrackColor = Color.Gray,
         )
     )
