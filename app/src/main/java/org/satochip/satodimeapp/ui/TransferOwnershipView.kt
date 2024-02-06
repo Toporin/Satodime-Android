@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -55,6 +57,7 @@ private const val TAG = "TransferOwnershipView"
 
 @Composable
 fun TransferOwnershipView(navController: NavController, viewModel: SharedViewModel) {
+    val scrollState = rememberScrollState()
     val context = LocalContext.current
     val showNoCardScannedDialog = remember { mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
@@ -66,6 +69,20 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
             .background(MaterialTheme.colors.background)
     ) {
         TopLeftBackButton(navController)
+        //TITLE
+        Text(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = 40.dp),
+                //.padding(top = 30.dp, bottom = 20.dp),
+            //textAlign = TextAlign.Center,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondary,
+            text = stringResource(R.string.transferOwner)
+        )
+        // BACKGROUND IMAGE
         Image(
             painter = painterResource(R.drawable.transfer_ownership_background),
             contentDescription = null,
@@ -80,22 +97,17 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(top = 75.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)// start just below TopLeftButton
+            //.padding(10.dp)
+            .verticalScroll(state = scrollState)
     ) {
-        Text(
-            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.transferOwner)
-        )
+
         Image(
             painter = painterResource(id = R.drawable.transfer_ownership),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 40.dp, bottom = 20.dp)
                 .height(175.dp),
             contentScale = ContentScale.FillHeight
         )
