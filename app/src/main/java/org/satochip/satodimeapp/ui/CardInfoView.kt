@@ -58,7 +58,7 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
         Text(
             modifier = Modifier.padding(top = 22.dp, bottom = 10.dp),
             textAlign = TextAlign.Center,
-            fontSize = 38.sp,
+            fontSize = 30.sp, // todo uniform
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
