@@ -651,7 +651,14 @@ object NFCCardService {
         val updatedCardSlots = mutableListOf<CardSlot>()
         val keyState = satodimeStatus?.keysState ?: return
         for (i in keyState.indices) {
-            val cardSlot = getCardSlot(index= i)
+            //val cardSlot = getCardSlot(index= i)
+            val cardSlot = if (keyState[i] == 0x00.toByte()){
+                // uninitialized slot
+                CardSlot(i, ByteArray(4), keyState[i], null)
+            } else{
+                // get info from card
+                getCardSlot(index= i)
+            }
             updatedCardSlots += cardSlot
         }
         cardSlots.postValue(updatedCardSlots)
@@ -666,12 +673,15 @@ object NFCCardService {
 
     fun getCardSlot(index: Int): CardSlot {
         SatoLog.d(TAG, "getCardSlot: START Slot: $index")
+        var rapdu: APDUResponse? = null
         var pubKey: ByteArray? = null
         try {
-            pubKey = cmdSet.parser.parseSatodimeGetPubkey(cmdSet.satodimeGetPubkey(index))
+            rapdu = cmdSet.satodimeGetPubkey(index)
+            pubKey = cmdSet.parser.parseSatodimeGetPubkey(rapdu)
         } catch (e: Exception) {
             SatoLog.e(TAG, "getCardSlot: exception thrown while reading public keys: $e")
             SatoLog.e(TAG, Log.getStackTraceString(e))
+            SatoLog.e(TAG, "getCardSlot: exception thrown while reading public keys pubkey: ${rapdu?.bytes}")
         }
 
         // keysSlotStatus
