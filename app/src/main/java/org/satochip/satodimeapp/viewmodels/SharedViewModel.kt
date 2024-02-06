@@ -91,29 +91,16 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         }
         NFCCardService.ownershipStatus.observeForever{
             ownershipStatus = it
+            if (it == OwnershipStatus.NotOwner){
+                showOwnershipDialog.value = true
+            }
         }
         NFCCardService.authenticityStatus.observeForever{
             authenticityStatus = it
-        }
-        NFCCardService.ownershipStatus.observeForever{
-            viewModelScope.launch {
-                // add delay so that dialogs do not show at same time...
-                delay(5000) //todo remove?
-                if (it == OwnershipStatus.NotOwner){
-                    showOwnershipDialog.value = true
-                }
+            if (it == AuthenticityStatus.NotAuthentic){
+                showAuthenticityDialog.value = true
             }
         }
-        NFCCardService.authenticityStatus.observeForever{
-            viewModelScope.launch {
-                // add delay so that dialogs do not show at same time...
-                delay(5000) // todo remove?
-                if (it == AuthenticityStatus.NotAuthentic){
-                    showAuthenticityDialog.value = true
-                }
-            }
-        }
-
     }
 
     // Card actions
