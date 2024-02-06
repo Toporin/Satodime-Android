@@ -10,7 +10,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="authenticationSuccessText">This card has been issued by Satochip. You can use it safely.</string>
     <string name="certDetails">Certificate details</string>
     <string name="copyToClipboard">Copy to clipboard</string>
-    <string name="cardInfo">Card Information</string>
+    <string name="cardInfo">Card \nInformation</string>
     <string name="cardOwnershipStatus">Card ownership status</string>
     <string name="youAreTheCardOwner">You are the card owner</string>
     <string name="youAreNotTheCardOwner">You are NOT the card owner</string>
@@ -19,7 +19,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="cardAuthenticity">Card authenticity</string>
     <string name="createAndSeal">Create and seal</string>
     <string name="expertMode">Expert mode</string>
-    <string name="rememberPrivateKeys">"Remember that your **private key** will be accessible once you’ve **unsealed** your **vault**."</string>
+    <string name="rememberPrivateKeys">"Remember that your private key will be accessible once you’ve unsealed your vault."</string>
 <!--    <string name="remember_that_your">"Remember that your "</string>-->
 <!--    <string name="private_keys">private keys</string>-->
 <!--    <string name="will_be_accessible_once_you_ve">" will be accessible once you've "</string>-->
@@ -27,7 +27,7 @@ To facilitate maintenance, keep same key name whenever possible
 <!--    <string name="your">" your "</string>-->
 <!--    <string name="vault">vault</string>-->
     <string name="showMyVault">Show my vault</string>
-    <string name="onceTheVaultHasBeengenerated">Once the **vault** has been generated, the corresponding **private** **key** is hidden in the **Satodime** **chip’s** **memory**.</string>
+    <string name="onceTheVaultHasBeengenerated">Once the vault has been generated, the corresponding private key is hidden in the Satodime chip’s memory.</string>
 <!--    <string name="once_the">"Once the "</string>-->
 <!--    <string name="has_been_generated_the_corresponding">" has been generated the corresponding "</string>-->
 <!--    <string name="is_hidden_in_the">" is hidden in the "</string>-->
@@ -37,7 +37,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="welcome">Welcome</string>
     <string name="satodimeLetsYou">Satodime lets you easily create vaults to store your cryptocurrencies. It supports the most innovative crypto-assets.</string>
     <string name="allOurProducts">All our products</string>
-    <string name="vaultSuccessfullyUnseal">**Vault** successfully **unseal**</string>
+    <string name="vaultSuccessfullyUnseal">Vault successfully unseal</string>
     <string name="vaultSuccessfullyReset">Vault successfully RESET.</string>
     <string name="youCanNowCreateAndSeal">You can now CREATE and SEAL a new vault.</string>
 <!--    <string name="vault_cap">Vault</string>-->
@@ -51,7 +51,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="backToMyVaults">Back to my vaults</string>
     <string name="warning">Warning</string>
     <string name="youAreAboutToReset">You are about to RESET the following crypto vault.</string>
-    <string name="resettingThisCryptoVaultWill">**Reset** this **vault** will completely and irrevocably **delete** the corresponding **private key** from your card.</string>
+    <string name="resettingThisCryptoVaultWill">Reset this vault will completely and irrevocably delete the corresponding private key from your card.</string>
     <string name="resetBtn">Reset</string>
     <string name="actionCancelled">Action cancelled</string>
 
@@ -61,7 +61,7 @@ To facilitate maintenance, keep same key name whenever possible
 <!--    <string name="the_corresponding">" the corresponding "</string>-->
 <!--    <string name="from_your">" from your "</string>-->
 <!--    <string name="satodime_device">Satodime device</string>-->
-    <string name="afterThatYouWillBeAbleTo">After that you will be able to **create a new crypto vault**.</string>
+    <string name="afterThatYouWillBeAbleTo">After that you will be able to create a new crypto vault.</string>
 <!--    <string name="after_that_you_will_be_able_to">"After that you will be able to "</string>-->
 <!--    <string name="create_a_new_crypto_vault">create a new crypto vault</string>-->
     <string name="iConfirmThatBackup">I confirm that I have made a backup of the corresponding private key.</string>
@@ -82,7 +82,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="showThePrivateKey">Show the private key</string>
     <string name="youAreAboutToUnseal">You are about to UNSEAL the following crypto vault.</string>
 
-    <string name="unsealingThisCryptoVaultWillReveal">**Unsealing** this crypto vault will reveal the corresponding private key.</string>
+    <string name="unsealingThisCryptoVaultWillReveal">Unsealing this crypto vault will reveal the corresponding private key.</string>
 <!--    <string name="unsealing">Unsealing</string>-->
 <!--    <string name="this_crypto_vault_will_reveal_the_corresponding_private_key">" this crypto vault will reveal the corresponding private key."</string>-->
     <string name="youCanThenTransferTheEntireBalance">You can then transfer the entire balance to another wallet using the revealed private key.</string>
@@ -141,7 +141,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="termsOfService">Terms of service</string>
     <string name="privacyPolicy">Privacy policy</string>
     <string name="readyToScan">Ready to Scan</string>
-    <string name="nfcHoldSatodime">Hold your Satodime near your iPhone</string>
+    <string name="nfcHoldSatodime">Hold your Satodime near your phone</string>
     <string name="thisCardIsGenuine">This card is authentic</string>
     <string name="thisCardIsNotGenuine">Card failed to authenticate!</string>
     <string name="dontHaveASatodime">You don’t have a Satodime yet?\nClick here to buy one.</string>

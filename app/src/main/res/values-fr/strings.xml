@@ -134,7 +134,7 @@
 <!--    <string name="switchToExpertMode">Activer le mode expert</string>-->
 <!--    <string name="enterAnyTextHereToAddEntropy">Ajoutez de l\'entropie ici</string>-->
     <string name="notAuthenticText">L\'authenticité de la carte n\'a pas pu être établie.</string>
-    <string name="nfcHoldSatodime">Tenez votre Satodime près de votre iPhone</string>
+    <string name="nfcHoldSatodime">Tenez votre Satodime près de votre phone</string>
     <string name="readyToScan">Prêt à scanner</string>
     <string name="dontHaveASatodime">Pas encore de carte Satodime ?\nCliquez ici pour en acheter une.</string>
     <string name="exploreBlockchain">Explorer</string>
