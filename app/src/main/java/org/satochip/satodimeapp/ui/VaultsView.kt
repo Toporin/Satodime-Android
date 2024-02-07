@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
@@ -753,33 +756,27 @@ fun VaultsViewTokenRow(asset: Asset) {
         }
 
         // LINK TO EXPLORER
-        Spacer(Modifier.weight(1f))
-        IconButton(
-            onClick = {
-                uriHandler.openUri(asset.explorerLink ?: "")
-            },
+        Icon(
+            painter = painterResource(R.drawable.open_in_new_24px),
+            contentDescription = "link to explorer",
+            modifier = Modifier
+                .width(30.dp)
+                .clickable{
+                    uriHandler.openUri(asset.explorerLink ?: "")
+                },
+            tint = MaterialTheme.colors.secondary, //Color.LightGray,
         )
-        {
-            Icon(
-                painter = painterResource(R.drawable.open_in_new_24px),
-                contentDescription = "link to explorer",
-                modifier = Modifier
-                    .size(30.dp), //.size(45.dp)
-                tint = Color.LightGray,
-            )
-        }
-
     }
 }
 
 @Composable
 fun VaultsViewNftRow(asset: Asset) {
     val showNftDialog = remember { mutableStateOf(false)}
-    val nftDialogUrl = remember { mutableStateOf("")}
     val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
+        //horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
             .padding(5.dp)
@@ -806,7 +803,10 @@ fun VaultsViewNftRow(asset: Asset) {
                     onClickLabel = "open image in dialog"
                 ),
         )
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column(modifier = Modifier
+            .padding(10.dp)
+            .weight(1f)
+        ) {
             // NAME
             Text(
                 fontSize = 16.sp,
@@ -833,22 +833,18 @@ fun VaultsViewNftRow(asset: Asset) {
         }
 
         // LINK TO EXPLORER
-        Spacer(Modifier.weight(1f))
-        IconButton(
-            onClick = {
-                uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
-            },
+        Icon(
+            painter = painterResource(R.drawable.open_in_new_24px),
+            contentDescription = "link to NFT explorer",
+            modifier = Modifier
+                .width(30.dp)
+                .clickable{
+                    uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
+                },
+            //.requiredWidth(30.dp)
+            //.size(30.dp), //.size(45.dp)
+            tint = MaterialTheme.colors.secondary, //Color.LightGray,
         )
-        {
-            Icon(
-                painter = painterResource(R.drawable.open_in_new_24px),
-                contentDescription = "link to NFT explorer",
-                modifier = Modifier
-                    .size(30.dp), //.size(45.dp)
-                tint = Color.LightGray,
-            )
-        }
-
     }
 
     // show bigger image in dialog
