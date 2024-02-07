@@ -651,9 +651,19 @@ fun VaultsViewTabScreen(vault: CardVault?) {
             contentColor = MaterialTheme.colors.secondary,
         ) {
             tabs.forEachIndexed { index, title ->
+//                // add number of asssets
+//                val titleText  = if (vault != null){
+//                    if (index == 0) {
+//                        title + " (${vault.tokenList.size})"
+//                    } else {
+//                        title + " (${vault.nftList.size})"
+//                    }
+//                } else {
+//                    title
+//                }
                 Tab(
                     modifier = Modifier.background(MaterialTheme.colors.primary),
-                    text = { Text(title, color = MaterialTheme.colors.secondary) },
+                    text = { Text(text = title, color = MaterialTheme.colors.secondary) },
                     selected = tabIndex == index,
                     onClick = { tabIndex = index },
                 )
