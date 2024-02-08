@@ -119,8 +119,6 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
             text = stringResource(R.string.takeTheOwnershipDescription)
         )
         Spacer(Modifier.weight(1f))
-//        val successText = stringResource(R.string.you_are_now_the_owner)
-//        val failureText = "Failed To take ownership" // todo
         // ACCEPT
         Button(
             onClick = {
@@ -147,7 +145,7 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         Button(
             onClick = {
                 viewModel.dismissCardOwnership()
-                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
                 navController.navigateUp()
             },
             modifier = Modifier

@@ -85,11 +85,9 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
 
     val balance = decimalFormat.format(balanceDouble)
 
-    // todo: format number
     return "$balance $symbolString"
 }
 
-// todo: move in own file?
 fun newBaseCoin(
     keySlip44Int: Int,
     isTestnet: Boolean,

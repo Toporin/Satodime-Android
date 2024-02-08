@@ -115,7 +115,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
 
-    //val vaults = viewModel.vaults.collectAsState(initial = listOf(null, null, null)) // TODO deprecate
     val vaults = sharedViewModel.cardVaults.value
     val vaultsSize = vaults?.size ?: 0
     val vaultsListState = rememberLazyListState()
@@ -698,7 +697,7 @@ fun VaultsViewToken(vault: CardVault) {
 @Composable
 fun VaultsViewNft(vault: CardVault) {
     LazyColumn {
-        items(vault.nftList) {asset ->//TODO add tokens
+        items(vault.nftList) {asset ->
             // todo only show NFTs?
             //if (asset.type == AssetType.NFT) {
                 VaultsViewNftRow(asset)
@@ -823,7 +822,7 @@ fun VaultsViewNftRow(asset: Asset) {
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = "${asset.nftName ?: asset.contract ?: "NFT"}",// todo format
+                text = "${asset.nftName ?: asset.contract ?: "NFT"}",
             )
             // NFT BALANCE
             Text(

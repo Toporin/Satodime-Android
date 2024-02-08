@@ -107,7 +107,6 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
             }
 
-            // todo: the ShowPrivateKeyData screen is not shown automatically after privkey recovery...
             if (privkey != null){
                 SatoLog.d(TAG, "ShowPrivateKeyView privkey readily available")
                 SatoLog.d(TAG, "ShowPrivateKeyView navigating to ShowPrivateKeyData view")
@@ -270,7 +269,6 @@ fun PrivateKeyItem(title: String, onSelect: () -> Unit) {
                 Icon(
                     modifier = Modifier.size(40.dp),
                     imageVector = Icons.Outlined.Add,
-                    //tint = Color.LightGray, // todo: does not show in lightmode
                     tint = MaterialTheme.colors.secondary,
                     contentDescription = null
                 )

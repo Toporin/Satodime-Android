@@ -19,14 +19,12 @@ private const val TAG = "CardVault"
 private const val DEBUG_EXPLORER = false
 private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup address, only available in DEBUG mode!
 
-// todo: add context?
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
     val debugMode = prefs.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)
     val logLevel = if (debugMode) {Level.CONFIG} else {Level.WARNING}
 
-    // TODO: clean and remove unnecessary/redundant fields
     private val keySlip44: ByteArray = cardSlot.keySlip44
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
     private val keySlip44Int = wrappedKeySlip44.int

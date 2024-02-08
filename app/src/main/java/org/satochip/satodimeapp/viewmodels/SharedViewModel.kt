@@ -49,8 +49,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     @SuppressLint("StaticFieldLeak")
     private val context = getApplication<Application>().applicationContext
 
-    var isCardConnected by mutableStateOf(false) // todo deprecate?
-    var isAskingForCardOwnership by mutableStateOf(false) // todo: rename waitForSetup //deprecate?
+    var isCardConnected by mutableStateOf(false)
+    var isAskingForCardOwnership by mutableStateOf(false) // todo: rename waitForSetup
 
     var isCardDataAvailable by mutableStateOf(false)
     var cardSlots = mutableListOf<CardSlot>()

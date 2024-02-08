@@ -163,7 +163,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         val toastMsg = stringResource(R.string.actionCancelled)
         Button(
             onClick = {
-                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
                 navController.navigateUp()
             },
             modifier = Modifier
