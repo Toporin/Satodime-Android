@@ -3,6 +3,12 @@ package org.satochip.satodimeapp.viewmodels
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -277,6 +283,46 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
             }
             cardVaults.postValue(updatedVaults)
         }
+    }
+
+    fun sendMail(activity: Activity, senderEmail: String, subject: String, text: String? = null) {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(senderEmail))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, text ?: getMailText(activity))
+        }
+        try {
+            activity.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            println("Could not start Google mail, error: $e")
+        }
+    }
+
+    private fun getMailText(context: Context): String {
+        val version = Build.VERSION.RELEASE
+        val model = Build.MODEL
+        val packageName = context.packageName
+        val packageManager = context.packageManager
+        var versionName = ""
+        var versionCode = 0
+        try {
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            versionName = packageInfo.versionName
+            versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.longVersionCode.toInt()
+            } else {
+                packageInfo.versionCode
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return "Application name: Satodime\n" +
+                "Android version: $version\n" +
+                "Device model: $model\n" +
+                "App version: $versionName\n" +
+                "App build: $versionCode\n\n" +
+                "Please describe your issue / feedback below\n"
     }
 
 }
