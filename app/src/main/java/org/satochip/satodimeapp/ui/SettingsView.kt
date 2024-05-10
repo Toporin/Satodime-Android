@@ -47,18 +47,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.SatoButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
+import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
-fun SettingsView(navController: NavController) {
+fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current as Activity
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
@@ -245,24 +249,30 @@ fun SettingsView(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         // SHOW LOGS BUTTON
-        Button(
+        SatoButton(
             onClick = {
                 navController.navigate(
                     SatodimeScreen.ShowLogsView.name
                 )
             },
-            modifier = Modifier
-                .padding(10.dp)
-                .height(40.dp),
-            //.width(125.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.primary,
-            )
-        ) {
-            Text(stringResource(R.string.showLogs), color = MaterialTheme.colors.secondary)
-        }
+            text = R.string.showLogs,
+        )
         Spacer(modifier = Modifier.weight(1f))
+
+        // SEND FEEDBACK
+        SatoButton(
+            onClick = {
+                viewModel.sendMail(
+                    activity = context,
+                    subject = "Satodime-Android - Feedback",
+                    senderEmail = "support@satochip.io"
+                )
+            },
+            text = R.string.sendFeedback,
+            buttonColor = SatoGreen
+        )
+        Spacer(modifier = Modifier.weight(1f))
+
         // APPLY BUTTON
         Button(
             onClick = {
@@ -300,6 +310,9 @@ fun SettingsView(navController: NavController) {
 @Composable
 fun SettingsViewPreview() {
     SatodimeTheme {
-        SettingsView(rememberNavController())
+        SettingsView(
+            rememberNavController(),
+            viewModel(factory = SharedViewModel.Factory)
+        )
     }
 }

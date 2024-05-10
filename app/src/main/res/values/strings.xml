@@ -113,6 +113,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="accept">Accept</string>
     <string name="activateTheExpertMode">Activate the expert mode</string>
     <string name="showLogs">Show logs</string>
+    <string name="sendFeedback">Send feedback</string>
     <string name="LogsTitle">Logs</string>
     <string name="apply">Apply</string>
     <string name="toUseItText">To use it, put the card on top of your phone when prompted and keep it on the reader throughout the operation.</string>

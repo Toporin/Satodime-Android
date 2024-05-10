@@ -232,7 +232,7 @@ fun Navigation() {
         }
         // SETTINGS
         composable(route = SatodimeScreen.SettingsView.name) {
-            SettingsView(navController)
+            SettingsView(navController, sharedViewModel)
         }
         // LOGS
         composable(route = SatodimeScreen.ShowLogsView.name) {
