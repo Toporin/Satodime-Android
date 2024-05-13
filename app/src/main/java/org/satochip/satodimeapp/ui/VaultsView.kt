@@ -100,6 +100,7 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.util.formatBalance
 import org.satochip.satodimeapp.util.sanitizeNftImageUrlString
+import org.satochip.satodimeapp.util.webviewActivityIntent
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 private const val TAG = "VaultsView"
@@ -319,7 +320,10 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 Spacer(Modifier.weight(1f))
                 Button(
                     onClick = {
-                    uriHandler.openUri("https://satochip.io/product/satodime/")
+                        webviewActivityIntent(
+                            url = "https://satochip.io/product/satodime/",
+                            context = activity
+                        )
                 }) {
                     Text(stringResource(id = R.string.dontHaveASatodime))
                 }
@@ -370,7 +374,10 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             buttonTitle = stringResource(R.string.moreInfo),
             buttonAction =
             {
-                uriHandler.openUri("https://satochip.io/satodime-ownership-explained/")
+                webviewActivityIntent(
+                    url = "https://satochip.io/satodime-ownership-explained/",
+                    context = activity
+                )
             },)
     }
 

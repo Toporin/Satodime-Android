@@ -19,7 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,13 +47,15 @@ import org.satochip.satodimeapp.ui.theme.DarkBlue
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.webviewActivityIntent
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
 fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
     val scrollState = rememberScrollState()
     val showNoCardScannedDialog = remember { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,7 +95,7 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 110, Color(0xFF67889B),
                 R.drawable.cards_info
             ) {
-                if (sharedViewModel.isCardDataAvailable){
+                if (sharedViewModel.isCardDataAvailable) {
                     navController.navigate(SatodimeScreen.CardInfoView.name)
                 } else {
                     showNoCardScannedDialog.value = true
@@ -124,7 +127,12 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 220, 110,
                 Color(0xFF64B3B3),
                 R.drawable.how_to
-            ) { uriHandler.openUri("https://satochip.io/setup-use-satodime-on-mobile/") }
+            ) {
+                webviewActivityIntent(
+                    url = "https://satochip.io/setup-use-satodime-on-mobile/",
+                    context = context
+                )
+            }
             MenuCard(
                 stringResource(R.string.settings),
                 TextAlign.Left,
@@ -144,11 +152,29 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 .fillMaxWidth()
                 .height(90.dp)
         ) {
-            MenuCard(stringResource(R.string.termsOfService), TextAlign.Center, 190, 100, Color(0xFF2D2F45)) {
-                uriHandler.openUri("https://satochip.io/terms-of-service/")
+            MenuCard(
+                stringResource(R.string.termsOfService),
+                TextAlign.Center,
+                190,
+                100,
+                Color(0xFF2D2F45)
+            ) {
+                webviewActivityIntent(
+                    url = "https://satochip.io/terms-of-service/",
+                    context = context
+                )
             }
-            MenuCard(stringResource(R.string.privacyPolicy), TextAlign.Center, 190, 100, Color(0xFF2D2F45)) {
-                uriHandler.openUri("https://satochip.io/privacy-policy/")
+            MenuCard(
+                stringResource(R.string.privacyPolicy),
+                TextAlign.Center,
+                190,
+                100,
+                Color(0xFF2D2F45)
+            ) {
+                webviewActivityIntent(
+                    url = "https://satochip.io/privacy-policy/",
+                    context = context
+                )
             }
         }
 
@@ -166,7 +192,10 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                 .padding(10.dp)
                 .padding(bottom = 50.dp)
                 .clickable {
-                    uriHandler.openUri("https://satochip.io/shop/")
+                    webviewActivityIntent(
+                        url = "https://satochip.io/shop/",
+                        context = context
+                    )
                 },
             shape = RoundedCornerShape(15.dp)
         ) {
@@ -192,14 +221,16 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
     }
 
     if (showNoCardScannedDialog.value
-        && !sharedViewModel.isCardDataAvailable){
+        && !sharedViewModel.isCardDataAvailable
+    ) {
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
             title = stringResource(R.string.cardNeedToBeScannedTitle),
             message = stringResource(R.string.cardNeedToBeScannedMessage),
             isActionButtonVisible = false,
             buttonTitle = "",
-            buttonAction = {},)
+            buttonAction = {},
+        )
     }
 }
 

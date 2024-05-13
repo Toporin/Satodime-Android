@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SatoButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: Int,
     buttonColor: Color = MaterialTheme.colors.primary,
@@ -24,7 +25,7 @@ fun SatoButton(
         onClick = {
             onClick()
         },
-        modifier = Modifier
+        modifier = modifier
             .padding(10.dp)
             .height(40.dp),
         shape = RoundedCornerShape(50),

@@ -22,6 +22,7 @@
     <string name="createSealGift">Créez, scellez et offrez</string>
     <string name="createUpTo3Dfifferent">Créez jusqu\'à 3 coffres-forts pour stocker des cryptomonnaies et des NFTs. Transférez la propriété et offrez la carte en toute sécurité.</string>
     <string name="moreInfo">Plus d\'info</string>
+    <string name="videoInfo">Regarder le didacticiel vidéo</string>
     <string name="usingNFC">Utiliser le NFC</string>
     <string name="toUseItText">Pour l\'utiliser, placez la carte sur le dessus de votre téléphone lorsque vous y êtes invité et gardez-la sur le lecteur pendant toute la durée de l\'opération.</string>
     <string name="start">Start</string>
