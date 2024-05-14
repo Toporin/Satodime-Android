@@ -142,6 +142,9 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="termsOfService">Terms of service</string>
     <string name="privacyPolicy">Privacy policy</string>
     <string name="readyToScan">Ready to Scan</string>
+    <string name="listedVaults">Listed vaults successfully!</string>
+    <string name="scanning">Scanning</string>
+    <string name="unknownError">Unknown error!</string>
     <string name="nfcHoldSatodime">Hold your Satodime near your phone</string>
     <string name="thisCardIsGenuine">This card is authentic</string>
     <string name="thisCardIsNotGenuine">Card failed to authenticate!</string>

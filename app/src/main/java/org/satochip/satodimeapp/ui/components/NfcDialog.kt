@@ -20,6 +20,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +35,7 @@ import org.satochip.satodimeapp.ui.components.vaults.VaultDrawerScreen
 import org.satochip.satodimeapp.ui.components.vaults.VaultsBottomDrawer
 import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.ui.theme.Orange
+import org.satochip.satodimeapp.ui.theme.SatoWarningOrange
 import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "NfcDialog"
@@ -54,31 +56,50 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
             SatoLog.d(TAG, "LaunchedEffect after while delay ${resultCodeLive}")
         }
 
-        if (resultCodeLive == NfcResultCode.Busy){
-            VaultDrawerScreen(
-                closeSheet = {
-                    openDialogCustom.value = !openDialogCustom.value
-                },
-                closeDrawerButton = true,
-                title = R.string.readyToScan,
-                image = R.drawable.phone_icon,
-                message = R.string.nfcHoldSatodime
-            )
-        } else {
-            if (resultCodeLive == NfcResultCode.Ok){
+        if (resultCodeLive == NfcResultCode.Busy) {
+            if (isConnected) {
+                VaultDrawerScreen(
+                    closeSheet = {
+                        openDialogCustom.value = !openDialogCustom.value
+                    },
+                    title = R.string.scanning,
+                    image = R.drawable.contactless_24px,
+                    colorFilter = ColorFilter.tint(LightBlue)
+                )
+            } else {
                 VaultDrawerScreen(
                     closeSheet = {
                         openDialogCustom.value = !openDialogCustom.value
                     },
                     closeDrawerButton = true,
                     title = R.string.readyToScan,
-                    image = R.drawable.icon_check_gif,
+                    image = R.drawable.phone_icon,
                     message = R.string.nfcHoldSatodime
                 )
-                LaunchedEffect(Unit) {
-                    delay(0.5.seconds)
-                    openDialogCustom.value = false
-                }
+            }
+        } else {
+            if (resultCodeLive == NfcResultCode.Ok) {
+                VaultDrawerScreen(
+                    closeSheet = {
+                        openDialogCustom.value = !openDialogCustom.value
+                    },
+                    image = R.drawable.icon_check_gif,
+                    message = R.string.listedVaults
+                )
+            }  else {
+                VaultDrawerScreen(
+                    closeSheet = {
+                        openDialogCustom.value = !openDialogCustom.value
+                    },
+                    title = R.string.warning,
+                    image = R.drawable.error_24px,
+                    message = R.string.unknownError,
+                    colorFilter = ColorFilter.tint(SatoWarningOrange)
+                )
+            }
+            LaunchedEffect(Unit) {
+                delay(1.seconds)
+                openDialogCustom.value = false
             }
         }
     }

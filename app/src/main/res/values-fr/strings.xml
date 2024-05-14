@@ -137,6 +137,9 @@
     <string name="notAuthenticText">L\'authenticité de la carte n\'a pas pu être établie.</string>
     <string name="nfcHoldSatodime">Tenez votre Satodime près de votre phone</string>
     <string name="readyToScan">Prêt à scanner</string>
+    <string name="listedVaults">Coffres répertoriés avec succès!</string>
+    <string name="scanning">Scanner</string>
+    <string name="unknownError">Erreur inconnue!</string>
     <string name="dontHaveASatodime">Pas encore de carte Satodime ?\nCliquez ici pour en acheter une.</string>
     <string name="exploreBlockchain">Explorer</string>
     <string name="showDeviceCert">Montrer le certificat de la carte</string>
