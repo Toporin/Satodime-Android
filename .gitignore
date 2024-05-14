@@ -1,6 +1,7 @@
 # Project exclude paths
 .gradle/
 .idea/
+.DS_Store
 /build
 /local.properties
 /satodime-android

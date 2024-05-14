@@ -145,4 +145,8 @@
     <string name="subcaInfo">Certificat sub-CA</string>
     <string name="rootCaInfo">Certificat root CA</string>
     <string name="copied_to_clipboard">Copié dans le presse-papier</string>
+    <string name="networkError">Erreur réseau</string>
+    <string name="networkErrorMessage">Échec de la récupération des données.\nVeuillez vérifier votre connexion réseau.</string>
+    <string name="networkConnected">Connecté</string>
+    <string name="networkConnectedMessage">Vous êtes de nouveau en ligne.</string>
 </resources>

@@ -30,6 +30,8 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.services.SatoLog
+import org.satochip.satodimeapp.ui.components.vaults.VaultDrawerScreen
+import org.satochip.satodimeapp.ui.components.vaults.VaultsBottomDrawer
 import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.ui.theme.Orange
 import kotlin.time.Duration.Companion.seconds
@@ -39,24 +41,46 @@ private const val TAG = "NfcDialog"
 @Composable
 fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResultCode, isConnected: Boolean) {
 
-    Dialog(onDismissRequest = {
-        openDialogCustom.value = false
-        // todo: disable NFC scan?
-    }) {
-        NfcDialogUI(openDialogCustom = openDialogCustom, resultCodeLive = resultCodeLive, isConnected = isConnected)
+    VaultsBottomDrawer(
+        showSheet = openDialogCustom
+    ) {
 
-        // auto-close alertDialog when action is done
         LaunchedEffect(resultCodeLive) {
             SatoLog.d(TAG, "LaunchedEffect START ${resultCodeLive}")
             while (resultCodeLive == NfcResultCode.Busy || resultCodeLive == NfcResultCode.None) {
                 SatoLog.d(TAG, "LaunchedEffect in while delay 2s ${resultCodeLive}")
                 delay(2.seconds)
             }
-            SatoLog.d(TAG, "LaunchedEffect after while delay 3s ${resultCodeLive}")
-            delay(3.seconds)
-            openDialogCustom.value = false
+            SatoLog.d(TAG, "LaunchedEffect after while delay ${resultCodeLive}")
         }
 
+        if (resultCodeLive == NfcResultCode.Busy){
+            VaultDrawerScreen(
+                closeSheet = {
+                    openDialogCustom.value = !openDialogCustom.value
+                },
+                closeDrawerButton = true,
+                title = R.string.readyToScan,
+                image = R.drawable.phone_icon,
+                message = R.string.nfcHoldSatodime
+            )
+        } else {
+            if (resultCodeLive == NfcResultCode.Ok){
+                VaultDrawerScreen(
+                    closeSheet = {
+                        openDialogCustom.value = !openDialogCustom.value
+                    },
+                    closeDrawerButton = true,
+                    title = R.string.readyToScan,
+                    image = R.drawable.icon_check_gif,
+                    message = R.string.nfcHoldSatodime
+                )
+                LaunchedEffect(Unit) {
+                    delay(0.5.seconds)
+                    openDialogCustom.value = false
+                }
+            }
+        }
     }
 }
 
