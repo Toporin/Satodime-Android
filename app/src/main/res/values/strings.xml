@@ -152,4 +152,8 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="subcaInfo">Sub-CA certificate</string>
     <string name="rootCaInfo">Root CA certificate</string>
     <string name="exploreBlockchain">Explore</string>
+    <string name="networkError">Network Error</string>
+    <string name="networkErrorMessage">Data recovery failed.\nPlease check your network connection.</string>
+    <string name="networkConnected">Connected</string>
+    <string name="networkConnectedMessage">You are back online.</string>
 </resources>

@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -92,10 +93,14 @@ import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.NftDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.components.shared.SatoButton
+import org.satochip.satodimeapp.ui.components.vaults.VaultDrawerScreen
+import org.satochip.satodimeapp.ui.components.vaults.VaultsBottomDrawer
 import org.satochip.satodimeapp.ui.theme.DarkRed
 import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.ui.theme.LightDarkBlue
 import org.satochip.satodimeapp.ui.theme.LightGreen
+import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.util.formatBalance
@@ -111,6 +116,11 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     var showVaultsOnly by remember{mutableStateOf(false) }
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val showNoCardScannedDialog = remember { mutableStateOf(false)}// for NoCardScannedDialog
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
 
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
@@ -373,12 +383,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 uriHandler.openUri("https://satochip.io/satodime-ownership-explained/")
             },)
     }
-
-    // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
-    }
-
 }
 
 /// LIST VIEW
@@ -770,7 +774,7 @@ fun VaultsViewTokenRow(asset: Asset) {
             contentDescription = "link to explorer",
             modifier = Modifier
                 .width(30.dp)
-                .clickable{
+                .clickable {
                     uriHandler.openUri(asset.explorerLink ?: "")
                 },
             tint = MaterialTheme.colors.secondary, //Color.LightGray,
@@ -847,7 +851,7 @@ fun VaultsViewNftRow(asset: Asset) {
             contentDescription = "link to NFT explorer",
             modifier = Modifier
                 .width(30.dp)
-                .clickable{
+                .clickable {
                     uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
                 },
             //.requiredWidth(30.dp)
