@@ -1,14 +1,11 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -17,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,11 +32,12 @@ import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.webviewActivityIntent
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
 fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel) {
-    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -88,8 +86,11 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
             ownershipStatusString = stringResource(R.string.cardHasNoOwner)
             colorOwner = Color.Blue
         }
-        CardInfoCard(ownershipStatusString, 300, colorOwner){
-            uriHandler.openUri("https://satochip.io/satodime-ownership-explained/")
+        CardInfoCard(ownershipStatusString, 300, colorOwner) {
+            webviewActivityIntent(
+                url = "https://satochip.io/satodime-ownership-explained/",
+                context = context
+            )
         }
 
         Spacer(Modifier.weight(1f))
@@ -120,8 +121,8 @@ fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel)
         var authenticityStatusString = "Unknown"
         var authenticityColor = Color.Yellow
         //if(NFCCardService.isAuthentic.value == true) {
-        if(NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic) {
-            authenticityStatusString =  stringResource(R.string.thisCardIsGenuine)
+        if (NFCCardService.authenticityStatus.value == AuthenticityStatus.Authentic) {
+            authenticityStatusString = stringResource(R.string.thisCardIsGenuine)
             authenticityColor = LightGreen
         } else {
             authenticityStatusString = stringResource(R.string.thisCardIsNotGenuine)
