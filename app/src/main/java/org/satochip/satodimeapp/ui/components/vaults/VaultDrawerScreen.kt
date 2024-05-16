@@ -14,6 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -28,9 +29,10 @@ fun VaultDrawerScreen(
     closeSheet: () -> Unit,
     closeDrawerButton: Boolean = false,
     title: Int? = null,
-    message: Int,
-    image: Int? = null
-) {
+    message: Int? = null,
+    image: Int? = null,
+    colorFilter: ColorFilter? = null,
+    ) {
     Column(
         modifier = Modifier
             .height(350.dp)
@@ -52,19 +54,22 @@ fun VaultDrawerScreen(
         image?.let {
             GifImage(
                 modifier = Modifier.size(125.dp),
-                image = image
+                image = image,
+                colorFilter = colorFilter
             )
 
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Text(
-            text = stringResource(message),
-            style = TextStyle(
-                color = Color.Black,
-                fontSize = 16.sp
+        message?.let {
+            Text(
+                text = stringResource(message),
+                style = TextStyle(
+                    color = Color.Black,
+                    fontSize = 16.sp
+                )
             )
-        )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         if (closeDrawerButton) {
             SatoButton(

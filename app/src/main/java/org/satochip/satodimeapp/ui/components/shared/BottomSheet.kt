@@ -23,12 +23,6 @@ fun BottomSheet(
     if (!showSheet.value) {
         return
     } else {
-        BottomSheet(
-            modifier = modifier,
-            showSheet = showSheet,
-        ) {
-            content()
-        }
         ModalBottomSheet(
             modifier = modifier,
             containerColor = Color.White,
