@@ -160,4 +160,5 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="networkErrorMessage">Data recovery failed.\nPlease check your network connection.</string>
     <string name="networkConnected">Connected</string>
     <string name="networkConnectedMessage">You are back online.</string>
+    <string name="clickAndScan">Click \n&amp; \nScan</string>
 </resources>

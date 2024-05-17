@@ -153,4 +153,5 @@
     <string name="networkErrorMessage">Échec de la récupération des données.\nVeuillez vérifier votre connexion réseau.</string>
     <string name="networkConnected">Connecté</string>
     <string name="networkConnectedMessage">Vous êtes de nouveau en ligne.</string>
+    <string name="clickAndScan">Cliquez \n&amp; \nScannez</string>
 </resources>
