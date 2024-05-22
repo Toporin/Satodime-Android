@@ -8,6 +8,7 @@ import org.satochip.javacryptotools.coins.Constants
 import org.satochip.javacryptotools.coins.Counterparty
 import org.satochip.javacryptotools.coins.Ethereum
 import org.satochip.javacryptotools.coins.Litecoin
+import org.satochip.javacryptotools.coins.Polygon
 import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.satodimeapp.BuildConfig
 import org.satochip.satodimeapp.services.SatoLog
@@ -21,6 +22,7 @@ val apiKeys = hashMapOf(
     Pair("API_KEY_ETHPLORER", BuildConfig.API_KEY_ETHPLORER),
     Pair("API_KEY_BSCSCAN", BuildConfig.API_KEY_BSCSCAN),
     Pair("API_KEY_RARIBLE", BuildConfig.API_KEY_RARIBLE),
+    Pair("API_KEY_COVALENT", BuildConfig.API_KEY_COVALENT),
 )
 
 /** Convert an IPFS address to IPFS gateway (https) address */
@@ -80,6 +82,7 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
     val decimalFormat: DecimalFormat = when(symbolString){
         "BTC" -> DecimalFormat("###.########")
         "ETH" -> DecimalFormat("###.######")
+        "MATIC" -> DecimalFormat("###.######")
         else -> {DecimalFormat("###.##")}
     }
 
@@ -98,6 +101,7 @@ fun newBaseCoin(
         Constants.LTC -> Litecoin(isTestnet, apiKeys)
         Constants.BCH -> BitcoinCash(isTestnet, apiKeys)
         Constants.ETH -> Ethereum(isTestnet, apiKeys)
+        Constants.MATIC -> Polygon(isTestnet, apiKeys)
         Constants.XCP -> Counterparty(isTestnet, apiKeys)
         else -> UnsupportedCoin(isTestnet, apiKeys)
     }
@@ -110,6 +114,7 @@ fun coinToSlip44Bytes(coinSymbol: String, isTestnet: Boolean): ByteArray {
         "BCH" -> Constants.BCH
         "ETH" -> Constants.ETH
         "XCP" -> Constants.XCP
+        "MATIC" -> Constants.MATIC
         else -> Constants.BTC // should not happen
     }
 

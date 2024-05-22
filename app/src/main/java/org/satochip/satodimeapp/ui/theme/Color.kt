@@ -17,6 +17,7 @@ val LightBlue = Color(0xFF65BBE0)
 val InfoDialogBackgroundColor = Color(0xFF27273C)
 val MoreInfoButtonColor = Color(0xFF525684)
 
+val SatoOrange = Color(0xFFEE9882)
 val SatoGreen = Color(0xFF25B59A)
 val SatoLightGrey = Color(0xFFC6C6C6)
 val SatoGrey = Color(0xFF8F8E94)
