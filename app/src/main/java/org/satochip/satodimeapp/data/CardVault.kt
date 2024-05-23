@@ -52,7 +52,13 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
     // meta info such as icon
     val coin: Coin = try {
-        if (nativeAsset.symbol == "ROP") Coin.ETH else Coin.valueOf(nativeAsset.symbol.take(3)) //todo: clean?
+        if (nativeAsset.symbol == "ROP")
+            Coin.ETH
+        else if (nativeAsset.symbol == "MATIC") {
+            Coin.MATIC
+        }
+        else
+            Coin.valueOf(nativeAsset.symbol.take(3)) //todo: clean?
     } catch (e: IllegalArgumentException) {
         Coin.UNKNOWN
     }

@@ -18,11 +18,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.satochip.satodimeapp.R
+import org.satochip.satodimeapp.ui.theme.SatoOrange
 import org.satochip.satodimeapp.ui.theme.Teal200
 
 @Composable
 fun SealedIndicator(modifier: Modifier, isSealed: Boolean) {
-    val color = if(isSealed) Teal200 else Color.Red
+    val color = if(isSealed) Teal200 else SatoOrange
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -36,7 +37,7 @@ fun SealedIndicator(modifier: Modifier, isSealed: Boolean) {
         )
         Text(
             fontSize = 14.sp,
-            fontWeight = FontWeight.Light,
+            fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.SansSerif,
             color = color,
             text = if (isSealed) stringResource(R.string.sealed) else stringResource(R.string.unsealed)
