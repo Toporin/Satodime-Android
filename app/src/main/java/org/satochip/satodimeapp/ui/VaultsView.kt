@@ -1,6 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -745,7 +746,7 @@ fun VaultsViewTokenRow(asset: Asset) {
     val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceBetween, //Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
             .clickable {
@@ -754,54 +755,55 @@ fun VaultsViewTokenRow(asset: Asset) {
             }
             .padding(5.dp)
             .fillMaxWidth()
-            .height(80.dp)
+            .height(80.dp),
     ) {
+        Row {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(asset.iconUrl ?: "")
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_sato_small),
+                error = painterResource(R.drawable.ic_sato_small),
+                contentDescription = (asset.name ?: asset.contract ?: ""),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(60.dp),
+            )
 
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(asset.iconUrl ?: "")
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_sato_small),
-            error = painterResource(R.drawable.ic_sato_small),
-            contentDescription = (asset.name ?: asset.contract ?: ""),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(10.dp)
-                .size(60.dp),
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = "${asset.name}",// vault.displayName
+                )
+                // TOKEN BALANCE
+                Text(
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = formatBalance(
+                        balanceString = asset.balance,
+                        decimalsString = asset.decimals,
+                        symbol = asset.symbol
+                    )
+                )
+            }
+        }
+        Text(
+            fontSize = 10.sp,
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondary,
+            text = formatBalance(
+                balanceString = asset.valueInSecondCurrency,
+                decimalsString = "0",
+                symbol = asset.secondCurrency
+            )
         )
 
-        Column(modifier = Modifier.padding(10.dp)) {
-            Text(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = "${asset.name}",// vault.displayName
-            )
-            // TOKEN BALANCE
-            Text(
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = formatBalance(
-                    balanceString = asset.balance,
-                    decimalsString = asset.decimals,
-                    symbol = asset.symbol
-                )
-            )
-            // VALUE IN SECOND CURRENCY
-            Text(
-                fontSize = 10.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = formatBalance(
-                    balanceString = asset.valueInSecondCurrency,
-                    decimalsString = "0",
-                    symbol = asset.secondCurrency
-                )
-            )
-        }
     }
 }
 
