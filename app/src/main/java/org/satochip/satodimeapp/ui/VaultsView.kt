@@ -748,6 +748,10 @@ fun VaultsViewTokenRow(asset: Asset) {
         horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
+            .clickable {
+                // LINK TO EXPLORER
+                uriHandler.openUri(asset.explorerLink ?: "")
+            }
             .padding(5.dp)
             .fillMaxWidth()
             .height(80.dp)
@@ -798,18 +802,6 @@ fun VaultsViewTokenRow(asset: Asset) {
                 )
             )
         }
-
-        // LINK TO EXPLORER
-        Icon(
-            painter = painterResource(R.drawable.open_in_new_24px),
-            contentDescription = "link to explorer",
-            modifier = Modifier
-                .width(30.dp)
-                .clickable {
-                    uriHandler.openUri(asset.explorerLink ?: "")
-                },
-            tint = MaterialTheme.colors.secondary, //Color.LightGray,
-        )
     }
 }
 
