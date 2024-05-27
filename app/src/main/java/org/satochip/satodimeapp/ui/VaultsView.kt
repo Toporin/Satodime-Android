@@ -817,6 +817,15 @@ fun VaultsViewNftRow(asset: Asset) {
         //horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
+            .clickable {
+                // LINK TO EXPLORER
+                //uriHandler.openUri(asset.nftImageLink ?: "")
+                uriHandler.openUri(
+                    sanitizeNftImageUrlString(
+                        asset.nftExplorerLink ?: asset.explorerLink ?: ""
+                    )
+                )
+            }
             .padding(5.dp)
             .fillMaxWidth()
             .height(80.dp)
@@ -884,18 +893,18 @@ fun VaultsViewNftRow(asset: Asset) {
         }
 
         // LINK TO EXPLORER
-        Icon(
-            painter = painterResource(R.drawable.open_in_new_24px),
-            contentDescription = "link to NFT explorer",
-            modifier = Modifier
-                .width(30.dp)
-                .clickable {
-                    uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
-                },
-            //.requiredWidth(30.dp)
-            //.size(30.dp), //.size(45.dp)
-            tint = MaterialTheme.colors.secondary, //Color.LightGray,
-        )
+//        Icon(
+//            painter = painterResource(R.drawable.open_in_new_24px),
+//            contentDescription = "link to NFT explorer",
+//            modifier = Modifier
+//                .width(30.dp)
+//                .clickable {
+//                    uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
+//                },
+//            //.requiredWidth(30.dp)
+//            //.size(30.dp), //.size(45.dp)
+//            tint = MaterialTheme.colors.secondary, //Color.LightGray,
+//        )
     }
 
     // show bigger image in dialog

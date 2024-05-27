@@ -47,7 +47,7 @@ fun sanitizeNftImageUrlString(link: String): String {
         // do nothing
         return nftImageUrlString
     }
-    SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
+    //SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
     return nftImageUrlString
 }
 

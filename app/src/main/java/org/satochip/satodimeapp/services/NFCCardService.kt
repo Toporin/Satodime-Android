@@ -692,7 +692,8 @@ object NFCCardService {
         }
         val cardSlot = CardSlot(index, keySlotStatus.keySlip44, keySlotStatus.keyStatus, pubKey)
         SatoLog.d(TAG, "getCardSlot index: $index")
-        SatoLog.d(TAG, "getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
+        SatoLog.d(TAG, "getCardSlot keySlip44: ${"0x"+SatochipParser.toHexString(cardSlot.keySlip44)}")
+        //SatoLog.d(TAG, "getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
         SatoLog.d(TAG, "getCardSlot keyStatus: ${cardSlot.slotState}")
         SatoLog.d(TAG, "getCardSlot pubKey: ${pubKey}")
         return cardSlot
