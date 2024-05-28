@@ -21,7 +21,7 @@ fun ShowPrivateKeyDataView(
     label: String,
     data: String,
 ) {
-    val vaults = sharedViewModel.cardVaults.value
+    val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
     if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!

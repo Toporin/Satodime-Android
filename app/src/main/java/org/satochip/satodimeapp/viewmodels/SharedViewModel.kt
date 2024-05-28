@@ -11,16 +11,15 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.satochip.satodimeapp.data.AuthenticityStatus
@@ -46,7 +45,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 modelClass: Class<T>,
                 extras: CreationExtras
             ): T {
-                val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                val application =
+                    checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return SharedViewModel(application) as T
             }
         }
@@ -60,7 +60,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     var isCardDataAvailable by mutableStateOf(false)
     var cardSlots = mutableListOf<CardSlot>()
-    var cardVaults = MutableLiveData<List<CardVault?>>() //MutableLiveData<MutableList<CardVault?>>() // mutableListOf<CardVault?>()
+    val cardVaults = mutableStateListOf<CardVault?>()
     var cardPrivkeys = mutableListOf<CardPrivkey?>()
     var selectedVault by mutableIntStateOf(1)
     var resultCodeLive by mutableStateOf(NfcResultCode.Busy)
@@ -82,7 +82,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         NFCCardService.resultCodeLive.observeForever {
             resultCodeLive = it
         }
-        NFCCardService.isCardDataAvailable.observeForever{
+        NFCCardService.isCardDataAvailable.observeForever {
             isCardDataAvailable = it
         }
         // update balances
@@ -95,15 +95,15 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         NFCCardService.cardPrivkeys.observeForever {
             cardPrivkeys = it.toMutableList()
         }
-        NFCCardService.ownershipStatus.observeForever{
+        NFCCardService.ownershipStatus.observeForever {
             ownershipStatus = it
-            if (it == OwnershipStatus.NotOwner){
+            if (it == OwnershipStatus.NotOwner) {
                 showOwnershipDialog.value = true
             }
         }
-        NFCCardService.authenticityStatus.observeForever{
+        NFCCardService.authenticityStatus.observeForever {
             authenticityStatus = it
-            if (it == AuthenticityStatus.NotAuthentic){
+            if (it == AuthenticityStatus.NotAuthentic) {
                 showAuthenticityDialog.value = true
             }
         }
@@ -130,14 +130,21 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // assert 0 <= index < cardSlots.size
-    fun sealSlot(activity: Activity, index: Int, coinSymbol: String, isTestnet: Boolean, entropyBytes: ByteArray) {
+    fun sealSlot(
+        activity: Activity,
+        index: Int,
+        coinSymbol: String,
+        isTestnet: Boolean,
+        entropyBytes: ByteArray
+    ) {
         SatoLog.d(TAG, "sealSlot START slot: ${index}")
         NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
         NFCCardService.actionEntropy = entropyBytes
         // convert to slip44Bytes
-        NFCCardService.actionSlip44 = coinToSlip44Bytes(coinSymbol = coinSymbol, isTestnet = isTestnet)
+        NFCCardService.actionSlip44 =
+            coinToSlip44Bytes(coinSymbol = coinSymbol, isTestnet = isTestnet)
         scanCardForAction(activity)
     }
 
@@ -174,7 +181,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     /// WEB API
     private suspend fun updateVaults(cardSlots: List<CardSlot>) {
-        SatoLog.d(TAG,"updateVaults START")
+        SatoLog.d(TAG, "updateVaults START")
         fetchVaultInfoFromSlot(cardSlots)
 
         // balance
@@ -192,96 +199,115 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
-        SatoLog.d(TAG,"fetchVaultBalance START")
+        SatoLog.d(TAG, "fetchVaultBalance START")
         withContext(Dispatchers.IO) {
             val updatedVaults = cardSlots.map {
                 if (it.slotState == SlotState.UNINITIALIZED) {
-                    SatoLog.d(TAG,"fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
+                    SatoLog.d(TAG, "fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
                     return@map null
                 }
 
                 var cardVault = CardVault(it, context)
-                SatoLog.d(TAG,"fetchVaultInfoFromSlot created vault ${cardVault.index}")
+                SatoLog.d(TAG, "fetchVaultInfoFromSlot created vault ${cardVault.index}")
                 return@map cardVault
             }
-            cardVaults.postValue(updatedVaults) //postValue(updatedVaults.toMutableList())
+            if (cardVaults != updatedVaults) {
+                cardVaults.clear()
+                cardVaults.addAll(updatedVaults)
+            }
         }
 
     }
 
     private suspend fun fetchVaultBalance() {
-        SatoLog.d(TAG,"fetchVaultBalance START")
+        SatoLog.d(TAG, "fetchVaultBalance START")
         withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.value?.map {
+            val updatedVaults = cardVaults.map {
                 if (it == null) {
-                    SatoLog.d(TAG,"fetchVaultBalance uninitialized vault")
+                    SatoLog.d(TAG, "fetchVaultBalance uninitialized vault")
                     return@map null
                 }
 
                 it.fetchBalance()
-                SatoLog.d(TAG,"fetchVaultBalance updated vault ${it.index}")
+                SatoLog.d(TAG, "fetchVaultBalance updated vault ${it.index}")
                 return@map it
             }
-            cardVaults.postValue(updatedVaults)
+            if (cardVaults != updatedVaults) {
+                cardVaults.clear()
+                cardVaults.addAll(updatedVaults)
+            }
         }
     }
 
-    private suspend fun fetchVaultPrice(){
-        SatoLog.d(TAG,"fetchVaultPrice START")
+    private suspend fun fetchVaultPrice() {
+        SatoLog.d(TAG, "fetchVaultPrice START")
         withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.value?.map {
+            val updatedVaults = cardVaults.map {
                 if (it == null) {
-                    SatoLog.d(TAG,"fetchVaultPrice uninitialized vault")
+                    SatoLog.d(TAG, "fetchVaultPrice uninitialized vault")
                     return@map null
                 }
 
                 // update asset value/rate fields
                 it.fetchAssetValue(it.nativeAsset)
-                SatoLog.d(TAG,"fetchVaultPrice updated vault ${it.index}")
+                SatoLog.d(TAG, "fetchVaultPrice updated vault ${it.index}")
                 return@map it
             }
-            cardVaults.postValue(updatedVaults)
+            if (cardVaults != updatedVaults) {
+                cardVaults.clear()
+                cardVaults.addAll(updatedVaults)
+            }
         }
     }
 
     private suspend fun fetchVaultAssets() {
-        SatoLog.d(TAG,"fetchVaultAssets START")
+        SatoLog.d(TAG, "fetchVaultAssets START")
         withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.value?.map {
+            val updatedVaults = cardVaults.map {
                 if (it == null) {
-                    SatoLog.d(TAG,"fetchVaultAssets uninitialized vault")
+                    SatoLog.d(TAG, "fetchVaultAssets uninitialized vault")
                     return@map null
                 }
 
                 it.fetchTokenList()
                 it.fetchNftList()
-                SatoLog.d(TAG,"fetchVaultAssets updated vault ${it.index}")
+                SatoLog.d(TAG, "fetchVaultAssets updated vault ${it.index}")
                 return@map it
             }
-            cardVaults.postValue(updatedVaults)
+            updatedVaults.let {
+                if (cardVaults != updatedVaults) {
+                    cardVaults.clear()
+                    cardVaults.addAll(updatedVaults)
+                }
+            }
         }
     }
 
     private suspend fun fetchVaultAssetPrices() {
-        SatoLog.d(TAG,"fetchVaultAssetPrices START")
+        SatoLog.d(TAG, "fetchVaultAssetPrices START")
         withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.value?.map {
+            val updatedVaults = cardVaults.map {
                 if (it == null) {
-                    SatoLog.d(TAG,"fetchVaultAssetPrices uninitialized vault")
+                    SatoLog.d(TAG, "fetchVaultAssetPrices uninitialized vault")
                     return@map null
                 }
                 // update asset value/rate fields
-                for(asset in it.tokenList){
+                for (asset in it.tokenList) {
                     it.fetchAssetValue(asset)
                 }
                 // update asset value/rate fields for nft
-                for(asset in it.nftList){
+                for (asset in it.nftList) {
                     it.fetchAssetValue(asset)
                 }
-                SatoLog.d(TAG,"fetchVaultAssetPrices updated vault ${it.index}")
+                SatoLog.d(TAG, "fetchVaultAssetPrices updated vault ${it.index}")
                 return@map it
             }
-            cardVaults.postValue(updatedVaults)
+            updatedVaults.let {
+                if (cardVaults != updatedVaults) {
+                    cardVaults.clear()
+                    cardVaults.addAll(updatedVaults)
+                }
+            }
         }
     }
 
