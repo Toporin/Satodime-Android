@@ -60,7 +60,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isBackupConfirmed = remember { mutableStateOf(false) }
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
-    val vaults = sharedViewModel.cardVaults.value
+    val vaults = sharedViewModel.cardVaults
 //    val vaultsSize = vaults?.size ?: 0
 //    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
 //        SatoLog.e(TAG, "ResetWarningView VAULT IS NULL!!")

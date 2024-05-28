@@ -57,7 +57,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
-    val vaults = sharedViewModel.cardVaults.value
+    val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
     if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!

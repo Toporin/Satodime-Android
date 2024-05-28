@@ -1,6 +1,5 @@
 package org.satochip.satodimeapp.util
 
-import android.util.Log
 import org.satochip.javacryptotools.coins.BaseCoin
 import org.satochip.javacryptotools.coins.Bitcoin
 import org.satochip.javacryptotools.coins.BitcoinCash
@@ -47,7 +46,7 @@ fun sanitizeNftImageUrlString(link: String): String {
         // do nothing
         return nftImageUrlString
     }
-    //SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
+//    SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
     return nftImageUrlString
 }
 

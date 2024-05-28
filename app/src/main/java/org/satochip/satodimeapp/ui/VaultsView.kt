@@ -1,8 +1,8 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,15 +18,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -46,19 +45,18 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -103,6 +101,7 @@ import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 private const val TAG = "VaultsView"
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     val activity = LocalContext.current as Activity
@@ -123,12 +122,12 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
 
-    val vaults = sharedViewModel.cardVaults.value
-    val vaultsSize = vaults?.size ?: 0
-    val vaultsListState = rememberLazyListState()
-    val visibleItems by remember { derivedStateOf { vaultsListState.layoutInfo.visibleItemsInfo } }
-    val configuration = LocalConfiguration.current
-    sharedViewModel.selectedVault = findVaultToSelect(visibleItems, configuration.screenWidthDp)
+    val vaults = sharedViewModel.cardVaults
+    val vaultsSize = vaults.size
+    val pagerState = rememberPagerState(pageCount = {
+        3
+    })
+    sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
     if (sharedViewModel.selectedVault > vaultsSize
         || vaults?.get(sharedViewModel.selectedVault - 1) == null
@@ -147,7 +146,6 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
         // LOGO
         if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
             IconButton(
@@ -290,23 +288,16 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         }
 
         if (sharedViewModel.isCardDataAvailable) {
-            //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
-            val cardVaultsWithDefaultsValuesIfEmpty =
-                vaults?.ifEmpty { listOf(null, null, null) } ?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = sharedViewModel.cardVaults.value ?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = if (viewModel.cardVaults.isEmpty()) listOf(null, null, null) else {viewModel.cardVaults} //?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = viewModel.cardVaults.ifEmpty { listOf(null, null, null) }
-
             if (showVaultsOnly) {
                 VaultsListView(
-                    cardVaultsWithDefaultsValuesIfEmpty,
+                    vaults,
                     sharedViewModel.selectedVault,
                     onAddVault
                 )
             } else {
                 DetailedVaultView(
-                    vaultsListState,
-                    cardVaultsWithDefaultsValuesIfEmpty,
+                    vaults,
+                    pagerState,
                     sharedViewModel.selectedVault,
                     onAddFunds,
                     onExplore,
@@ -423,10 +414,11 @@ fun VaultsListView(
 
 /// DETAILED VIEW
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailedVaultView(
-    vaultsListState: LazyListState,
-    vaults: List<CardVault?>,
+    vaults: SnapshotStateList<CardVault?>,
+    pagerState: PagerState,
     selectedCard: Int,
     onAddFunds: () -> Unit, // todo: add Int parameter for vault index?
     onExplore: () -> Unit, // todo: add Int parameter for vault index?
@@ -436,7 +428,7 @@ fun DetailedVaultView(
     onReset: () -> Unit, // todo: add Int parameter for vault index?
 ) {
     // VAULT CARD
-    VaultCards(vaultsListState, vaults, selectedCard, onAddVault)
+    VaultCards(pagerState, vaults, selectedCard, onAddVault)
 
     // ACTIONS ROW
     Row(
@@ -651,15 +643,26 @@ fun DetailedVaultView(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VaultCards(
-    vaultsListState: LazyListState,
-    vaults: List<CardVault?>,
+    pagerState: PagerState,
+    vaults: SnapshotStateList<CardVault?>,
     selectedCard: Int,
     onAddVault: (Int) -> Unit
 ) {
-    LazyRow(state = vaultsListState) {
-        renderVaults(vaults, selectedCard, onAddVault)
+    HorizontalPager(
+        state = pagerState,
+        contentPadding = PaddingValues(10.dp),
+        pageSize = PageSize.Fixed(300.dp)
+    ) { page ->
+        val cardVault = vaults.getOrNull(page)
+        cardVault?.let {
+            VaultCard(page + 1, selectedCard == page + 1, cardVault)
+        } ?: run {
+            val isFirstEmptyVault = page == vaults.indexOfFirst { it == null }
+            EmptyVaultCard(page + 1, isFirstEmptyVault, onAddVault)
+        }
     }
 }
 
@@ -678,16 +681,6 @@ fun VaultsViewTabScreen(vault: CardVault?) {
             contentColor = MaterialTheme.colors.secondary,
         ) {
             tabs.forEachIndexed { index, title ->
-//                // add number of asssets
-//                val titleText  = if (vault != null){
-//                    if (index == 0) {
-//                        title + " (${vault.tokenList.size})"
-//                    } else {
-//                        title + " (${vault.nftList.size})"
-//                    }
-//                } else {
-//                    title
-//                }
                 Tab(
                     modifier = Modifier.background(MaterialTheme.colors.primary),
                     text = { Text(text = title, color = MaterialTheme.colors.secondary) },
@@ -944,24 +937,12 @@ fun LazyListScope.renderVaults(
             val isFirstEmptyVault = index == vaults.indexOfFirst { it == null }
             EmptyVaultCard(index + 1, isFirstEmptyVault, onAddVault)
         }
-
     }
 }
 
-fun findVaultToSelect(visibleItems: List<LazyListItemInfo>, screenWidth: Int): Int {
-    if (visibleItems.isEmpty()) return 1
-
-    return if ((visibleItems[0].index == 1 && visibleItems[0].offset < -(screenWidth / 2))
-        || visibleItems[0].index == 2
-    ) {
-        3
-    } else if ((visibleItems[0].index == 0 && visibleItems[0].offset < -(screenWidth / 2))
-        || visibleItems[0].index == 1
-    ) {
-        2
-    } else {
-        1
-    }
+@OptIn(ExperimentalFoundationApi::class)
+fun findVaultToSelect(selectedVault: PagerState): Int {
+    return selectedVault.currentPage + 1
 }
 
 @Preview(showBackground = true)
