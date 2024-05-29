@@ -46,7 +46,7 @@ fun sanitizeNftImageUrlString(link: String): String {
         // do nothing
         return nftImageUrlString
     }
-//    SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
+    SatoLog.d(TAG, "sanitizeNftImageUrlString: converted link: $link to: $nftImageUrlString")
     return nftImageUrlString
 }
 
@@ -73,7 +73,7 @@ fun formatBalance(balanceString: String?, decimalsString: String?, symbol: Strin
 fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int = 8): String{
     val symbolString = symbol?:""
 
-    if (balanceDouble == null){
+    if (balanceDouble == null || balanceDouble < 0){
         return "" // "? $symbolString"
     }
 

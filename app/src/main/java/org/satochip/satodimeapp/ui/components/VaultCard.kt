@@ -161,7 +161,7 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.body1,
             color = Color.LightGray,
-            text = stringResource(R.string.totalBalance)
+            text = vault.nativeAsset.name //stringResource(R.string.totalBalance)
         )
         Text(
             fontSize = 18.sp, //24.sp,
