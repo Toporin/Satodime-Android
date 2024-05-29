@@ -128,7 +128,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                 requestedPrivkeyType.value = RequestedPrivkeyType.WIF
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
-                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                if (sharedViewModel.resultCodeLive == NfcResultCode.RecoverPrivkeySuccess) {
                     SatoLog.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
                 }
             }
@@ -152,7 +152,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
                 requestedPrivkeyType.value = RequestedPrivkeyType.ENTROPY
                 showNfcDialog.value = true // NfcDialog
                 sharedViewModel.recoverSlotPrivkey(context as Activity, selectedVault - 1)
-                if (sharedViewModel.resultCodeLive == NfcResultCode.Ok) {
+                if (sharedViewModel.resultCodeLive == NfcResultCode.RecoverPrivkeySuccess) {
                     SatoLog.d(TAG, "ShowPrivateKeyView: successfully recovered privkey for slot ${selectedVault -1}")
                     // todo something?
                 }
@@ -194,7 +194,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
 //        SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${showNfcDialog.value}")
 //        SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect START ${requestedPrivkeyType.value}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.RecoverPrivkeySuccess
             || requestedPrivkeyType.value == RequestedPrivkeyType.NONE
             || showNfcDialog.value) {
             SatoLog.d(TAG, "ShowPrivateKeyView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

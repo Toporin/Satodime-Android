@@ -63,7 +63,7 @@ object NFCCardService {
     var actionIndex: Int = 0
     var actionEntropy: ByteArray = byteArrayOf() // for seal
     var actionSlip44: ByteArray = byteArrayOf() // for seal
-    var resultMsg: String = ""
+    var resultMsg: String = "" // todo: remove
     var resultCodeLive = MutableLiveData<NfcResultCode>(NfcResultCode.Busy) //NfcResultCode = NfcResultCode.Ok
 
     fun scanCardForAction(activity: Activity){
@@ -203,14 +203,14 @@ object NFCCardService {
             // Fetch Vaults info
             updateCardSlots()
 
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.ListVaultsSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card scan successful!"
             NFCCardService.isCardDataAvailable.postValue(true)
             SatoLog.d(TAG, "readCard: Card reading successful")
         } catch (e: Exception) {
             SatoLog.e(TAG, "readCard exception: $e")
             SatoLog.e(TAG, Log.getStackTraceString(e))
-            resultCodeLive.postValue(NfcResultCode.UnknownError)
+            resultCodeLive.postValue(NfcResultCode.FailedToListVaults)
             resultMsg = "readCard exception: ${e.localizedMessage}"
         }
     }
@@ -258,7 +258,7 @@ object NFCCardService {
                     SatoLog.d(TAG,"takeOwnership: Saved unlockSecret for card ${authentikeyHex}")
                     // update status
                     ownershipStatus.postValue(OwnershipStatus.Owner)
-                    resultCodeLive.postValue(NfcResultCode.Ok)
+                    resultCodeLive.postValue(NfcResultCode.TakeOwnershipSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
                     resultMsg = "Card ownership claimed successfully for $authentikeyHex!"
                     SatoLog.d(TAG,"takeOwnership: ownership claimed successfully for ${authentikeyHex}")
                     // add a delay to not leave the view immediately
@@ -344,7 +344,7 @@ object NFCCardService {
                 SatoLog.d(TAG, "releaseOwnership: removed unlockSecret for card $authentikeyHex")
             }
             ownershipStatus.postValue(OwnershipStatus.Unclaimed)
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.ReleaseOwnershipSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card ownership released successfully for $authentikeyHex!"
 
         } catch (e: Exception) {
@@ -425,7 +425,7 @@ object NFCCardService {
                 }
             }
 
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.SealVaultSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault sealed successfully for $authentikeyHex!"
             SatoLog.d(TAG, "seal: vault sealed successfully for $authentikeyHex!")
 
@@ -493,7 +493,7 @@ object NFCCardService {
             }
             cardSlots.postValue(updatedCardSlots)
 
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.UnsealVaultSuccess) // resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault unsealed successfully for $authentikeyHex!"
             SatoLog.d(TAG, "unseal: vault unsealed successfully for $authentikeyHex!")
 
@@ -562,7 +562,7 @@ object NFCCardService {
             }
             cardSlots.postValue(updatedCardSlots)
 
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.ResetVaultSuccess) // resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Vault reset successfully for $authentikeyHex!"
             SatoLog.d(TAG, "reset: vault reset successfully for $authentikeyHex!")
 
@@ -634,7 +634,7 @@ object NFCCardService {
                 updatedcardPrivkeys[slot] = newCardPrivkey
             }
             cardPrivkeys.postValue(updatedcardPrivkeys)
-            resultCodeLive.postValue(NfcResultCode.Ok)
+            resultCodeLive.postValue(NfcResultCode.RecoverPrivkeySuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Privkey recovered successfully for $authentikeyHex!"
             SatoLog.d(TAG, "getPrivkey: privkey recovered successfully for $authentikeyHex!")
 

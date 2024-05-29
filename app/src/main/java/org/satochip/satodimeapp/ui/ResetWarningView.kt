@@ -233,7 +233,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     // todo improve?
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, isReadyToNavigate) {
         SatoLog.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.ResetVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

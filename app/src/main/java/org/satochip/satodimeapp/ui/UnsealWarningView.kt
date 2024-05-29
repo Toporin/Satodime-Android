@@ -189,7 +189,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.UnsealVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

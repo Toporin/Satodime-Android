@@ -81,25 +81,15 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
                 )
             }
         } else {
-            if (resultCodeLive == NfcResultCode.Ok) {
-                VaultDrawerScreen(
-                    closeSheet = {
-                        openDialogCustom.value = !openDialogCustom.value
-                    },
-                    image = R.drawable.icon_check_gif,
-                    message = R.string.listedVaults
-                )
-            }  else {
-                VaultDrawerScreen(
-                    closeSheet = {
-                        openDialogCustom.value = !openDialogCustom.value
-                    },
-                    title = R.string.warning,
-                    image = R.drawable.error_24px,
-                    message = resultCodeLive.res, //R.string.unknownError,
-                    colorFilter = ColorFilter.tint(SatoWarningOrange)
-                )
-            }
+            VaultDrawerScreen(
+                closeSheet = {
+                    openDialogCustom.value = !openDialogCustom.value
+                },
+                title = resultCodeLive.resTitle,
+                image = resultCodeLive.resImage,
+                message = resultCodeLive.resMsg,
+                colorFilter = if (resultCodeLive.resTitle == R.string.nfcTitleWarning) ColorFilter.tint(SatoWarningOrange) else null
+            )
             LaunchedEffect(Unit) {
                 delay(1.seconds)
                 openDialogCustom.value = false
@@ -108,7 +98,7 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
     }
 }
 
-
+// TODO: remove!
 @Composable
 fun NfcDialogUI(modifier: Modifier = Modifier, openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResultCode, isConnected: Boolean) {
     Card(

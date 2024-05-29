@@ -190,7 +190,7 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
     // auto-navigate when action is performed successfully
     LaunchedEffect(viewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "LaunchedEffect START ${viewModel.resultCodeLive}")
-        while (viewModel.resultCodeLive != NfcResultCode.Ok
+        while (viewModel.resultCodeLive != NfcResultCode.ReleaseOwnershipSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "LaunchedEffect in while delay 1s ${viewModel.resultCodeLive}")

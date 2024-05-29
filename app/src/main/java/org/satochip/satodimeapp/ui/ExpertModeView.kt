@@ -212,7 +212,7 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.SealVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

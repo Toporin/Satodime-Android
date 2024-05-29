@@ -198,7 +198,7 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "CreateVaultView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.SealVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
