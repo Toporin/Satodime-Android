@@ -221,7 +221,7 @@ fun ExpertModeView(
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.SealVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value
         ) {
