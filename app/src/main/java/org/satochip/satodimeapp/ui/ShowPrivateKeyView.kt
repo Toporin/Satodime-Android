@@ -2,6 +2,7 @@ package org.satochip.satodimeapp.ui
 
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,9 +50,11 @@ import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.NavigationParam
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.webviewActivityIntent
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import kotlin.time.Duration.Companion.seconds
 
@@ -80,22 +84,21 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             .padding(10.dp)
             .verticalScroll(state = scrollState)
     ) {
-
-        // TITLE
-        Text(
-            modifier = Modifier
-                .padding(20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.showPrivateKey)
+        HeaderRow(
+            onClick = {
+                navController.navigate(SatodimeScreen.Vaults.name) {
+                    popUpTo(0)
+                }
+            },
+            titleText = R.string.showPrivateKey,
         )
         VaultCard(index = selectedVault, true, vault = vault)
 
         // LEGACY FORMAT
-        PrivateKeyItem(stringResource(R.string.showPrivateKeyLegacy)) {
+        PrivateKeyItem(
+            title = R.string.showPrivateKeyLegacy,
+            icon = R.drawable.arrow_right_circle
+        ) {
 
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
 
@@ -120,7 +123,10 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
 
         // WIF FORMAT
-        PrivateKeyItem(stringResource(R.string.showPrivateKeyWIF)) {
+        PrivateKeyItem(
+            title = R.string.showPrivateKeyWIF,
+            icon = R.drawable.arrow_right_circle
+        ) {
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
@@ -144,7 +150,10 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
 
         // ENTROPY
-        PrivateKeyItem(stringResource(R.string.showEntropy)) {
+        PrivateKeyItem(
+            title = R.string.showEntropy,
+            icon = R.drawable.arrow_right_circle
+        ) {
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
@@ -169,19 +178,16 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
         }
 
         // HELP LINK
-        PrivateKeyHelpItem()
+        PrivateKeyItem(
+            title = R.string.howDoiExportPrivateKey,
+            icon = R.drawable.outlined_info
+        ) {
+            webviewActivityIntent(
+                url = "https://satochip.io/satodime-how-to-export-private-key/",
+                context = context
+            )
+        }
         Spacer(Modifier.weight(1f))
-
-        // BACK TO VAULTS
-        BottomButton(
-            onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
-            },
-            width = 240.dp,
-            text = stringResource(R.string.backToMyVaults)
-        )
     }
 
     // NfcDialog
@@ -238,7 +244,11 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
 }
 
 @Composable
-fun PrivateKeyItem(title: String, onSelect: () -> Unit) {
+fun PrivateKeyItem(
+    title: Int,
+    icon: Int,
+    onClick: () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,71 +261,30 @@ fun PrivateKeyItem(title: String, onSelect: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .background(MaterialTheme.colors.primary)
-                .padding(10.dp)
-                .fillMaxWidth()
-                .height(40.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(5.dp),
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = title
-            )
-            Spacer(Modifier.weight(1f))
-            IconButton(
-                onClick = onSelect
-            ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    imageVector = Icons.Outlined.Add,
-                    tint = MaterialTheme.colors.secondary,
-                    contentDescription = null
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PrivateKeyHelpItem() {
-    val uriHandler = LocalUriHandler.current
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
-        shape = RoundedCornerShape(15.dp),
-        elevation = 5.dp
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .background(MaterialTheme.colors.primary)
-                .padding(10.dp)
-                .fillMaxWidth()
-                .height(40.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(5.dp),
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.howDoiExportPrivateKey)
-            )
-            Spacer(Modifier.weight(1f))
-            IconButton(
-                onClick = {
-                    uriHandler.openUri("https://satochip.io/satodime-how-to-export-private-key/")
+                .clickable {
+                    onClick()
                 }
-            ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    imageVector = Icons.Outlined.Info,
-                    tint = Color.LightGray,
-                    contentDescription = null
-                )
-            }
+                .padding(10.dp)
+                .fillMaxWidth()
+                .height(40.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(5.dp),
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = stringResource(id = title)
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(32.dp),
+//                painter = painterResource(id = R.drawable.arrow_right_circle),
+                painter = painterResource(id = icon),
+                tint = MaterialTheme.colors.secondary,
+                contentDescription = null
+            )
         }
     }
 }

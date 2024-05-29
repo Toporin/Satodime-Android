@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,8 +46,7 @@ import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
-import org.satochip.satodimeapp.ui.components.Title
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
@@ -59,30 +57,31 @@ import kotlin.time.Duration.Companion.seconds
 private const val TAG = "CreateVaultView"
 
 @Composable
-fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int, selectedCoinName: String) { // todo change order
+fun CreateVaultView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    selectedVault: Int,
+    selectedCoinName: String
+) { // todo change order
     val context = LocalContext.current
-    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
-    val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
-
+    val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
     val selectedCoin = Coin.valueOf(selectedCoinName)
     // todo display vault index in view!
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.primaryVariant)
-    ) {
-        TopLeftBackButton(navController)
-    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colors.primaryVariant)
             .padding(10.dp)
     ) {
-        Title(
-            stringResource(R.string.createYourVault),
-            stringResource(R.string.youAreAboutToCreateAndSeal)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.createYourVault,
+            message = R.string.youAreAboutToCreateAndSeal
         )
         CoinDisplay(coin = selectedCoin)
         Card(
@@ -163,7 +162,13 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
                 SatoLog.d(TAG, "CreateVaultView: selectedCoinName: $selectedCoinName")
                 showNfcDialog.value = true // NfcDialog
                 isReadyToNavigate.value = true
-                sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= false, entropyBytes= entropyBytes)
+                sharedViewModel.sealSlot(
+                    context as Activity,
+                    index = selectedVault - 1,
+                    coinSymbol = selectedCoinName,
+                    isTestnet = false,
+                    entropyBytes = entropyBytes
+                )
             },
             text = stringResource(R.string.createAndSeal)
         )
@@ -191,8 +196,12 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
     }
 
     // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    if (showNfcDialog.value) {
+        NfcDialog(
+            openDialogCustom = showNfcDialog,
+            resultCodeLive = sharedViewModel.resultCodeLive,
+            isConnected = sharedViewModel.isCardConnected
+        )
     }
 
     // auto-navigate when action is performed successfully
@@ -200,8 +209,12 @@ fun CreateVaultView(navController: NavController, sharedViewModel: SharedViewMod
         SatoLog.d(TAG, "CreateVaultView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
         while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
             || isReadyToNavigate.value == false
-            || showNfcDialog.value) {
-            SatoLog.d(TAG, "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            || showNfcDialog.value
+        ) {
+            SatoLog.d(
+                TAG,
+                "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}"
+            )
             delay(1.seconds)
         }
         // navigate
@@ -244,6 +257,11 @@ fun CoinDisplay(coin: Coin) {
 @Composable
 fun CreateVaultViewPreview() {
     SatodimeTheme {
-        CreateVaultView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),3, Coin.BTC.name)
+        CreateVaultView(
+            rememberNavController(),
+            viewModel(factory = SharedViewModel.Factory),
+            3,
+            Coin.BTC.name
+        )
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -42,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,7 +50,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.components.shared.SatoButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatoGreen
@@ -68,13 +66,13 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
     var showCurrenciesMenu by remember { mutableStateOf(false) }
     var starterIntro by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,true))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, true))
     }
     var debugMode by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name, false))
     }
     val savedCurrency by remember {
-        mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name,"USD"))
+        mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name, "USD"))
     }
     var selectedCurrency = savedCurrency //savedCurrency.value
 
@@ -85,17 +83,11 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
-        TopLeftBackButton(navController)
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 40.dp),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.settings)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.settings,
         )
     }
 
@@ -103,22 +95,15 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 75.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)// start just below TopLeftButton
+            .padding(
+                top = 75.dp,
+                bottom = 20.dp,
+                start = 20.dp,
+                end = 20.dp
+            )// start just below TopLeftButton
             //.padding(75.dp)//.padding(20.dp)
             .verticalScroll(state = scrollState)
     ) {
-
-//        // TITLE => in box above (better scrolling ui)
-//        Text(
-//            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
-//            textAlign = TextAlign.Center,
-//            fontSize = 30.sp,
-//            fontWeight = FontWeight.Medium,
-//            style = MaterialTheme.typography.body1,
-//            color = MaterialTheme.colors.secondary,
-//            text = stringResource(R.string.settings)
-//        )
-
         // IMAGE
         Image(
             painter = painterResource(id = R.drawable.tools),

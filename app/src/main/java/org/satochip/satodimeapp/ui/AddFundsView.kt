@@ -28,7 +28,7 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
         navController = navController,
         vault = cardVault,
         index = selectedVault,
-        title = stringResource(R.string.addFunds),
+        title = R.string.addFunds,
         label = stringResource(R.string.depositAddress),
         data = cardVault.nativeAsset.address
     )

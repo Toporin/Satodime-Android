@@ -51,6 +51,7 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.DarkBlue
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
@@ -79,96 +80,100 @@ fun AuthenticCardView(navController: NavController) {
         Color.Red
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(if (isSystemInDarkTheme()) DarkBlue else Color.LightGray)
+            .padding(horizontal = 10.dp, vertical = 18.dp)
     ) {
-        TopLeftBackButton(navController)
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 75.dp)
-            .verticalScroll(state = scrollState)
-    ) {
-        // LOGO
-        Image(
-            painter = painterResource(id = R.drawable.logo_settings),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(10.dp)
-                .width(250.dp)
-                .height(70.dp),
-            contentScale = ContentScale.FillHeight
-        )
-        Spacer(Modifier.height(50.dp))
-
-        // LOGO SUCCESS/FAILURE
-        Image(
-            painter = painterResource(id = R.drawable.ic_sato_small),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(10.dp)
-                .height(150.dp),
-            contentScale = ContentScale.FillHeight,
-            colorFilter = ColorFilter.tint(authenticityColor)
-        )
-        // SHORT STATUS
-        Text(
-            modifier = Modifier.padding(20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = shortStatusText
-        )
-        // DETAILED STATUS
-        Text(
-            modifier = Modifier.padding(20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = longStatusText
-        )
-
-        val showCardCertText =  stringResource(R.string.showDeviceCert)
-        val hideCardCertText =  stringResource(R.string.hideDeviceCert)
-        if (!showCardCert){
-            CardInfoCard(showCardCertText, 275, authenticityColor) {
-                showCardCert = showCardCert.not() // toggle display
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
             }
-        }
-        // SHOW CERTIFICATE DETAILS
-        if (showCardCert && (NFCCardService.certificateList.value?.size ?: 0) > 0){
-            CardInfoCard(hideCardCertText, 275, authenticityColor) {
-                showCardCert = showCardCert.not() // toggle display
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp)
+                .verticalScroll(state = scrollState)
+        ) {
+            // LOGO
+            Image(
+                painter = painterResource(id = R.drawable.logo_settings),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .width(250.dp)
+                    .height(70.dp),
+                contentScale = ContentScale.FillHeight
+            )
+            Spacer(Modifier.height(50.dp))
+
+            // LOGO SUCCESS/FAILURE
+            Image(
+                painter = painterResource(id = R.drawable.ic_sato_small),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(150.dp),
+                contentScale = ContentScale.FillHeight,
+                colorFilter = ColorFilter.tint(authenticityColor)
+            )
+            // SHORT STATUS
+            Text(
+                modifier = Modifier.padding(20.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = shortStatusText
+            )
+            // DETAILED STATUS
+            Text(
+                modifier = Modifier.padding(20.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = longStatusText
+            )
+
+            val showCardCertText =  stringResource(R.string.showDeviceCert)
+            val hideCardCertText =  stringResource(R.string.hideDeviceCert)
+            if (!showCardCert){
+                CardInfoCard(showCardCertText, 275, authenticityColor) {
+                    showCardCert = showCardCert.not() // toggle display
+                }
             }
-            Column(modifier = Modifier
-                .border(width = 4.dp, color = authenticityColor, shape = RoundedCornerShape(15.dp))
-                .padding(10.dp),
-            ){
-                // COPY TO CLIPBOARD
-                Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.secondary,
-                        text = stringResource(R.string.copyToClipboard)
-                    )
-                    val toastText = stringResource(R.string.copied_to_clipboard)
-                    Icon(
-                        modifier = Modifier
-                            .size(25.dp)
-                            .clickable {
-                                var txt = """
+            // SHOW CERTIFICATE DETAILS
+            if (showCardCert && (NFCCardService.certificateList.value?.size ?: 0) > 0){
+                CardInfoCard(hideCardCertText, 275, authenticityColor) {
+                    showCardCert = showCardCert.not() // toggle display
+                }
+                Column(modifier = Modifier
+                    .border(width = 4.dp, color = authenticityColor, shape = RoundedCornerShape(15.dp))
+                    .padding(10.dp),
+                ){
+                    // COPY TO CLIPBOARD
+                    Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                            textAlign = TextAlign.Center,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.secondary,
+                            text = stringResource(R.string.copyToClipboard)
+                        )
+                        val toastText = stringResource(R.string.copied_to_clipboard)
+                        Icon(
+                            modifier = Modifier
+                                .size(25.dp)
+                                .clickable {
+                                    var txt = """
                                     RootCA: \n 
                                     ${NFCCardService.certificateList.value?.get(1) ?: "(None)"} \n\n 
                                     SubCA: \n 
@@ -176,86 +181,88 @@ fun AuthenticCardView(navController: NavController) {
                                     card: \n 
                                     ${NFCCardService.certificateList.value?.get(3) ?: "(None)"}
                                     """
-                                clipboardManager.setText(AnnotatedString(txt))
-                                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
-                            },
-                        imageVector = Icons.Outlined.ContentCopy,
-                        tint = Color.LightGray,
-                        contentDescription = "Copy cert to clipboard"
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                // ROOT CA CERT
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
+                                    clipboardManager.setText(AnnotatedString(txt))
+                                    Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                                },
+                            imageVector = Icons.Outlined.ContentCopy,
+                            tint = Color.LightGray,
+                            contentDescription = "Copy cert to clipboard"
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                    // ROOT CA CERT
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = stringResource(R.string.rootCaInfo),
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.rootCaInfo),
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.secondary,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.body1,
+                        text = NFCCardService.certificateList.value?.get(1) ?: "" //todo
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    color = MaterialTheme.colors.secondaryVariant,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.body1,
-                    text = NFCCardService.certificateList.value?.get(1) ?: "" //todo
-                )
-                // SUBCA CERT
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
+                    // SUBCA CERT
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = stringResource(R.string.subcaInfo),
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.subcaInfo),
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.secondary,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.body1,
+                        text = NFCCardService.certificateList.value?.get(2) ?: "" // todo
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    color = MaterialTheme.colors.secondaryVariant,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.body1,
-                    text = NFCCardService.certificateList.value?.get(2) ?: "" // todo
-                )
-                // CARD CERT
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
+                    // CARD CERT
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = stringResource(R.string.deviceInfo),
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                     Text(
                         modifier = Modifier.padding(10.dp),
-                        text = stringResource(R.string.deviceInfo),
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.secondary,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.body1,
+                        text = NFCCardService.certificateList.value?.get(3) ?: "" // todo
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    color = MaterialTheme.colors.secondaryVariant,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.body1,
-                    text = NFCCardService.certificateList.value?.get(3) ?: "" // todo
-                )
 
+                }
             }
-        }
 
+        }
     }
+
 }
 
 @Preview(showBackground = true)

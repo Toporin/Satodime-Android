@@ -1,9 +1,7 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,7 +25,7 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.services.NFCCardService
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
@@ -39,29 +36,20 @@ import org.satochip.satodimeapp.viewmodels.SharedViewModel
 fun CardInfoView(navController: NavController, sharedViewModel: SharedViewModel) {
     val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ) {
-        TopLeftBackButton(navController)
-    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colors.background)
             .padding(10.dp)
     ) {
-        //TITLE
-        Text(
-            modifier = Modifier.padding(top = 22.dp, bottom = 10.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp, // todo uniform
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.cardInfo)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.cardInfo
         )
+        //TITLE
         Spacer(Modifier.weight(1f))
 
         // CARD OWNERSHIP STATUS

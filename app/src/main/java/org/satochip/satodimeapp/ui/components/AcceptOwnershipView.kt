@@ -31,7 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +42,7 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.services.SatoLog
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
@@ -58,27 +58,20 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
     val scrollState = rememberScrollState()
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember{ mutableStateOf(false) }// to show result
+    val toastMsg = stringResource(R.string.actionCancelled) // Text for Cancel toast message
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
-        TopLeftBackButton(navController) {
-            viewModel.dismissCardOwnership()
-        }
-        // TITLE
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 40.dp),
-                //.padding(top = 30.dp, bottom = 20.dp),
-            //textAlign = TextAlign.Center,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.takeTheOwnershipTitle)
+        HeaderRow(
+            onClick = {
+                viewModel.dismissCardOwnership()
+                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
+                navController.navigateUp()
+            },
+            titleText = R.string.takeTheOwnershipTitle
         )
         // BACKGROUND IMAGE
         Image(
@@ -140,8 +133,6 @@ fun AcceptOwnershipView(navController: NavController, viewModel: SharedViewModel
         ) {
             Text(stringResource(R.string.accept))
         }
-        // CANCEL BUTTON
-        val toastMsg = stringResource(R.string.actionCancelled)
         Button(
             onClick = {
                 viewModel.dismissCardOwnership()

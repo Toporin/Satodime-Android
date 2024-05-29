@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.SlotState
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 
 private val topBoxHeight = 225.dp
 
@@ -41,7 +42,7 @@ fun DisplayDataView(
     navController: NavController,
     vault: CardVault,
     index: Int,
-    title: String,
+    title: Int,
     label: String,
     subLabel: String = "",
     data: String
@@ -57,18 +58,11 @@ fun DisplayDataView(
                 contentScale = ContentScale.FillBounds
             )
     ) {
-        TopLeftBackButton(navController)
-        Text(
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .width(150.dp)
-                .align(Alignment.TopCenter),
-            color = Color.LightGray,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Center,
-            text = title
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = title
         )
         Column(modifier = Modifier.padding(start = 40.dp, top = 100.dp)) {
             Text(

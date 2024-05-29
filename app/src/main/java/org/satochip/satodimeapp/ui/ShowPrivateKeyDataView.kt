@@ -44,7 +44,7 @@ fun ShowPrivateKeyDataView(
         navController = navController,
         vault = vault,
         index = selectedVault,
-        title = stringResource(R.string.showPrivateKey),
+        title = R.string.showPrivateKey,
         label = labelString,
         subLabel = subLabelString,
         data = data

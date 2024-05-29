@@ -145,6 +145,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             .padding(top = 20.dp, bottom = 5.dp, start = 20.dp, end = 5.dp)
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // LOGO
         if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
@@ -225,16 +226,18 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             modifier = Modifier
             //.padding(top = 20.dp, end = 5.dp)
         ) {
-            // SWITCH VIEW
-            CustomSwitch(checked = showVaultsOnly) {
-                showVaultsOnly = it
-            }
-            // RESCAN BUTTON
-            IconButton(onClick = {
-                showNfcDialog.value = true // NfcDialog
-                sharedViewModel.scanCard(activity)
-            }) {
-                Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
+            if (sharedViewModel.isCardDataAvailable) {
+                // SWITCH VIEW
+                CustomSwitch(checked = showVaultsOnly) {
+                    showVaultsOnly = it
+                }
+                // RESCAN BUTTON
+                IconButton(onClick = {
+                    showNfcDialog.value = true // NfcDialog
+                    sharedViewModel.scanCard(activity)
+                }) {
+                    Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
+                }
             }
             // MENU BUTTON
             IconButton(onClick = { navController.navigate(SatodimeScreen.MenuView.name) }) {

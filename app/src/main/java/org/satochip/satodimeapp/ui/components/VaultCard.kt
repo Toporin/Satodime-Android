@@ -201,6 +201,9 @@ fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> 
     ) {
         Box(
             modifier = Modifier
+                .clickable {
+                    onAddVault(index)
+                }
                 .background(MaterialTheme.colors.primaryVariant)
                 .padding(20.dp)
         ) {
