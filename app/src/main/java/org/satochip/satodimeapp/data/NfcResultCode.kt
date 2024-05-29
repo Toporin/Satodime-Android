@@ -1,22 +1,24 @@
 package org.satochip.satodimeapp.data
 
-enum class  NfcResultCode {
-    Ok,
+import org.satochip.satodimeapp.R
 
-    RequireSetup,
-    CardMismatch,
-    OwnershipAlreadyClaimed,
-    NotOwner,
-    UnknownError,
+enum class  NfcResultCode(val res : Int) {
+    Ok(R.string.nfcResultCodeOk),
 
-    FailedToTakeOwnership,
-    FailedToReleaseOwnership,
-    FailedToSealVault,
-    FailedToUnsealVault,
-    FailedToResetVault,
-    FailedToRecoverPrivkey,
+    RequireSetup(R.string.nfcResultCodeRequireSetup),
+    CardMismatch(R.string.nfcResultCodeCardMismatch),
+    OwnershipAlreadyClaimed(R.string.nfcResultCodeOwnershipAlreadyClaimed),
+    NotOwner(R.string.nfcResultCodeNotOwner),
+    UnknownError(R.string.nfcResultCodeUnknownError),
 
-    None,
-    Busy,
-    NfcError,
+    FailedToTakeOwnership(R.string.nfcResultCodeFailedToTakeOwnership),
+    FailedToReleaseOwnership(R.string.nfcResultCodeFailedToReleaseOwnership),
+    FailedToSealVault(R.string.nfcResultCodeFailedToSealVault),
+    FailedToUnsealVault(R.string.nfcResultCodeFailedToUnsealVault),
+    FailedToResetVault(R.string.nfcResultCodeFailedToResetVault),
+    FailedToRecoverPrivkey(R.string.nfcResultCodeFailedToRecoverPrivkey),
+
+    None(R.string.nfcResultCodeNone),
+    Busy(R.string.nfcResultCodeBusy),
+    NfcError(R.string.nfcResultCodeNfcError),
 }

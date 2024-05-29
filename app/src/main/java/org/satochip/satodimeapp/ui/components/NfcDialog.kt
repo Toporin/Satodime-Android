@@ -66,6 +66,7 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
                     },
                     title = R.string.scanning,
                     image = R.drawable.contactless_24px,
+                    //message = NfcResultCode.Busy.res, // show?
                     colorFilter = ColorFilter.tint(LightBlue)
                 )
             } else {
@@ -95,7 +96,7 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
                     },
                     title = R.string.warning,
                     image = R.drawable.error_24px,
-                    message = R.string.unknownError,
+                    message = resultCodeLive.res, //R.string.unknownError,
                     colorFilter = ColorFilter.tint(SatoWarningOrange)
                 )
             }
