@@ -82,6 +82,7 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
         "BTC" -> DecimalFormat("###.########")
         "ETH" -> DecimalFormat("###.######")
         "MATIC" -> DecimalFormat("###.######")
+        "BCH" -> DecimalFormat("###.########")
         else -> {DecimalFormat("###.##")}
     }
 
