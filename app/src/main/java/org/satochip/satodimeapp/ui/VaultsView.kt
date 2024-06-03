@@ -765,7 +765,10 @@ fun VaultsViewTokenRow(asset: Asset) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(10.dp)
-                    .size(60.dp),
+                    .size(60.dp)
+                    .clip(
+                        RoundedCornerShape(50)
+                    ),
             )
 
             Column(modifier = Modifier.padding(10.dp)) {
