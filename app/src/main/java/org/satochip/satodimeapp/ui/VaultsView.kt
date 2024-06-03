@@ -673,9 +673,9 @@ fun VaultCards(
 fun VaultsViewTabScreen(vault: CardVault?) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Token", "NFT")
-    val isNftClickable = vault?.coin?.let { coin ->
-        coin.name in listOf("BCH", "LTC", "BTC")
-    } ?: false
+    val isAvailable: Boolean = vault?.baseCoin?.nft_supported ?: run {
+        true
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(
@@ -692,12 +692,12 @@ fun VaultsViewTabScreen(vault: CardVault?) {
                     text = {
                         Text(
                             text = title,
-                            color = if (index != 1 || !isNftClickable) MaterialTheme.colors.secondary else Color.Gray
+                            color = if (index != 1 || isAvailable) MaterialTheme.colors.secondary else Color.Gray
                         )
                     },
                     selected = tabIndex == index,
                     onClick = {
-                        if (index != 1 || !isNftClickable) {
+                        if (index != 1 || isAvailable) {
                             tabIndex = index;
                         }
                     },
