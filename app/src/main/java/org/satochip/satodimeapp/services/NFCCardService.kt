@@ -143,6 +143,21 @@ object NFCCardService {
             SatoLog.d(TAG, "readCard CardVersionString: $versionString")
             cardAppletVersion = versionString
 
+            // check version: v0.1-0.1 cannot proceed further without setup first
+            if (versionInt <= 0x00010001 && !cardStatus.isSetupDone) {
+                SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
+                ownershipStatus.postValue(OwnershipStatus.Unclaimed)
+                waitForSetup.postValue(true) // show accept ownership immediatly
+                resultCodeLive.postValue(NfcResultCode.RequireSetup)
+                resultMsg = "Satodime v0.1-0.1 requires user to claim ownership to continue!"
+                SatoLog.w(
+                    TAG,
+                    "readCard Satodime v0.1-0.1 requires user to claim ownership to continue!"
+                )
+                // return early
+                return
+            }
+
             // authenticity
             var authResults = cmdSet.cardVerifyAuthenticity()
             if (authResults != null) {
@@ -181,28 +196,12 @@ object NFCCardService {
 
             resultCodeLive.postValue(NfcResultCode.ListVaultsSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card scan successful!"
-
             // check if setupDone
-            if (!cardStatus.isSetupDone) {
+            if (versionInt > 0x00010001 && !cardStatus.isSetupDone) {
                 SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
                 ownershipStatus.postValue(OwnershipStatus.Unclaimed)
-
-                // check version: v0.1-0.1 cannot proceed further without setup first
-                if (versionInt <= 0x00010001) {
-                    waitForSetup.postValue(true) // show accept ownership immediatly
-                    resultCodeLive.postValue(NfcResultCode.RequireSetup)
-                    resultMsg = "Satodime v0.1-0.1 requires user to claim ownership to continue!"
-                    SatoLog.w(
-                        TAG,
-                        "readCard Satodime v0.1-0.1 requires user to claim ownership to continue!"
-                    )
-                    // return early
-                    return
-                } else {
-                    waitForSetup.postValue(true)
-                }
+                waitForSetup.postValue(true)
             }
-
             NFCCardService.isCardDataAvailable.postValue(true)
             SatoLog.d(TAG, "readCard: Card reading successful")
         } catch (e: Exception) {
