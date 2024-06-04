@@ -64,10 +64,9 @@ fun NfcDialog(openDialogCustom: MutableState<Boolean>, resultCodeLive: NfcResult
                     closeSheet = {
                         openDialogCustom.value = !openDialogCustom.value
                     },
-                    title = R.string.scanning,
-                    image = R.drawable.contactless_24px,
+                    message = R.string.scanning,
+                    image = R.drawable.nfc_scanner,
                     //message = NfcResultCode.Busy.res, // show?
-                    colorFilter = ColorFilter.tint(LightBlue)
                 )
             } else {
                 VaultDrawerScreen(

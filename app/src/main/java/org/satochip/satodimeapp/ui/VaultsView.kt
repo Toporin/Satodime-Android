@@ -125,7 +125,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults.size
     val pagerState = rememberPagerState(pageCount = {
-        3
+        vaults.size
     })
     sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
@@ -673,6 +673,9 @@ fun VaultCards(
 fun VaultsViewTabScreen(vault: CardVault?) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Token", "NFT")
+    val isAvailable: Boolean = vault?.baseCoin?.nft_supported ?: run {
+        true
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(
@@ -686,9 +689,18 @@ fun VaultsViewTabScreen(vault: CardVault?) {
             tabs.forEachIndexed { index, title ->
                 Tab(
                     modifier = Modifier.background(MaterialTheme.colors.primary),
-                    text = { Text(text = title, color = MaterialTheme.colors.secondary) },
+                    text = {
+                        Text(
+                            text = title,
+                            color = if (index != 1 || isAvailable) MaterialTheme.colors.secondary else Color.Gray
+                        )
+                    },
                     selected = tabIndex == index,
-                    onClick = { tabIndex = index },
+                    onClick = {
+                        if (index != 1 || isAvailable) {
+                            tabIndex = index;
+                        }
+                    },
                 )
             }
         }
@@ -765,7 +777,10 @@ fun VaultsViewTokenRow(asset: Asset) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(10.dp)
-                    .size(60.dp),
+                    .size(60.dp)
+                    .clip(
+                        RoundedCornerShape(50)
+                    ),
             )
 
             Column(modifier = Modifier.padding(10.dp)) {

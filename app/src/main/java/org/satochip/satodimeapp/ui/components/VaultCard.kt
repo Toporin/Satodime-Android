@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -127,7 +128,10 @@ fun VaultCard(
                 contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
-                    .offset(y = 110.dp),
+                    .offset(y = 110.dp)
+                    .clip(
+                        RoundedCornerShape(50)
+                    ),
                 contentScale = ContentScale.Crop
             )
             Text(
