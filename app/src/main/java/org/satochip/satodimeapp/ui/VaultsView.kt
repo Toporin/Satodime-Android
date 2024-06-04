@@ -125,7 +125,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults.size
     val pagerState = rememberPagerState(pageCount = {
-        3
+        vaults.size
     })
     sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
