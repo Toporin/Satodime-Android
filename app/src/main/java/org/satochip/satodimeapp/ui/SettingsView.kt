@@ -74,6 +74,9 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
     val savedCurrency by remember {
         mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name, "USD"))
     }
+    var bitcoinOnly by remember {
+        mutableStateOf(settings.getBoolean(SatodimePreferences.BITCOIN_ONLY.name, false))
+    }
     var selectedCurrency = savedCurrency //savedCurrency.value
 
     // todo show list of ownership card
@@ -110,7 +113,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 40.dp, bottom = 20.dp)
+                .padding(bottom = 20.dp)
                 .height(200.dp),
             contentScale = ContentScale.FillHeight
         )
@@ -199,6 +202,41 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
         }
         Spacer(modifier = Modifier.weight(1f))
 
+        // BITCOIN ONLY
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(75.dp)
+                .padding(10.dp),
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Row(Modifier.background(MaterialTheme.colors.primary)) {
+                Text(
+                    modifier = Modifier
+                        .padding(15.dp),
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colors.secondary,
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.body1,
+                    text = stringResource(id = R.string.bitcoinOnly)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    modifier = Modifier.padding(10.dp),
+                    checked = bitcoinOnly,
+                    onCheckedChange = { bitcoinOnly = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color.White,
+                        uncheckedThumbColor = Color.LightGray,// todo more visible
+                        uncheckedTrackColor = Color.Gray,
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
+
         // DEBUG MODE
         Card(
             modifier = Modifier
@@ -215,7 +253,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                     color = MaterialTheme.colors.secondary,
                     fontSize = 18.sp,
                     style = MaterialTheme.typography.body1,
-                    text = "Debug mode"// todo i18n
+                    text = stringResource(id = R.string.debugMode)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
@@ -257,6 +295,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
             buttonColor = SatoGreen
         )
         Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // APPLY BUTTON
         Button(
@@ -265,7 +304,11 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                     .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro)
                     .apply()
                 settings.edit()
-                    .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode).apply()
+                    .putBoolean(SatodimePreferences.BITCOIN_ONLY.name, bitcoinOnly)
+                    .apply()
+                settings.edit()
+                    .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode)
+                    .apply()
                 settings.edit()
                     .putString(
                         SatodimePreferences.SELECTED_CURRENCY.name,

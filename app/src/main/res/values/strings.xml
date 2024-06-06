@@ -185,4 +185,6 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="networkConnected">Connected</string>
     <string name="networkConnectedMessage">You are back online.</string>
     <string name="clickAndScan">Click \n&amp; \nScan</string>
+    <string name="bitcoinOnly">Bitcoin only</string>
+    <string name="debugMode">Debug mode</string>
 </resources>
