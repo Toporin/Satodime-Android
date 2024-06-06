@@ -4,4 +4,5 @@ enum class SatodimePreferences {
     FIRST_TIME_LAUNCH,
     SELECTED_CURRENCY,
     VERBOSE_MODE,
+    BITCOIN_ONLY
 }

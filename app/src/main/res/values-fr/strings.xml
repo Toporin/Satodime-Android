@@ -160,4 +160,6 @@
     <string name="networkConnected">Connecté</string>
     <string name="networkConnectedMessage">Vous êtes de nouveau en ligne.</string>
     <string name="clickAndScan">Cliquez \n&amp; \nScannez</string>
+    <string name="bitcoinOnly">Bitcoin uniquement</string>
+    <string name="debugMode">Mode débogage</string>
 </resources>

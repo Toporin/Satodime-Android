@@ -103,7 +103,11 @@ private const val TAG = "VaultsView"
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
+fun VaultsView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    onClick: (Int) -> Unit
+) {
     val activity = LocalContext.current as Activity
     val uriHandler = LocalUriHandler.current
     var showVaultsOnly by remember { mutableStateOf(false) }
@@ -267,10 +271,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             }
         }
         val onAddVault = { index: Int ->
-            navController.navigate(
-                SatodimeScreen.SelectBlockchain.name
-                        + "/${index}"
-            )
+            onClick(index)
         }
         val onShowKey = {
             navController.navigate(
@@ -969,7 +970,8 @@ fun VaultsViewPreview() {
     SatodimeTheme {
         VaultsView(
             rememberNavController(),
-            viewModel(factory = SharedViewModel.Factory)
+            viewModel(factory = SharedViewModel.Factory),
+            onClick = {}
         )
     }
 }
