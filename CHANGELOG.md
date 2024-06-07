@@ -8,13 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0]:
 
 * Feature: submit button on settings page
-* Feature: new nfc look, network failure toast implemented
+* Feature: new nfc toast look, network failure toast implemented
 * feature: added crashlytics and playstore in app review
 * feature: added webview activity for url handling
 * feature: redesigned vault screen buttons
 * update: added customized spinner for the application
-* feature: added support for polygon using jlib javacryptotools v0.3.0
+* feature: added support for polygon using jlib javacryptotools v0.3.0 (commit 468bfe510c2e8e4b70d80aa6b52dbaa6be9c52d2)
 * Patch: updated satochip-android lib to v0.0.2: fix crash issue when removing card too early on android 12+ devices
+* feature: added option to only use bitcoin blockchain
+* feature: nft tab in vaults view is now only clickable for select coins
 
 ## [0.2.2]:
 UI: onboarding screens quick fix for small display screen
