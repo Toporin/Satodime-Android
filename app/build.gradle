@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -12,8 +14,8 @@ android {
         applicationId "org.satochip.satodimeapp"
         minSdk 24
         targetSdk 34
-        versionCode 202
-        versionName "0.2.2"
+        versionCode 300
+        versionName "0.3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,6 +28,7 @@ android {
         buildConfigField "String", "API_KEY_ETHPLORER", "\"${properties.getProperty("API_KEY_ETHPLORER")}\""
         buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
         buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
+        buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
     }
 
     buildTypes {
@@ -82,15 +85,24 @@ dependencies {
 
     //satochip libraries
     implementation files('libs/satochip-lib-0.0.4.jar')
-    implementation files('libs/satochip-android-0.0.1.jar')
+    implementation files('libs/satochip-android-0.0.2.jar')
     //implementation files('libs/javacryptotools-0.1.0.jar')
-    implementation files('libs/javacryptotools-0.2.0.jar')
+    //implementation files('libs/javacryptotools-0.2.0.jar')
+    implementation files('libs/javacryptotools-0.3.0.jar')
 
     //satochip-android & satochip-lib related dependencies
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
     //javacryptotools related dependencies
     implementation("com.google.guava:guava:32.1.2-jre")
+
+    //App review
+    implementation ('com.google.android.play:review-ktx:2.0.1')
+    implementation ('com.google.android.play:review:2.0.1')
+
+    //App firebase crashlytics
+    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+    implementation("com.google.firebase:firebase-crashlytics")
 
     //Test and debug dependencies
     testImplementation 'junit:junit:4.13.2'
@@ -99,4 +111,11 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+
+    //Material 3 compose
+    implementation 'androidx.compose.material3:material3:1.2.1'
+
+    //Compose coil image
+    implementation "io.coil-kt:coil-gif:2.0.0-rc02"
+    implementation 'io.coil-kt:coil-compose:2.0.0-rc02'
 }

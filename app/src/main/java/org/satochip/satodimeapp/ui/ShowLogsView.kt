@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.services.SatoLog
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.util.SatodimePreferences
 import java.util.logging.Level
@@ -63,94 +63,87 @@ fun ShowLogsView(
         mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false))
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
-        TopLeftBackButton(navController)
-    }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-    ) {
-        // TITLE
-        Text(
-            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.LogsTitle)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.LogsTitle,
         )
-        // VERBOSE MODE
-        Row {
-            Text(
-                modifier = Modifier.padding(top = 10.dp, bottom = 20.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = "LogLevel: ${
-                    if (verboseMode) {
-                        "verbose "
-                    } else {
-                        "warning only "
-                    }
-                }"
-            )
-            val toastText = stringResource(R.string.copied_to_clipboard)
-            Icon(
-                modifier = Modifier
-                    .size(25.dp)
-                    .clickable {
-                        var txt = ""
-                        for (log in SatoLog.logList) {
-                            val logString =
-                                "${log.date}; ${log.level.name}; ${log.tag}; ${log.msg} \n"
-                            txt = txt + logString
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            // VERBOSE MODE
+            Row {
+                Text(
+                    modifier = Modifier.padding(top = 10.dp, bottom = 20.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = "LogLevel: ${
+                        if (verboseMode) {
+                            "verbose "
+                        } else {
+                            "warning only "
                         }
-                        clipboardManager.setText(AnnotatedString(txt))
-                        Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
-                    },
-                imageVector = Icons.Outlined.ContentCopy,
-                tint = Color.LightGray,
-                contentDescription = "Copy logs to clipboard"
-            )
-        }
-
-        LazyColumn {
-            items(SatoLog.logList) { log ->
-
-                // DATE
-                Text(
-                    modifier = Modifier.padding(top = 10.dp, bottom = 5.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondary,
-                    text = "${log.date.toString()}"
+                    }"
                 )
-
-                // LEVEl
-                Text(
-                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondary,
-                    //text = "\uD83D\uDD34 ${log.level.name} - ${log.tag}"
-                    text = "${getEmojiFromLevel(log.level)} ${log.level.name} - ${log.tag}"
+                val toastText = stringResource(R.string.copied_to_clipboard)
+                Icon(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clickable {
+                            var txt = ""
+                            for (log in SatoLog.logList) {
+                                val logString =
+                                    "${log.date}; ${log.level.name}; ${log.tag}; ${log.msg} \n"
+                                txt = txt + logString
+                            }
+                            clipboardManager.setText(AnnotatedString(txt))
+                            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                        },
+                    imageVector = Icons.Outlined.ContentCopy,
+                    tint = Color.LightGray,
+                    contentDescription = "Copy logs to clipboard"
                 )
+            }
 
-                // TAG
+            LazyColumn {
+                items(SatoLog.logList) { log ->
+
+                    // DATE
+                    Text(
+                        modifier = Modifier.padding(top = 10.dp, bottom = 5.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.secondary,
+                        text = "${log.date.toString()}"
+                    )
+
+                    // LEVEl
+                    Text(
+                        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.secondary,
+                        //text = "\uD83D\uDD34 ${log.level.name} - ${log.tag}"
+                        text = "${getEmojiFromLevel(log.level)} ${log.level.name} - ${log.tag}"
+                    )
+
+                    // TAG
 //                Text(
 //                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
 //                    textAlign = TextAlign.Start,
@@ -161,37 +154,38 @@ fun ShowLogsView(
 //                    text = log.tag
 //                )
 
-                // MSG
-                Text(
-                    modifier = Modifier.padding(top = 5.dp, bottom = 10.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondary,
-                    text = log.msg
-                )
+                    // MSG
+                    Text(
+                        modifier = Modifier.padding(top = 5.dp, bottom = 10.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.secondary,
+                        text = log.msg
+                    )
 
-                Divider(color = Color.LightGray)
+                    Divider(color = Color.LightGray)
+                }
             }
-        }
 
-        // CLOSE BUTTON
-        Button(
-            onClick = {
-                navController.navigateUp()
-            },
-            modifier = Modifier
-                .padding(10.dp)
-                .height(40.dp)
-                .width(150.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = LightBlue, //LightGreen,
-                contentColor = Color.White
-            )
-        ) {
-            Text(stringResource(R.string.close))
+            // CLOSE BUTTON
+            Button(
+                onClick = {
+                    navController.navigateUp()
+                },
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(40.dp)
+                    .width(150.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = LightBlue, //LightGreen,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(stringResource(R.string.close))
+            }
         }
     }
 }

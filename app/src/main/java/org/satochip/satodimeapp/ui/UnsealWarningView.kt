@@ -43,6 +43,7 @@ import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
@@ -57,28 +58,23 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
-    val vaults = sharedViewModel.cardVaults.value
+    val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
     if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
 
     RedGradientBackground()
-    TopLeftBackButton(navController)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .padding(20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.warning)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.warning
         )
         Text(
             modifier = Modifier
@@ -189,7 +185,7 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.UnsealVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

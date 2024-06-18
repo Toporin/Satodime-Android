@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -42,35 +41,41 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
+import org.satochip.satodimeapp.ui.components.shared.SatoButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
+import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
-fun SettingsView(navController: NavController) {
+fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current as Activity
     val settings = context.getSharedPreferences("satodime", Context.MODE_PRIVATE)
     var showCurrenciesMenu by remember { mutableStateOf(false) }
     var starterIntro by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name,true))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, true))
     }
     var debugMode by remember {
-        mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false))
+        mutableStateOf(settings.getBoolean(SatodimePreferences.VERBOSE_MODE.name, false))
     }
     val savedCurrency by remember {
-        mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name,"USD"))
+        mutableStateOf(settings.getString(SatodimePreferences.SELECTED_CURRENCY.name, "USD"))
+    }
+    var bitcoinOnly by remember {
+        mutableStateOf(settings.getBoolean(SatodimePreferences.BITCOIN_ONLY.name, false))
     }
     var selectedCurrency = savedCurrency //savedCurrency.value
 
@@ -81,17 +86,11 @@ fun SettingsView(navController: NavController) {
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
-        TopLeftBackButton(navController)
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 40.dp),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.settings)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.settings,
         )
     }
 
@@ -99,29 +98,22 @@ fun SettingsView(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 75.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)// start just below TopLeftButton
+            .padding(
+                top = 75.dp,
+                bottom = 20.dp,
+                start = 20.dp,
+                end = 20.dp
+            )// start just below TopLeftButton
             //.padding(75.dp)//.padding(20.dp)
             .verticalScroll(state = scrollState)
     ) {
-
-//        // TITLE => in box above (better scrolling ui)
-//        Text(
-//            modifier = Modifier.padding(top = 30.dp, bottom = 20.dp),
-//            textAlign = TextAlign.Center,
-//            fontSize = 30.sp,
-//            fontWeight = FontWeight.Medium,
-//            style = MaterialTheme.typography.body1,
-//            color = MaterialTheme.colors.secondary,
-//            text = stringResource(R.string.settings)
-//        )
-
         // IMAGE
         Image(
             painter = painterResource(id = R.drawable.tools),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 40.dp, bottom = 20.dp)
+                .padding(bottom = 20.dp)
                 .height(200.dp),
             contentScale = ContentScale.FillHeight
         )
@@ -210,6 +202,41 @@ fun SettingsView(navController: NavController) {
         }
         Spacer(modifier = Modifier.weight(1f))
 
+        // BITCOIN ONLY
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(75.dp)
+                .padding(10.dp),
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Row(Modifier.background(MaterialTheme.colors.primary)) {
+                Text(
+                    modifier = Modifier
+                        .padding(15.dp),
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colors.secondary,
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.body1,
+                    text = stringResource(id = R.string.bitcoinOnly)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    modifier = Modifier.padding(10.dp),
+                    checked = bitcoinOnly,
+                    onCheckedChange = { bitcoinOnly = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color.White,
+                        uncheckedThumbColor = Color.LightGray,// todo more visible
+                        uncheckedTrackColor = Color.Gray,
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
+
         // DEBUG MODE
         Card(
             modifier = Modifier
@@ -226,7 +253,7 @@ fun SettingsView(navController: NavController) {
                     color = MaterialTheme.colors.secondary,
                     fontSize = 18.sp,
                     style = MaterialTheme.typography.body1,
-                    text = "Debug mode"// todo i18n
+                    text = stringResource(id = R.string.debugMode)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
@@ -245,24 +272,31 @@ fun SettingsView(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         // SHOW LOGS BUTTON
-        Button(
+        SatoButton(
             onClick = {
                 navController.navigate(
                     SatodimeScreen.ShowLogsView.name
                 )
             },
-            modifier = Modifier
-                .padding(10.dp)
-                .height(40.dp),
-            //.width(125.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.primary,
-            )
-        ) {
-            Text(stringResource(R.string.showLogs), color = MaterialTheme.colors.secondary)
-        }
+            text = R.string.showLogs,
+        )
         Spacer(modifier = Modifier.weight(1f))
+
+        // SEND FEEDBACK
+        SatoButton(
+            onClick = {
+                viewModel.sendMail(
+                    activity = context,
+                    subject = "Satodime-Android - Feedback",
+                    senderEmail = "support@satochip.io"
+                )
+            },
+            text = R.string.sendFeedback,
+            buttonColor = SatoGreen
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
+
         // APPLY BUTTON
         Button(
             onClick = {
@@ -270,7 +304,11 @@ fun SettingsView(navController: NavController) {
                     .putBoolean(SatodimePreferences.FIRST_TIME_LAUNCH.name, starterIntro)
                     .apply()
                 settings.edit()
-                    .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode).apply()
+                    .putBoolean(SatodimePreferences.BITCOIN_ONLY.name, bitcoinOnly)
+                    .apply()
+                settings.edit()
+                    .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode)
+                    .apply()
                 settings.edit()
                     .putString(
                         SatodimePreferences.SELECTED_CURRENCY.name,
@@ -300,6 +338,9 @@ fun SettingsView(navController: NavController) {
 @Composable
 fun SettingsViewPreview() {
     SatodimeTheme {
-        SettingsView(rememberNavController())
+        SettingsView(
+            rememberNavController(),
+            viewModel(factory = SharedViewModel.Factory)
+        )
     }
 }

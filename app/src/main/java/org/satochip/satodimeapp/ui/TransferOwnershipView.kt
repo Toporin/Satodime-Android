@@ -31,7 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,7 @@ import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.InfoDialog
 import org.satochip.satodimeapp.ui.components.NfcDialog
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.LightGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
@@ -60,27 +59,19 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val showNoCardScannedDialog = remember { mutableStateOf(false) }
-    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
-    val isReadyToNavigate = remember{ mutableStateOf(false) }// to show result
+    val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember { mutableStateOf(false) }// to show result
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
-        TopLeftBackButton(navController)
-        //TITLE
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 40.dp),
-                //.padding(top = 30.dp, bottom = 20.dp),
-            //textAlign = TextAlign.Center,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.transferOwner)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.transferOwner,
         )
         // BACKGROUND IMAGE
         Image(
@@ -97,7 +88,12 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 75.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)// start just below TopLeftButton
+            .padding(
+                top = 75.dp,
+                bottom = 20.dp,
+                start = 20.dp,
+                end = 20.dp
+            )// start just below TopLeftButton
             //.padding(10.dp)
             .verticalScroll(state = scrollState)
     ) {
@@ -172,27 +168,34 @@ fun TransferOwnershipView(navController: NavController, viewModel: SharedViewMod
     // no card scanned dialog
     if (showNoCardScannedDialog.value
         && !viewModel.isCardDataAvailable
-        && !showNfcDialog.value){
+        && !showNfcDialog.value
+    ) {
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
             title = stringResource(R.string.cardNeedToBeScannedTitle),
             message = stringResource(R.string.cardNeedToBeScannedMessage),
             isActionButtonVisible = false,
             buttonTitle = "",
-            buttonAction = {},)
+            buttonAction = {},
+        )
     }
 
     // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = viewModel.resultCodeLive, isConnected = viewModel.isCardConnected)
+    if (showNfcDialog.value) {
+        NfcDialog(
+            openDialogCustom = showNfcDialog,
+            resultCodeLive = viewModel.resultCodeLive,
+            isConnected = viewModel.isCardConnected
+        )
     }
 
     // auto-navigate when action is performed successfully
     LaunchedEffect(viewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "LaunchedEffect START ${viewModel.resultCodeLive}")
-        while (viewModel.resultCodeLive != NfcResultCode.Ok
+        while (viewModel.resultCodeLive != NfcResultCode.ReleaseOwnershipSuccess
             || isReadyToNavigate.value == false
-            || showNfcDialog.value) {
+            || showNfcDialog.value
+        ) {
             SatoLog.d(TAG, "LaunchedEffect in while delay 1s ${viewModel.resultCodeLive}")
             delay(1.seconds)
         }

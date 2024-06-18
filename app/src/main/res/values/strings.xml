@@ -54,7 +54,6 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="resettingThisCryptoVaultWill">Reset this vault will completely and irrevocably delete the corresponding private key from your card.</string>
     <string name="resetBtn">Reset</string>
     <string name="actionCancelled">Action cancelled</string>
-
     <!--    <string name="reset_cap">Reset</string>-->
 <!--    <string name="this_vault_will_completely_and_irrevocably">" this vault will completely and irrevocably "</string>-->
 <!--    <string name="delete">delete</string>-->
@@ -81,7 +80,6 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="youCanNowViewThePrivateKey">You can now view the corresponding private key and import it into another wallet.</string>
     <string name="showThePrivateKey">Show the private key</string>
     <string name="youAreAboutToUnseal">You are about to UNSEAL the following crypto vault.</string>
-
     <string name="unsealingThisCryptoVaultWillReveal">Unsealing this crypto vault will reveal the corresponding private key.</string>
 <!--    <string name="unsealing">Unsealing</string>-->
 <!--    <string name="this_crypto_vault_will_reveal_the_corresponding_private_key">" this crypto vault will reveal the corresponding private key."</string>-->
@@ -113,6 +111,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="accept">Accept</string>
     <string name="activateTheExpertMode">Activate the expert mode</string>
     <string name="showLogs">Show logs</string>
+    <string name="sendFeedback">Send feedback</string>
     <string name="LogsTitle">Logs</string>
     <string name="apply">Apply</string>
     <string name="toUseItText">To use it, put the card on top of your phone when prompted and keep it on the reader throughout the operation.</string>
@@ -134,6 +133,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="notAuthenticText">Could not authenticate this card. \nGo to the card info screen to get more details.</string>
 <!--    <string name="moreDetails">More details</string>-->
     <string name="moreInfo">More info</string>
+    <string name="videoInfo">Watch video tutorial</string>
     <string name="ownershipText">You are not the owner of this card, so you cannot perform sensitive operations on the vaults such as: \n- Create and Seal \n- Unseal \n- Delete \n\nGet more information on how to get the ownership by clicking here.</string>
     <string name="close">Close</string>
     <string name="transferBtn">Transfer</string>
@@ -141,6 +141,35 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="termsOfService">Terms of service</string>
     <string name="privacyPolicy">Privacy policy</string>
     <string name="readyToScan">Ready to Scan</string>
+    <string name="listedVaults">Listed vaults successfully!</string>
+    <string name="scanning">Scanning</string>
+    <string name="unknownError">Unknown error!</string>
+    <string name="nfcTitleWarning">Warning</string>
+    <string name="nfcTitleSuccess"></string>
+    <string name="nfcResultCodeNone">None</string>
+    <string name="nfcResultCodeBusy">Busy</string>
+    <string name="nfcResultCodeNfcError">Error during card scan</string>
+    <string name="nfcOk">Operation successful!</string>
+    <string name="nfcCardMismatch">Card mismatch! \nIs this the correct card?</string>
+    <string name="nfcOwnershipTransferSuccess">Ownership transfer initiated successfully!</string>
+    <string name="nfcOwnershiptTransferFailed">Failed to transfer ownership</string>
+    <string name="nfcErrorOccured">An error occured, please try again</string>
+    <string name="nfcPrivkeyRecoverSuccess">Vault privkey recovered successfully!</string>
+    <string name="nfcPrivkeyRecoverFailed">Failed to recover vault private key</string>
+    <string name="nfcNeedsFirstVaults">This card needs to setup a first vault</string>
+    <string name="nfcVaultsListSuccess">Listed vaults successfully!</string>
+    <string name="nfcVaultsListFailed">Failed to list vaults</string>
+    <string name="nfcOwnershipAcceptSuccess">Card ownership accepted successfully!</string>
+    <string name="nfcOwnershipAcceptFailed">Failed to accept card ownership</string>
+    <string name="nfcTransferAlreadyDone">Card transfer already done!</string>
+    <string name="nfcVaultSealedSuccess">Vault sealed successfully!</string>
+    <string name="nfcVaultSealedFailed">Failed to seal vault</string>
+    <string name="nfcVaultResetSuccess">Vault reset successfully!</string>
+    <string name="nfcVaultResetFailed">Failed to reset vault slot</string>
+    <string name="nfcVaultUnsealSuccess">Vault unsealed successfully!</string>
+    <string name="nfcVaultUnsealFailed">Failed to unseal vault</string>
+    <string name="nfcUnlockSecretNotFound">You are not owner of this card on this device.</string>
+    <string name="nfcSatodimeNeedsSetup">Your Satodime needs setup!</string>
     <string name="nfcHoldSatodime">Hold your Satodime near your phone</string>
     <string name="thisCardIsGenuine">This card is authentic</string>
     <string name="thisCardIsNotGenuine">Card failed to authenticate!</string>
@@ -151,4 +180,11 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="subcaInfo">Sub-CA certificate</string>
     <string name="rootCaInfo">Root CA certificate</string>
     <string name="exploreBlockchain">Explore</string>
+    <string name="networkError">Network Error</string>
+    <string name="networkErrorMessage">Data recovery failed.\nPlease check your network connection.</string>
+    <string name="networkConnected">Connected</string>
+    <string name="networkConnectedMessage">You are back online.</string>
+    <string name="clickAndScan">Click \n&amp; \nScan</string>
+    <string name="bitcoinOnly">Bitcoin only</string>
+    <string name="debugMode">Debug mode</string>
 </resources>

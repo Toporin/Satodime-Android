@@ -2,6 +2,7 @@ package org.satochip.satodimeapp.ui
 
 import android.app.Activity
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,27 +13,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -50,19 +45,18 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -92,6 +86,8 @@ import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.NftDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.components.shared.SatoGradientButton
+import org.satochip.satodimeapp.ui.components.shared.SatoRoundButton
 import org.satochip.satodimeapp.ui.theme.DarkRed
 import org.satochip.satodimeapp.ui.theme.LightBlue
 import org.satochip.satodimeapp.ui.theme.LightDarkBlue
@@ -100,27 +96,42 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.util.formatBalance
 import org.satochip.satodimeapp.util.sanitizeNftImageUrlString
+import org.satochip.satodimeapp.util.webviewActivityIntent
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 private const val TAG = "VaultsView"
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
+fun VaultsView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    onClick: (Int) -> Unit
+) {
     val activity = LocalContext.current as Activity
     val uriHandler = LocalUriHandler.current
-    var showVaultsOnly by remember{mutableStateOf(false) }
-    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
-    val showNoCardScannedDialog = remember { mutableStateOf(false)}// for NoCardScannedDialog
+    var showVaultsOnly by remember { mutableStateOf(false) }
+    val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
+    val showNoCardScannedDialog = remember { mutableStateOf(false) }// for NoCardScannedDialog
+
+    // NfcDialog
+    if (showNfcDialog.value) {
+        NfcDialog(
+            openDialogCustom = showNfcDialog,
+            resultCodeLive = sharedViewModel.resultCodeLive,
+            isConnected = sharedViewModel.isCardConnected
+        )
+    }
 
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
 
-    val vaults = sharedViewModel.cardVaults.value
-    val vaultsSize = vaults?.size ?: 0
-    val vaultsListState = rememberLazyListState()
-    val visibleItems by remember { derivedStateOf { vaultsListState.layoutInfo.visibleItemsInfo } }
-    val configuration = LocalConfiguration.current
-    sharedViewModel.selectedVault = findVaultToSelect(visibleItems, configuration.screenWidthDp)
+    val vaults = sharedViewModel.cardVaults
+    val vaultsSize = vaults.size
+    val pagerState = rememberPagerState(pageCount = {
+        vaults.size
+    })
+    sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
     if (sharedViewModel.selectedVault > vaultsSize
         || vaults?.get(sharedViewModel.selectedVault - 1) == null
@@ -132,13 +143,14 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     }
 
     // HEADER ROW (LOGO - TITLE - ACTION BUTTONS)
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 20.dp, bottom = 5.dp, start = 20.dp, end = 5.dp)
-        .height(50.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp, bottom = 5.dp, start = 20.dp, end = 5.dp)
+            .height(50.dp),
         verticalAlignment = Alignment.CenterVertically,
-    ){
-
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         // LOGO
         if (sharedViewModel.authenticityStatus == AuthenticityStatus.Authentic) {
             IconButton(
@@ -155,12 +167,12 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                        //.offset(x = 20.dp, y = 20.dp),
+                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.tint(Color.Green)
                 )
             }
-        } else if (sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic){
+        } else if (sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic) {
             IconButton(
                 onClick = {
                     navController.navigate(
@@ -174,7 +186,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                        //.offset(x = 20.dp, y = 20.dp),
+                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.tint(Color.Red)
                 )
@@ -191,7 +203,7 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                        //.offset(x = 20.dp, y = 20.dp),
+                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
                     //colorFilter = ColorFilter.tint(Color.Yellow)
                 )
@@ -214,19 +226,22 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
         Spacer(modifier = Modifier.weight(1f))
 
         // ICONS
-        Row(modifier = Modifier
-                //.padding(top = 20.dp, end = 5.dp)
+        Row(
+            modifier = Modifier
+            //.padding(top = 20.dp, end = 5.dp)
         ) {
-            // RESCAN BUTTON
-            IconButton(onClick = {
-                showNfcDialog.value = true // NfcDialog
-                sharedViewModel.scanCard(activity)
-            }) {
-                Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
-            }
-            // SWITCH VIEW
-            CustomSwitch(checked = showVaultsOnly) {
-                showVaultsOnly = it
+            if (sharedViewModel.isCardDataAvailable) {
+                // SWITCH VIEW
+                CustomSwitch(checked = showVaultsOnly) {
+                    showVaultsOnly = it
+                }
+                // RESCAN BUTTON
+                IconButton(onClick = {
+                    showNfcDialog.value = true // NfcDialog
+                    sharedViewModel.scanCard(activity)
+                }) {
+                    Icon(Icons.Default.Loop, "", tint = MaterialTheme.colors.secondary)
+                }
             }
             // MENU BUTTON
             IconButton(onClick = { navController.navigate(SatodimeScreen.MenuView.name) }) {
@@ -242,24 +257,21 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             .padding(top = 75.dp, bottom = 5.dp, start = 5.dp, end = 5.dp)
     ) {
         val onAddFunds = {
-            if(vaults?.get(sharedViewModel.selectedVault - 1) != null) {
+            if (vaults?.get(sharedViewModel.selectedVault - 1) != null) {
                 navController.navigate(
                     SatodimeScreen.AddFunds.name + "/${sharedViewModel.selectedVault}"
                 )
             }
         }
         val onUnseal = {
-            if(vaults?.get(sharedViewModel.selectedVault - 1) != null) {
+            if (vaults?.get(sharedViewModel.selectedVault - 1) != null) {
                 navController.navigate(
                     SatodimeScreen.UnsealWarning.name + "/${sharedViewModel.selectedVault}"
                 )
             }
         }
         val onAddVault = { index: Int ->
-            navController.navigate(
-                SatodimeScreen.SelectBlockchain.name
-                        + "/${index}"
-            )
+            onClick(index)
         }
         val onShowKey = {
             navController.navigate(
@@ -272,25 +284,24 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             )
         }
         val onExplore = {
-            if (vaults != null && sharedViewModel.selectedVault <= vaultsSize && vaults[sharedViewModel.selectedVault - 1] != null){
-                val explorerLink = vaults[sharedViewModel.selectedVault-1]!!.nativeAsset.explorerLink
+            if (vaults != null && sharedViewModel.selectedVault <= vaultsSize && vaults[sharedViewModel.selectedVault - 1] != null) {
+                val explorerLink =
+                    vaults[sharedViewModel.selectedVault - 1]!!.nativeAsset.explorerLink
                 uriHandler.openUri(explorerLink)
             }
         }
 
         if (sharedViewModel.isCardDataAvailable) {
-            //val vaultsWithDefaultsValuesIfEmpty = vaults.ifEmpty { listOf(null, null, null) }
-            val cardVaultsWithDefaultsValuesIfEmpty = vaults?.ifEmpty { listOf(null, null, null) } ?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = sharedViewModel.cardVaults.value ?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = if (viewModel.cardVaults.isEmpty()) listOf(null, null, null) else {viewModel.cardVaults} //?: listOf(null, null, null)
-            //val cardVaultsWithDefaultsValuesIfEmpty = viewModel.cardVaults.ifEmpty { listOf(null, null, null) }
-
             if (showVaultsOnly) {
-                VaultsListView(cardVaultsWithDefaultsValuesIfEmpty, sharedViewModel.selectedVault, onAddVault)
+                VaultsListView(
+                    vaults,
+                    sharedViewModel.selectedVault,
+                    onAddVault
+                )
             } else {
                 DetailedVaultView(
-                    vaultsListState,
-                    cardVaultsWithDefaultsValuesIfEmpty,
+                    vaults,
+                    pagerState,
                     sharedViewModel.selectedVault,
                     onAddFunds,
                     onExplore,
@@ -308,21 +319,27 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.weight(1f))
-                Button(onClick = {
-                    SatoLog.d("VaultsView", "Clicked on Scan button!")
-                    // scan card
-                    showNfcDialog.value = true // NfcDialog
-                    sharedViewModel.scanCard(activity)
-                }) {
-                    Text("Click & Scan")
-                }
-                Spacer(Modifier.weight(1f))
-                Button(
+                SatoRoundButton(
+                    modifier = Modifier,
+                    text = R.string.clickAndScan,
                     onClick = {
-                    uriHandler.openUri("https://satochip.io/product/satodime/")
-                }) {
-                    Text(stringResource(id = R.string.dontHaveASatodime))
-                }
+                        SatoLog.d("VaultsView", "Clicked on Scan button!")
+                        // scan card
+                        showNfcDialog.value = true // NfcDialog
+                        sharedViewModel.scanCard(activity)
+                    }
+                )
+                Spacer(Modifier.weight(1f))
+                SatoGradientButton(
+                    modifier = Modifier,
+                    text = R.string.dontHaveASatodime,
+                    onClick = {
+                        webviewActivityIntent(
+                            url = "https://satochip.io/product/satodime/",
+                            context = activity
+                        )
+                    }
+                )
             }
         }
 
@@ -331,7 +348,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     // no card scanned dialog
     if (showNoCardScannedDialog.value
         && !sharedViewModel.isCardDataAvailable
-        && !showNfcDialog.value){
+        && !showNfcDialog.value
+    ) {
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
             title = stringResource(R.string.cardNeedToBeScannedTitle),
@@ -345,7 +363,8 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
     // Authenticity dialog
     if (sharedViewModel.showAuthenticityDialog.value
         && sharedViewModel.authenticityStatus == AuthenticityStatus.NotAuthentic
-        && !showNfcDialog.value){
+        && !showNfcDialog.value
+    ) {
         InfoDialog(
             openDialogCustom = sharedViewModel.showAuthenticityDialog,
             title = stringResource(R.string.warning),
@@ -355,13 +374,15 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             buttonAction =
             {
                 navController.navigate(SatodimeScreen.CardInfoView.name)
-            },)
+            },
+        )
     }
 
     // Ownership dialog
     if (sharedViewModel.showOwnershipDialog.value
         && sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner
-        && !showNfcDialog.value){
+        && !showNfcDialog.value
+    ) {
         InfoDialog(
             openDialogCustom = sharedViewModel.showOwnershipDialog,
             title = stringResource(R.string.warning),
@@ -370,15 +391,13 @@ fun VaultsView(navController: NavController, sharedViewModel: SharedViewModel) {
             buttonTitle = stringResource(R.string.moreInfo),
             buttonAction =
             {
-                uriHandler.openUri("https://satochip.io/satodime-ownership-explained/")
-            },)
+                webviewActivityIntent(
+                    url = "https://satochip.io/satodime-ownership-explained/",
+                    context = activity
+                )
+            },
+        )
     }
-
-    // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
-    }
-
 }
 
 /// LIST VIEW
@@ -399,10 +418,11 @@ fun VaultsListView(
 
 /// DETAILED VIEW
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailedVaultView(
-    vaultsListState: LazyListState,
-    vaults: List<CardVault?>,
+    vaults: SnapshotStateList<CardVault?>,
+    pagerState: PagerState,
     selectedCard: Int,
     onAddFunds: () -> Unit, // todo: add Int parameter for vault index?
     onExplore: () -> Unit, // todo: add Int parameter for vault index?
@@ -412,7 +432,7 @@ fun DetailedVaultView(
     onReset: () -> Unit, // todo: add Int parameter for vault index?
 ) {
     // VAULT CARD
-    VaultCards(vaultsListState, vaults, selectedCard, onAddVault)
+    VaultCards(pagerState, vaults, selectedCard, onAddVault)
 
     // ACTIONS ROW
     Row(
@@ -425,9 +445,10 @@ fun DetailedVaultView(
             .height(120.dp)
     ) {
 
-        if (selectedCard<=vaults.size
+        if (selectedCard <= vaults.size
             && vaults[selectedCard - 1] != null
-            && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED) {
+            && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED
+        ) {
 
             // ADD FUNDS BUTTON
             Column(
@@ -512,9 +533,10 @@ fun DetailedVaultView(
                 )
             }
         }
-        if (selectedCard<=vaults.size
+        if (selectedCard <= vaults.size
             && vaults[selectedCard - 1] != null
-            && vaults[selectedCard - 1]!!.state == SlotState.SEALED) {
+            && vaults[selectedCard - 1]!!.state == SlotState.SEALED
+        ) {
             // UNSEAL BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -547,9 +569,10 @@ fun DetailedVaultView(
                 )
             }
         }
-        if (selectedCard<=vaults.size
+        if (selectedCard <= vaults.size
             && vaults[selectedCard - 1] != null
-            && vaults[selectedCard - 1]!!.state == SlotState.UNSEALED) {
+            && vaults[selectedCard - 1]!!.state == SlotState.UNSEALED
+        ) {
             // SHOW PRIVKEY BUTTON
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -616,22 +639,34 @@ fun DetailedVaultView(
 
     }
 
-    if (selectedCard<=vaults.size
+    if (selectedCard <= vaults.size
         && vaults[selectedCard - 1] != null
-        && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED) {
+        && vaults[selectedCard - 1]!!.state != SlotState.UNINITIALIZED
+    ) {
         VaultsViewTabScreen(vaults[selectedCard - 1])
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VaultCards(
-    vaultsListState: LazyListState,
-    vaults: List<CardVault?>,
+    pagerState: PagerState,
+    vaults: SnapshotStateList<CardVault?>,
     selectedCard: Int,
     onAddVault: (Int) -> Unit
 ) {
-    LazyRow(state = vaultsListState) {
-        renderVaults(vaults, selectedCard, onAddVault)
+    HorizontalPager(
+        state = pagerState,
+        contentPadding = PaddingValues(10.dp),
+        pageSize = PageSize.Fixed(300.dp)
+    ) { page ->
+        val cardVault = vaults.getOrNull(page)
+        cardVault?.let {
+            VaultCard(page + 1, selectedCard == page + 1, cardVault)
+        } ?: run {
+            val isFirstEmptyVault = page == vaults.indexOfFirst { it == null }
+            EmptyVaultCard(page + 1, isFirstEmptyVault, onAddVault)
+        }
     }
 }
 
@@ -639,6 +674,9 @@ fun VaultCards(
 fun VaultsViewTabScreen(vault: CardVault?) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Token", "NFT")
+    val isAvailable: Boolean = vault?.baseCoin?.nft_supported ?: run {
+        true
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TabRow(
@@ -650,21 +688,20 @@ fun VaultsViewTabScreen(vault: CardVault?) {
             contentColor = MaterialTheme.colors.secondary,
         ) {
             tabs.forEachIndexed { index, title ->
-//                // add number of asssets
-//                val titleText  = if (vault != null){
-//                    if (index == 0) {
-//                        title + " (${vault.tokenList.size})"
-//                    } else {
-//                        title + " (${vault.nftList.size})"
-//                    }
-//                } else {
-//                    title
-//                }
                 Tab(
                     modifier = Modifier.background(MaterialTheme.colors.primary),
-                    text = { Text(text = title, color = MaterialTheme.colors.secondary) },
+                    text = {
+                        Text(
+                            text = title,
+                            color = if (index != 1 || isAvailable) MaterialTheme.colors.secondary else Color.Gray
+                        )
+                    },
                     selected = tabIndex == index,
-                    onClick = { tabIndex = index },
+                    onClick = {
+                        if (index != 1 || isAvailable) {
+                            tabIndex = index;
+                        }
+                    },
                 )
             }
         }
@@ -678,7 +715,7 @@ fun VaultsViewTabScreen(vault: CardVault?) {
 @Composable
 fun VaultsViewToken(vault: CardVault) {
     LazyColumn {
-        items(vault.tokenList) {asset ->//TODO add tokens
+        items(vault.tokenList) { asset ->//TODO add tokens
             // only show Token, not NFTs
             if (asset.type == AssetType.Token) {
                 VaultsViewTokenRow(asset)
@@ -697,17 +734,17 @@ fun VaultsViewToken(vault: CardVault) {
 @Composable
 fun VaultsViewNft(vault: CardVault) {
     LazyColumn {
-        items(vault.nftList) {asset ->
+        items(vault.nftList) { asset ->
             // todo only show NFTs?
             //if (asset.type == AssetType.NFT) {
-                VaultsViewNftRow(asset)
-                Divider(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.primary)
-                        .padding(start = 20.dp, end = 20.dp),
-                    thickness = 1.dp,
-                    color = Color.DarkGray
-                )
+            VaultsViewNftRow(asset)
+            Divider(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.primary)
+                    .padding(start = 20.dp, end = 20.dp),
+                thickness = 1.dp,
+                color = Color.DarkGray
+            )
             //}
         }
     }
@@ -718,69 +755,73 @@ fun VaultsViewTokenRow(asset: Asset) {
     val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start, //Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceBetween, //Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
+            .clickable {
+                // LINK TO EXPLORER
+                uriHandler.openUri(asset.explorerLink ?: "")
+            }
             .padding(5.dp)
             .fillMaxWidth()
-            .height(80.dp)
+            .height(80.dp),
     ) {
+        Row {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(asset.iconUrl ?: "")
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_sato_small),
+                error = painterResource(R.drawable.ic_sato_small),
+                contentDescription = (asset.name ?: asset.contract ?: ""),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(60.dp)
+                    .clip(
+                        RoundedCornerShape(50)
+                    ),
+            )
 
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(asset.iconUrl ?: "")
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_sato_small),
-            error = painterResource(R.drawable.ic_sato_small),
-            contentDescription = (asset.name ?: asset.contract ?: ""),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(10.dp)
-                .size(60.dp),
-        )
-
-        Column(modifier = Modifier.padding(10.dp)) {
-            Text(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = "${asset.name}",// vault.displayName
-            )
-            // TOKEN BALANCE
-            Text(
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = formatBalance(balanceString = asset.balance, decimalsString = asset.decimals, symbol = asset.symbol)
-            )
-            // VALUE IN SECOND CURRENCY
-            Text(
-                fontSize = 10.sp,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
-            )
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = "${asset.name}",// vault.displayName
+                )
+                // TOKEN BALANCE
+                Text(
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary,
+                    text = formatBalance(
+                        balanceString = asset.balance,
+                        decimalsString = asset.decimals,
+                        symbol = asset.symbol
+                    )
+                )
+            }
         }
-
-        // LINK TO EXPLORER
-        Icon(
-            painter = painterResource(R.drawable.open_in_new_24px),
-            contentDescription = "link to explorer",
-            modifier = Modifier
-                .width(30.dp)
-                .clickable{
-                    uriHandler.openUri(asset.explorerLink ?: "")
-                },
-            tint = MaterialTheme.colors.secondary, //Color.LightGray,
+        Text(
+            fontSize = 10.sp,
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondary,
+            text = formatBalance(
+                balanceString = asset.valueInSecondCurrency,
+                decimalsString = "0",
+                symbol = asset.secondCurrency
+            )
         )
+
     }
 }
 
 @Composable
 fun VaultsViewNftRow(asset: Asset) {
-    val showNftDialog = remember { mutableStateOf(false)}
+    val showNftDialog = remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -788,6 +829,15 @@ fun VaultsViewNftRow(asset: Asset) {
         //horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .background(MaterialTheme.colors.primary)
+            .clickable {
+                // LINK TO EXPLORER
+                //uriHandler.openUri(asset.nftImageLink ?: "")
+                uriHandler.openUri(
+                    sanitizeNftImageUrlString(
+                        asset.nftExplorerLink ?: asset.explorerLink ?: ""
+                    )
+                )
+            }
             .padding(5.dp)
             .fillMaxWidth()
             .height(80.dp)
@@ -795,7 +845,11 @@ fun VaultsViewNftRow(asset: Asset) {
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(sanitizeNftImageUrlString(asset.nftImageLink ?: "")) //.data(asset.nftImageLink ?: "")
+                .data(
+                    sanitizeNftImageUrlString(
+                        asset.nftImageLink ?: ""
+                    )
+                ) //.data(asset.nftImageLink ?: "")
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_sato_small),
@@ -812,9 +866,10 @@ fun VaultsViewNftRow(asset: Asset) {
                     onClickLabel = "open image in dialog"
                 ),
         )
-        Column(modifier = Modifier
-            .padding(10.dp)
-            .weight(1f)
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .weight(1f)
         ) {
             // NAME
             Text(
@@ -829,41 +884,53 @@ fun VaultsViewNftRow(asset: Asset) {
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = formatBalance(balanceString = asset.balance, decimalsString = asset.decimals, symbol = asset.symbol)
+                text = formatBalance(
+                    balanceString = asset.balance,
+                    decimalsString = asset.decimals,
+                    symbol = asset.symbol
+                )
             )
             // VALUE IN SECOND CURRENCY
             Text(
                 fontSize = 10.sp,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = formatBalance(balanceString = asset.valueInSecondCurrency, decimalsString = "0", symbol = asset.secondCurrency)
+                text = formatBalance(
+                    balanceString = asset.valueInSecondCurrency,
+                    decimalsString = "0",
+                    symbol = asset.secondCurrency
+                )
             )
 
         }
 
         // LINK TO EXPLORER
-        Icon(
-            painter = painterResource(R.drawable.open_in_new_24px),
-            contentDescription = "link to NFT explorer",
-            modifier = Modifier
-                .width(30.dp)
-                .clickable{
-                    uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
-                },
-            //.requiredWidth(30.dp)
-            //.size(30.dp), //.size(45.dp)
-            tint = MaterialTheme.colors.secondary, //Color.LightGray,
-        )
+//        Icon(
+//            painter = painterResource(R.drawable.open_in_new_24px),
+//            contentDescription = "link to NFT explorer",
+//            modifier = Modifier
+//                .width(30.dp)
+//                .clickable {
+//                    uriHandler.openUri(asset.nftExplorerLink ?: asset.explorerLink ?: "")
+//                },
+//            //.requiredWidth(30.dp)
+//            //.size(30.dp), //.size(45.dp)
+//            tint = MaterialTheme.colors.secondary, //Color.LightGray,
+//        )
     }
 
     // show bigger image in dialog
-    if (showNftDialog.value){
+    if (showNftDialog.value) {
         NftDialog(showNftDialog, asset)
     }
 }
 
 @Composable
-fun CustomSwitch(modifier: Modifier = Modifier, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+fun CustomSwitch(
+    modifier: Modifier = Modifier,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
     Switch(
         modifier = modifier,
         checked = checked,
@@ -883,30 +950,18 @@ fun LazyListScope.renderVaults(
     onAddVault: (Int) -> Unit
 ) {
     itemsIndexed(vaults) { index, vault ->
-        if(vault != null) {
+        if (vault != null) {
             VaultCard(index + 1, selectedCard == index + 1, vault)
         } else {
             val isFirstEmptyVault = index == vaults.indexOfFirst { it == null }
             EmptyVaultCard(index + 1, isFirstEmptyVault, onAddVault)
         }
-
     }
 }
 
-fun findVaultToSelect(visibleItems: List<LazyListItemInfo>, screenWidth: Int) : Int {
-    if(visibleItems.isEmpty()) return 1
-
-    return if ((visibleItems[0].index == 1 && visibleItems[0].offset < -(screenWidth / 2))
-        || visibleItems[0].index == 2
-    ) {
-        3
-    } else if ((visibleItems[0].index == 0 && visibleItems[0].offset < -(screenWidth / 2))
-        || visibleItems[0].index == 1
-    ) {
-        2
-    } else {
-        1
-    }
+@OptIn(ExperimentalFoundationApi::class)
+fun findVaultToSelect(selectedVault: PagerState): Int {
+    return selectedVault.currentPage + 1
 }
 
 @Preview(showBackground = true)
@@ -915,7 +970,8 @@ fun VaultsViewPreview() {
     SatodimeTheme {
         VaultsView(
             rememberNavController(),
-            viewModel(factory = SharedViewModel.Factory)
+            viewModel(factory = SharedViewModel.Factory),
+            onClick = {}
         )
     }
 }

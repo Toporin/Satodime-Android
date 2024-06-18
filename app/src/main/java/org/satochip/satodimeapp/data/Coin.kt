@@ -8,5 +8,6 @@ enum class Coin(val label: String, val painterResourceId: Int) {
     LTC("Litecoin", R.drawable.litecoin),
     BCH("Bitcoin Cash", R.drawable.bitcoin_cash),
     XCP("Counterparty", R.drawable.counterparty),
+    MATIC("Polygon", R.drawable.polygon),
     UNKNOWN("Unknown", R.drawable.top_left_logo)
 }

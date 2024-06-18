@@ -60,7 +60,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isBackupConfirmed = remember { mutableStateOf(false) }
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
-    val vaults = sharedViewModel.cardVaults.value
+    val vaults = sharedViewModel.cardVaults
 //    val vaultsSize = vaults?.size ?: 0
 //    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
 //        SatoLog.e(TAG, "ResetWarningView VAULT IS NULL!!")
@@ -233,7 +233,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     // todo improve?
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, isReadyToNavigate) {
         SatoLog.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.ResetVaultSuccess
             || isReadyToNavigate.value == false
             || showNfcDialog.value) {
             SatoLog.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")

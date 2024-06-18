@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
     <application
@@ -27,6 +28,19 @@
                 <category android:name="android.nfc.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".WebviewActivity"
+            android:exported="false"
+            android:label="Webview Activity"
+            android:theme="@style/Theme.Satodime"
+            />
+
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+    </queries>
 
 </manifest>

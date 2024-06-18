@@ -3,7 +3,6 @@ package org.satochip.satodimeapp.ui
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,7 +49,7 @@ import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.Network
 import org.satochip.satodimeapp.util.SatodimeScreen
@@ -61,41 +60,38 @@ import kotlin.time.Duration.Companion.seconds
 private const val TAG = "ExpertModeView"
 
 @Composable
-fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int, selectedCoinName: String) {
+fun ExpertModeView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    selectedVault: Int,
+    selectedCoinName: String
+) {
     // todo merge with CreateVaultView
     val context = LocalContext.current
     var selectedNetwork by remember { mutableStateOf(Network.MainNet) }
     var entropy by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
-    val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
+    val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
+    val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.primaryVariant)
-    ) {
-        TopLeftBackButton(navController)
-    }
-    Column(
-        modifier = Modifier.fillMaxWidth(),
+            .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.expertMode,
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
         ) {
-            Text(
-                modifier = Modifier.padding(top = 25.dp, bottom = 20.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 38.sp,
-                fontWeight = FontWeight.Medium,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondary,
-                text = stringResource(R.string.expertMode)
-            )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -181,41 +177,58 @@ fun ExpertModeView(navController: NavController, sharedViewModel: SharedViewMode
                 //val random = SecureRandom()
                 var entropyBytes = ByteArray(32)
                 var entropyStringToBytes = entropy.toByteArray()
-                if (entropyStringToBytes.size>32){
+                if (entropyStringToBytes.size > 32) {
                     // compute the hash of it
                     val sha256 = MessageDigest.getInstance("SHA-256")
                     entropyStringToBytes = sha256.digest(entropyStringToBytes)
                 }
                 // copy to array
                 entropyStringToBytes.copyInto(
-                    destination= entropyBytes,
-                    destinationOffset= 0,
-                    startIndex= 0,
-                    endIndex= minOf(entropyStringToBytes.size, 32)
+                    destination = entropyBytes,
+                    destinationOffset = 0,
+                    startIndex = 0,
+                    endIndex = minOf(entropyStringToBytes.size, 32)
                 )
 
                 // scan card
-                SatoLog.d(TAG, "ExpertModeView: clicked on create button selectedVault: $selectedVault")
+                SatoLog.d(
+                    TAG,
+                    "ExpertModeView: clicked on create button selectedVault: $selectedVault"
+                )
                 showNfcDialog.value = true // NfcDialog
                 isReadyToNavigate.value = true
-                sharedViewModel.sealSlot(context as Activity, index = selectedVault - 1, coinSymbol = selectedCoinName, isTestnet= isTestnet, entropyBytes= entropyBytes)
+                sharedViewModel.sealSlot(
+                    context as Activity,
+                    index = selectedVault - 1,
+                    coinSymbol = selectedCoinName,
+                    isTestnet = isTestnet,
+                    entropyBytes = entropyBytes
+                )
             },
             text = stringResource(R.string.createAndSeal)
         )
     }
 
     // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    if (showNfcDialog.value) {
+        NfcDialog(
+            openDialogCustom = showNfcDialog,
+            resultCodeLive = sharedViewModel.resultCodeLive,
+            isConnected = sharedViewModel.isCardConnected
+        )
     }
 
     // auto-navigate when action is performed successfully
     LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
         SatoLog.d(TAG, "ExpertModeView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.Ok
+        while (sharedViewModel.resultCodeLive != NfcResultCode.SealVaultSuccess
             || isReadyToNavigate.value == false
-            || showNfcDialog.value) {
-            SatoLog.d(TAG, "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
+            || showNfcDialog.value
+        ) {
+            SatoLog.d(
+                TAG,
+                "ExpertModeView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}"
+            )
             delay(1.seconds)
         }
         // navigate
@@ -265,6 +278,11 @@ fun NetworkDivider() {
 @Composable
 fun ExpertModeViewPreview() {
     SatodimeTheme {
-        ExpertModeView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1, Coin.BTC.name)
+        ExpertModeView(
+            rememberNavController(),
+            viewModel(factory = SharedViewModel.Factory),
+            1,
+            Coin.BTC.name
+        )
     }
 }

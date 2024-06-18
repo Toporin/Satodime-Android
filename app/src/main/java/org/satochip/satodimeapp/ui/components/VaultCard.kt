@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -66,14 +67,15 @@ fun VaultCard(
         shape = RoundedCornerShape(15.dp),
         border = if (isSelected) BorderStroke(2.dp, Color.DarkGray) else null
     ) {
-        val background = if (vault.state == SlotState.UNSEALED) R.drawable.unsealed_card else when (index) {
-            1 -> R.drawable.card1
-            2 -> R.drawable.card2
-            3 -> R.drawable.card3
-            else -> {
-                R.drawable.card1
+        val background =
+            if (vault.state == SlotState.UNSEALED) R.drawable.unsealed_card else when (index) {
+                1 -> R.drawable.card1
+                2 -> R.drawable.card2
+                3 -> R.drawable.card3
+                else -> {
+                    R.drawable.card1
+                }
             }
-        }
         Box(
             modifier = Modifier
                 .paint(
@@ -101,7 +103,10 @@ fun VaultCard(
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.body1,
                 color = Color.LightGray,
-                text = vault.nativeAsset.address.substring(0, minOf(vault.nativeAsset.address.length, 12)) + "..."
+                text = vault.nativeAsset.address.substring(
+                    0,
+                    minOf(vault.nativeAsset.address.length, 12)
+                ) + "..."
             )
             val copiedToClipboardText = stringResource(R.string.copied_to_clipboard)
             Icon(
@@ -110,7 +115,9 @@ fun VaultCard(
                     .offset(220.dp)
                     .clickable {
                         clipboardManager.setText(AnnotatedString(vault.nativeAsset.address))
-                        Toast.makeText(context, copiedToClipboardText, Toast.LENGTH_SHORT).show()
+                        Toast
+                            .makeText(context, copiedToClipboardText, Toast.LENGTH_SHORT)
+                            .show()
                     },
                 imageVector = Icons.Outlined.ContentCopy,
                 tint = Color.LightGray,
@@ -121,11 +128,14 @@ fun VaultCard(
                 contentDescription = null,
                 modifier = Modifier
                     .size(30.dp)
-                    .offset(y = 110.dp),
+                    .offset(y = 110.dp)
+                    .clip(
+                        RoundedCornerShape(50)
+                    ),
                 contentScale = ContentScale.Crop
             )
             Text(
-                modifier = Modifier.offset(x= (-8).dp, y = 135.dp),
+                modifier = Modifier.offset(x = (-8).dp, y = 135.dp),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.body1,
@@ -135,7 +145,7 @@ fun VaultCard(
             Balance(
                 modifier = Modifier
                     .align(Alignment.BottomEnd), //.padding(10.dp),
-                    //.offset(130.dp, 70.dp),
+                //.offset(130.dp, 70.dp),
 //                    .padding(top = 45.dp)
 //                    .padding(end = 20.dp),
                 vault
@@ -155,7 +165,7 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             fontWeight = FontWeight.Light,
             style = MaterialTheme.typography.body1,
             color = Color.LightGray,
-            text = stringResource(R.string.totalBalance)
+            text = vault.nativeAsset.name //stringResource(R.string.totalBalance)
         )
         Text(
             fontSize = 18.sp, //24.sp,
@@ -165,7 +175,8 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             text = formatBalance(
                 balanceString = vault.nativeAsset.balance,
                 decimalsString = vault.nativeAsset.decimals,
-                symbol = vault.nativeAsset.symbol)//vault.currencyAmount
+                symbol = vault.nativeAsset.symbol
+            )//vault.currencyAmount
         )
         Text(
             fontSize = 12.sp,
@@ -175,7 +186,8 @@ fun Balance(modifier: Modifier, vault: CardVault) {
             text = formatBalance(
                 balanceString = vault.nativeAsset.valueInSecondCurrency,
                 decimalsString = "0",
-                symbol = vault.nativeAsset.secondCurrency)
+                symbol = vault.nativeAsset.secondCurrency
+            )
         )
     }
 }
@@ -193,6 +205,9 @@ fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> 
     ) {
         Box(
             modifier = Modifier
+                .clickable {
+                    onAddVault(index)
+                }
                 .background(MaterialTheme.colors.primaryVariant)
                 .padding(20.dp)
         ) {
@@ -203,7 +218,7 @@ fun EmptyVaultCard(index: Int, isFirstEmptyVault: Boolean, onAddVault: (Int) -> 
                 color = Color.Gray,
                 text = "0$index"
             )
-            val addButtonColor = if(isFirstEmptyVault) Color.White else Color.Gray
+            val addButtonColor = if (isFirstEmptyVault) Color.White else Color.Gray
             OutlinedButton(
                 onClick = {
                     onAddVault(index)

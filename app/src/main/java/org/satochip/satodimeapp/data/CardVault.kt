@@ -52,7 +52,13 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
     // meta info such as icon
     val coin: Coin = try {
-        if (nativeAsset.symbol == "ROP") Coin.ETH else Coin.valueOf(nativeAsset.symbol.take(3)) //todo: clean?
+        if (nativeAsset.symbol == "ROP")
+            Coin.ETH
+        else if (nativeAsset.symbol == "MATIC") {
+            Coin.MATIC
+        }
+        else
+            Coin.valueOf(nativeAsset.symbol.take(3)) //todo: clean?
     } catch (e: IllegalArgumentException) {
         Coin.UNKNOWN
     }
@@ -146,7 +152,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
 
                 val balanceDouble = getBalanceDouble(asset.balance, asset.decimals)
                 if (balanceDouble != null && asset.rate != null && exchangeRate != null && exchangeRate >=0) {
-                    val valueDouble = balanceDouble * asset.rate / exchangeRate
+                    val valueDouble = balanceDouble * asset.rate * exchangeRate
                     asset.valueInSecondCurrency = valueDouble.toString()
                     asset.secondCurrency = selectedSecondCurrency
                     SatoLog.d(TAG, "fetchAssetValue: value: ${valueDouble} = ${valueDouble.toString()} $selectedSecondCurrency")
@@ -236,6 +242,13 @@ private fun getMockupAddressForDebug(coin_symbol: String): String? {
         addressCopy = "bitcoincash:pqtdjp63swypep62kyfxzh2k6kpq5weydvfqs9wpk2"
     } else if (coin_symbol == "LTC") {
         addressCopy = "ltc1qr07zu594qf63xm7l7x6pu3a2v39m2z6hh5pp4t"
+    } else if (coin_symbol == "MATIC") {
+        //addressCopy = "0x8db853Aa2f01AF401e10dd77657434536735aC62"
+        //addressCopy = "0x86d22A8219De3683CF188778CDAdEE62D1442033"
+        addressCopy = "0xE976c3052Df18cc2Dc878b9bc3191Bba68Ef3d80" // DolZ nft
+        //addressCopy = "0x440D4955a914D5e29F861aC024A608aE41c56cB6" // PookyBall nft contract
+        //addressCopy = "0xd7f1cbca340c831d77c0d8d3dc843a07873ade44" // PookyBall nft vault
+        //addressCopy = "0xF977814e90dA44bFA03b6295A0616a897441aceC" // Binance hot wallet with USDT
     }
     return addressCopy
 }
