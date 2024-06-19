@@ -162,4 +162,5 @@
     <string name="clickAndScan">Cliquez \n&amp; \nScannez</string>
     <string name="bitcoinOnly">Bitcoin uniquement</string>
     <string name="debugMode">Mode débogage</string>
+    <string name="onboardingVideo">https://youtu.be/ToSah4y16Jc</string>
 </resources>
