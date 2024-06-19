@@ -37,7 +37,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="welcome">Welcome</string>
     <string name="satodimeLetsYou">Satodime lets you easily create vaults to store your cryptocurrencies. It supports the most innovative crypto-assets.</string>
     <string name="allOurProducts">All our products</string>
-    <string name="vaultSuccessfullyUnseal">Vault successfully unseal</string>
+    <string name="vaultSuccessfullyUnseal">Vault successfully unsealed</string>
     <string name="vaultSuccessfullyReset">Vault successfully RESET.</string>
     <string name="youCanNowCreateAndSeal">You can now CREATE and SEAL a new vault.</string>
 <!--    <string name="vault_cap">Vault</string>-->

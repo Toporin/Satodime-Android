@@ -43,8 +43,8 @@ import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.EmptyVaultCard
 import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
-import org.satochip.satodimeapp.ui.components.TopLeftBackButton
 import org.satochip.satodimeapp.ui.components.VaultCard
+import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
@@ -61,28 +61,19 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
 
     val vaults = sharedViewModel.cardVaults
-//    val vaultsSize = vaults?.size ?: 0
-//    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) {
-//        SatoLog.e(TAG, "ResetWarningView VAULT IS NULL!!")
-//    }
 
     RedGradientBackground()
-    TopLeftBackButton(navController)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .padding(20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.warning)
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.warning
         )
         Text(
             modifier = Modifier

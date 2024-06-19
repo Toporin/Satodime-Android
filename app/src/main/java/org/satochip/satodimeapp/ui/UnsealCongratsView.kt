@@ -4,9 +4,11 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -101,27 +103,35 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
         )
 
         //Spacer(Modifier.weight(1f))
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                BottomButton(
+                    onClick = {
+                        navController.navigate(SatodimeScreen.ShowPrivateKey.name  + "/$selectedVault") {
+                            popUpTo(0)
+                        }
+                    },
+                    width = 200.dp,
+                    text = stringResource(R.string.showThePrivateKey)
+                )
+            }
 
-        BottomButton(
-            onClick = {
-                navController.navigate(SatodimeScreen.ShowPrivateKey.name  + "/$selectedVault") {
-                    popUpTo(0)
-                }
-            },
-            width = 200.dp,
-            text = stringResource(R.string.showThePrivateKey)
-        )
-
-        // BACK TO VAULT BUTTON
-        BottomButton(
-            onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
-            },
-            width = 240.dp,
-            text = stringResource(R.string.backToMyVaults)
-        )
+            item {
+                // BACK TO VAULT BUTTON
+                BottomButton(
+                    onClick = {
+                        navController.navigate(SatodimeScreen.Vaults.name) {
+                            popUpTo(0)
+                        }
+                    },
+                    width = 240.dp,
+                    text = stringResource(R.string.backToMyVaults)
+                )
+            }
+        }
 
     }
 }
