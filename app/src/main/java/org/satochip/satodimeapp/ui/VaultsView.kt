@@ -126,9 +126,11 @@ fun VaultsView(
 //    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
 //    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
     val vaults = sharedViewModel.cardVaults
-    val pagerState = rememberPagerState(pageCount = {
-        vaults.size
-    })
+    val pagerState = rememberPagerState(
+        pageCount = {
+            vaults.size
+        }
+    )
     sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
     if (sharedViewModel.selectedVault > vaults.size

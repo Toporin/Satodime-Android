@@ -1,6 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -182,20 +183,10 @@ fun UnsealWarningView(navController: NavController, sharedViewModel: SharedViewM
         NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
     }
 
-    // auto-navigate when action is performed successfully
-    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
-        SatoLog.d(TAG, "UnsealWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.UnsealVaultSuccess
-            || isReadyToNavigate.value == false
-            || showNfcDialog.value) {
-            SatoLog.d(TAG, "UnsealWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
-            delay(1.seconds)
-        }
-        // navigate
+    if (isReadyToNavigate.value && sharedViewModel.resultCodeLive == NfcResultCode.UnsealVaultSuccess && !showNfcDialog.value) {
         SatoLog.d(TAG, "UnsealWarningView navigating to UnsealCongrats view")
-        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault") {
-            popUpTo(0)
-        }
+        navController.popBackStack()
+        navController.navigate(SatodimeScreen.UnsealCongrats.name + "/$selectedVault")
     }
 }
 
