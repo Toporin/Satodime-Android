@@ -21,7 +21,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
@@ -52,7 +50,6 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import java.security.SecureRandom
-import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "CreateVaultView"
 
@@ -204,26 +201,11 @@ fun CreateVaultView(
         )
     }
 
-    // auto-navigate when action is performed successfully
-    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog) {
-        SatoLog.d(TAG, "CreateVaultView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.SealVaultSuccess
-            || isReadyToNavigate.value == false
-            || showNfcDialog.value
-        ) {
-            SatoLog.d(
-                TAG,
-                "CreateVaultView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}"
-            )
-            delay(1.seconds)
-        }
-        // navigate
+    if (isReadyToNavigate.value && sharedViewModel.resultCodeLive == NfcResultCode.SealVaultSuccess && !showNfcDialog.value) {
         SatoLog.d(TAG, "CreateVaultView navigating to CongratsVaultCreated view")
-        navController.navigate(SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName") {
-            popUpTo(0)
-        }
+        navController.popBackStack()
+        navController.navigate(SatodimeScreen.CongratsVaultCreated.name + "/$selectedCoinName")
     }
-
 }
 
 @Composable

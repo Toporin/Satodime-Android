@@ -109,9 +109,7 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
         Spacer(Modifier.weight(1f))
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
+                navController.navigateUp()
             },
             width = 240.dp,
             text = stringResource(R.string.backToMyVaults)
