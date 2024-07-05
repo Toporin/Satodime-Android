@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
@@ -59,161 +61,9 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val showNfcDialog = remember{ mutableStateOf(false) } // for NfcDialog
     val isBackupConfirmed = remember { mutableStateOf(false) }
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
+    val scrollState = rememberScrollState()
 
     val vaults = sharedViewModel.cardVaults
-
-    RedGradientBackground()
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-    ) {
-        HeaderRow(
-            onClick = {
-                navController.navigateUp()
-            },
-            titleText = R.string.warning
-        )
-        Text(
-            modifier = Modifier
-                .padding(10.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            text = stringResource(R.string.youAreAboutToReset)
-        )
-        if (vaults?.get(selectedVault - 1) != null) {
-            VaultCard(
-                index = selectedVault,
-                isSelected = true,
-                vault = vaults[selectedVault - 1]!!,
-            )
-        } else {
-            EmptyVaultCard(index = selectedVault, isFirstEmptyVault = true) {
-                navController.navigate(SatodimeScreen.SelectBlockchain.name + "/$selectedVault")
-            }
-        }
-        Text(
-            modifier = Modifier
-                .padding(10.dp),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.secondaryVariant,
-            fontSize = 14.sp,
-            style = MaterialTheme.typography.body1,
-            text = stringResource(R.string.resettingThisCryptoVaultWill)
-            // TODO add markdown support
-//            buildAnnotatedString {
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.reset_cap))
-//                }
-//                append(stringResource(R.string.this_vault_will_completely_and_irrevocably))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.delete))
-//                }
-//                append(stringResource(R.string.the_corresponding))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.private_keys))
-//                }
-//                append(stringResource(R.string.from_your))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.satodime_device))
-//                }
-//                append(".")
-//            }
-        )
-        Divider(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(2.dp)
-                .width(100.dp),
-            color = Color.DarkGray,
-        )
-        Text(
-            modifier = Modifier
-                .padding(10.dp),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.secondaryVariant,
-            fontSize = 14.sp,
-            style = MaterialTheme.typography.body1,
-            text = stringResource(R.string.afterThatYouWillBeAbleTo) // todo markdown support
-//            buildAnnotatedString {
-//                append(stringResource(R.string.after_that_you_will_be_able_to))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.create_a_new_crypto_vault))
-//                }
-//                append(".")
-//            }
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .padding(10.dp)
-                .width(400.dp)
-                .height(75.dp)
-        ) {
-            Checkbox(
-                colors = CheckboxDefaults.colors(Color.LightGray, Color.LightGray),
-                checked = isBackupConfirmed.value,
-                onCheckedChange = {
-                    isBackupConfirmed.value = !isBackupConfirmed.value
-                }
-            )
-            Text(
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.secondaryVariant,
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.iConfirmThatBackup)
-            )
-        }
-        Spacer(Modifier.weight(1f))
-//        val resetFailureText = stringResource(R.string.reset_failure)
-//        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
-//        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
-        val pleaseConfirmBackupText = stringResource(R.string.pleaseConfirmYouHaveMadeBackup)
-        BottomButton(
-            onClick = {
-
-                // scan card
-                if (isBackupConfirmed.value) {
-                    SatoLog.d(TAG, "ResetWarningView: clicked on reset button for selectedVault $selectedVault")
-                    showNfcDialog.value = true // NfcDialog
-                    isReadyToNavigate.value = true // ready to navigate to next view once action is done
-                    sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
-                } else {
-                    Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
-                }
-
-            },
-            //width = 240.dp,
-            color = Color.Red,
-            text = stringResource(R.string.resetBtn)
-        )
-
-        // CANCEL BUTTON
-        val toastMsg = stringResource(R.string.actionCancelled)
-        Button(
-            onClick = {
-                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
-                navController.navigateUp()
-            },
-            modifier = Modifier
-                .padding(10.dp)
-                .height(40.dp)
-                .width(100.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = LightGray,
-                contentColor = Color.White
-            )
-        ) {
-            Text(stringResource(R.string.cancel))
-        }
-    }
 
     // NfcDialog
     if (showNfcDialog.value){
@@ -237,6 +87,137 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
         }
     }
 
+    RedGradientBackground()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.warning
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = scrollState)
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(10.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.secondary,
+                text = stringResource(R.string.youAreAboutToReset)
+            )
+            if (vaults?.get(selectedVault - 1) != null) {
+                VaultCard(
+                    index = selectedVault,
+                    isSelected = true,
+                    vault = vaults[selectedVault - 1]!!,
+                )
+            } else {
+                EmptyVaultCard(index = selectedVault, isFirstEmptyVault = true) {
+                    navController.navigate(SatodimeScreen.SelectBlockchain.name + "/$selectedVault")
+                }
+            }
+            Text(
+                modifier = Modifier
+                    .padding(10.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.secondaryVariant,
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.body1,
+                text = stringResource(R.string.resettingThisCryptoVaultWill)
+                // TODO add markdown support
+            )
+            Divider(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(2.dp)
+                    .width(100.dp),
+                color = Color.DarkGray,
+            )
+            Text(
+                modifier = Modifier
+                    .padding(10.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.secondaryVariant,
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.body1,
+                text = stringResource(R.string.afterThatYouWillBeAbleTo) // todo markdown support
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .width(400.dp)
+                    .height(75.dp)
+            ) {
+                Checkbox(
+                    colors = CheckboxDefaults.colors(Color.LightGray, Color.LightGray),
+                    checked = isBackupConfirmed.value,
+                    onCheckedChange = {
+                        isBackupConfirmed.value = !isBackupConfirmed.value
+                    }
+                )
+                Text(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.secondaryVariant,
+                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.body1,
+                    text = stringResource(R.string.iConfirmThatBackup)
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            val pleaseConfirmBackupText = stringResource(R.string.pleaseConfirmYouHaveMadeBackup)
+            BottomButton(
+                onClick = {
+                    // scan card
+                    if (isBackupConfirmed.value) {
+                        SatoLog.d(TAG, "ResetWarningView: clicked on reset button for selectedVault $selectedVault")
+                        showNfcDialog.value = true // NfcDialog
+                        isReadyToNavigate.value = true // ready to navigate to next view once action is done
+                        sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
+                    } else {
+                        Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
+                    }
+
+                },
+                //width = 240.dp,
+                color = Color.Red,
+                text = stringResource(R.string.resetBtn)
+            )
+
+            // CANCEL BUTTON
+            val toastMsg = stringResource(R.string.actionCancelled)
+            Button(
+                onClick = {
+                    Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                    navController.navigateUp()
+                },
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(40.dp)
+                    .width(100.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = LightGray,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
