@@ -181,7 +181,6 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             val pleaseConfirmBackupText = stringResource(R.string.pleaseConfirmYouHaveMadeBackup)
             BottomButton(
                 onClick = {
-
                     // scan card
                     if (isBackupConfirmed.value) {
                         SatoLog.d(TAG, "ResetWarningView: clicked on reset button for selectedVault $selectedVault")

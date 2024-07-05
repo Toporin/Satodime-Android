@@ -2,16 +2,9 @@ package org.satochip.satodimeapp.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -35,8 +28,11 @@ import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
-fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
-
+fun UnsealCongratsView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    selectedVault: Int
+) {
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
     if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
@@ -97,7 +93,7 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
 
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.ShowPrivateKey.name  + "/$selectedVault") {
+                navController.navigate(SatodimeScreen.ShowPrivateKey.name + "/$selectedVault") {
                     popUpTo(0)
                 }
             },
@@ -122,6 +118,6 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
 @Composable
 fun UnsealCongratsViewPreview() {
     SatodimeTheme {
-        UnsealCongratsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1)
+        UnsealCongratsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory), 1)
     }
 }
