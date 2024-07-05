@@ -201,8 +201,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
         SatoLog.d(TAG, "fetchVaultBalance START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardSlots.map {
+        val updatedVaults = withContext(Dispatchers.Main) {
+            cardSlots.map {
                 if (it.slotState == SlotState.UNINITIALIZED) {
                     SatoLog.d(TAG, "fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
                     return@map null
@@ -212,19 +212,19 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultInfoFromSlot created vault ${cardVault.index}")
                 return@map cardVault
             }
-            if (cardVaults != updatedVaults) {
-                runBlocking {
-                    cardVaults.clear()
-                    cardVaults.addAll(updatedVaults)
-                }
+        }
+        if (cardVaults != updatedVaults) {
+            runBlocking {
+                cardVaults.clear()
+                cardVaults.addAll(updatedVaults)
             }
         }
     }
 
     private suspend fun fetchVaultBalance() {
         SatoLog.d(TAG, "fetchVaultBalance START")
-            val updatedVaults = withContext(Dispatchers.IO) {
-                cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultBalance uninitialized vault")
                     return@map null
@@ -245,8 +245,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultPrice() {
         SatoLog.d(TAG, "fetchVaultPrice START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultPrice uninitialized vault")
                     return@map null
@@ -257,19 +257,19 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultPrice updated vault ${it.index}")
                 return@map it
             }
-            if (cardVaults != updatedVaults) {
-                runBlocking {
-                    cardVaults.clear()
-                    cardVaults.addAll(updatedVaults)
-                }
+        }
+        if (cardVaults != updatedVaults) {
+            runBlocking {
+                cardVaults.clear()
+                cardVaults.addAll(updatedVaults)
             }
         }
     }
 
     private suspend fun fetchVaultAssets() {
         SatoLog.d(TAG, "fetchVaultAssets START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultAssets uninitialized vault")
                     return@map null
@@ -280,12 +280,12 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultAssets updated vault ${it.index}")
                 return@map it
             }
-            updatedVaults.let {
-                if (cardVaults != updatedVaults) {
-                    runBlocking {
-                        cardVaults.clear()
-                        cardVaults.addAll(updatedVaults)
-                    }
+        }
+        updatedVaults.let {
+            if (cardVaults != updatedVaults) {
+                runBlocking {
+                    cardVaults.clear()
+                    cardVaults.addAll(updatedVaults)
                 }
             }
         }
@@ -293,8 +293,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultAssetPrices() {
         SatoLog.d(TAG, "fetchVaultAssetPrices START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultAssetPrices uninitialized vault")
                     return@map null
@@ -310,12 +310,12 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultAssetPrices updated vault ${it.index}")
                 return@map it
             }
-            updatedVaults.let {
-                if (cardVaults != updatedVaults) {
-                    runBlocking {
-                        cardVaults.clear()
-                        cardVaults.addAll(updatedVaults)
-                    }
+        }
+        updatedVaults.let {
+            if (cardVaults != updatedVaults) {
+                runBlocking {
+                    cardVaults.clear()
+                    cardVaults.addAll(updatedVaults)
                 }
             }
         }
