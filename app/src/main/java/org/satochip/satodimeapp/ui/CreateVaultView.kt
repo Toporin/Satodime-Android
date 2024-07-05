@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -67,133 +69,9 @@ fun CreateVaultView(
     val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
     val selectedCoin = Coin.valueOf(selectedCoinName)
+    val scrollState = rememberScrollState()
+
     // todo display vault index in view!
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.primaryVariant)
-            .padding(10.dp)
-    ) {
-        HeaderRow(
-            onClick = {
-                navController.navigateUp()
-            },
-            titleText = R.string.createYourVault,
-            message = R.string.youAreAboutToCreateAndSeal
-        )
-        CoinDisplay(coin = selectedCoin)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            shape = RoundedCornerShape(15.dp)
-        ) {
-            Text(
-                modifier = Modifier
-                    .background(MaterialTheme.colors.primary)
-                    .padding(20.dp),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.secondary,
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.onceTheVaultHasBeengenerated) // todo support markdown
-//                buildAnnotatedString {
-//                    append(stringResource(R.string.once_the))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.vault))
-//                    }
-//                    append(stringResource(R.string.has_been_generated_the_corresponding))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.private_keys))
-//                    }
-//                    append(stringResource(R.string.is_hidden_in_the))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.satodime_chip_s_memory))
-//                    }
-//                    append(".")
-//                }
-            )
-        }
-        Spacer(Modifier.weight(1f))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .padding(10.dp)
-                .width(250.dp)
-                .height(75.dp)
-        ) {
-            Button(
-                onClick = {
-                    navController.navigate(
-                        SatodimeScreen.ExpertMode.name +
-                                "/$selectedCoinName/$selectedVault"
-                    )
-                },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .height(40.dp)
-                    .width(250.dp),
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = LightGray,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(stringResource(R.string.activateTheExpertMode))
-            }
-        }
-        Spacer(Modifier.weight(1f))
-//        val sealFailureText = stringResource(R.string.seal_failure)
-//        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
-//        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
-        BottomButton(
-            onClick = {
-                // generate entropy based on current time
-                val random = SecureRandom()
-                var entropyBytes = ByteArray(32)
-                random.nextBytes(entropyBytes)
-
-                // scan card
-                SatoLog.d(TAG, "CreateVaultView: clicked on create button!")
-                SatoLog.d(TAG, "CreateVaultView: selectedVault: $selectedVault")
-                SatoLog.d(TAG, "CreateVaultView: selectedCoinName: $selectedCoinName")
-                showNfcDialog.value = true // NfcDialog
-                isReadyToNavigate.value = true
-                sharedViewModel.sealSlot(
-                    context as Activity,
-                    index = selectedVault - 1,
-                    coinSymbol = selectedCoinName,
-                    isTestnet = false,
-                    entropyBytes = entropyBytes
-                )
-            },
-            text = stringResource(R.string.createAndSeal)
-        )
-
-        // CANCEL BUTTON
-        val toastMsg = stringResource(R.string.actionCancelled)
-        Button(
-            onClick = {
-                Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
-                navController.navigateUp()
-            },
-            modifier = Modifier
-                .padding(10.dp)
-                .height(40.dp)
-                .width(100.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = LightGray,
-                contentColor = Color.White
-            )
-        ) {
-            Text(stringResource(R.string.cancel))
-        }
-
-    }
 
     // NfcDialog
     if (showNfcDialog.value) {
@@ -224,6 +102,119 @@ fun CreateVaultView(
         }
     }
 
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.primaryVariant)
+            .padding(10.dp)
+    ) {
+        HeaderRow(
+            onClick = {
+                navController.navigateUp()
+            },
+            titleText = R.string.createYourVault,
+            message = R.string.youAreAboutToCreateAndSeal
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = scrollState)
+        ) {
+            CoinDisplay(coin = selectedCoin)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                shape = RoundedCornerShape(15.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary)
+                        .padding(20.dp),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.secondary,
+                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.body1,
+                    text = stringResource(R.string.onceTheVaultHasBeengenerated) // todo support markdown
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .width(250.dp)
+                    .height(75.dp)
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate(
+                            SatodimeScreen.ExpertMode.name +
+                                    "/$selectedCoinName/$selectedVault"
+                        )
+                    },
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(40.dp)
+                        .width(250.dp),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = LightGray,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(stringResource(R.string.activateTheExpertMode))
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            BottomButton(
+                onClick = {
+                    // generate entropy based on current time
+                    val random = SecureRandom()
+                    var entropyBytes = ByteArray(32)
+                    random.nextBytes(entropyBytes)
+
+                    // scan card
+                    SatoLog.d(TAG, "CreateVaultView: clicked on create button!")
+                    SatoLog.d(TAG, "CreateVaultView: selectedVault: $selectedVault")
+                    SatoLog.d(TAG, "CreateVaultView: selectedCoinName: $selectedCoinName")
+                    showNfcDialog.value = true // NfcDialog
+                    isReadyToNavigate.value = true
+                    sharedViewModel.sealSlot(
+                        context as Activity,
+                        index = selectedVault - 1,
+                        coinSymbol = selectedCoinName,
+                        isTestnet = false,
+                        entropyBytes = entropyBytes
+                    )
+                },
+                text = stringResource(R.string.createAndSeal)
+            )
+
+            // CANCEL BUTTON
+            val toastMsg = stringResource(R.string.actionCancelled)
+            Button(
+                onClick = {
+                    Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show() // todo translate
+                    navController.navigateUp()
+                },
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(40.dp)
+                    .width(100.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = LightGray,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    }
 }
 
 @Composable

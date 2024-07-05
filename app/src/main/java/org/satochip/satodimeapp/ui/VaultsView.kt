@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -123,9 +124,6 @@ fun VaultsView(
         )
     }
 
-//    val showOwnershipDialog = remember{ mutableStateOf(true) } // for OwnershipDialog
-//    val showAuthenticityDialog = remember{ mutableStateOf(true) } // for AuthenticityDialog
-
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults.size
     val pagerState = rememberPagerState(pageCount = {
@@ -167,7 +165,6 @@ fun VaultsView(
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.tint(Color.Green)
                 )
@@ -186,7 +183,6 @@ fun VaultsView(
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.tint(Color.Red)
                 )
@@ -203,9 +199,7 @@ fun VaultsView(
                     contentDescription = "logo",
                     modifier = Modifier
                         .size(45.dp), //.size(45.dp)
-                    //.offset(x = 20.dp, y = 20.dp),
                     contentScale = ContentScale.Crop,
-                    //colorFilter = ColorFilter.tint(Color.Yellow)
                 )
             }
         }
@@ -214,7 +208,6 @@ fun VaultsView(
 
         // TITLE
         Text(
-            //modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontSize = 38.sp,
             fontWeight = FontWeight.Medium,
@@ -228,7 +221,6 @@ fun VaultsView(
         // ICONS
         Row(
             modifier = Modifier
-            //.padding(top = 20.dp, end = 5.dp)
         ) {
             if (sharedViewModel.isCardDataAvailable) {
                 // SWITCH VIEW
@@ -253,7 +245,6 @@ fun VaultsView(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            //.padding(5.dp)
             .padding(top = 75.dp, bottom = 5.dp, start = 5.dp, end = 5.dp)
     ) {
         val onAddFunds = {
@@ -484,13 +475,6 @@ fun DetailedVaultView(
                     text = stringResource(R.string.addFunds)
                 )
             }
-//            Divider(
-//                modifier = Modifier
-//                    .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 40.dp)
-//                    .height(30.dp)
-//                    .width(2.dp),
-//                color = Color.LightGray,
-//            )
 
             // EXPLORE BUTTON
             Column(
@@ -602,9 +586,6 @@ fun DetailedVaultView(
                     text = stringResource(R.string.showKey)
                 )
             }
-//            Divider(modifier = Modifier
-//                .padding(10.dp)
-//                .size(0.dp))
 
             // RESET BUTTON
             Column(
@@ -715,6 +696,16 @@ fun VaultsViewTabScreen(vault: CardVault?) {
 @Composable
 fun VaultsViewToken(vault: CardVault) {
     LazyColumn {
+        item {
+            VaultsViewTokenRow(vault.nativeAsset, vault.coin.painterResourceId)
+            Divider(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.primary)
+                    .padding(start = 20.dp, end = 20.dp),
+                thickness = 1.dp,
+                color = Color.DarkGray
+            )
+        }
         items(vault.tokenList) { asset ->//TODO add tokens
             // only show Token, not NFTs
             if (asset.type == AssetType.Token) {
@@ -751,7 +742,7 @@ fun VaultsViewNft(vault: CardVault) {
 }
 
 @Composable
-fun VaultsViewTokenRow(asset: Asset) {
+fun VaultsViewTokenRow(asset: Asset, imageId: Int? = null) {
     val uriHandler = LocalUriHandler.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -766,23 +757,40 @@ fun VaultsViewTokenRow(asset: Asset) {
             .fillMaxWidth()
             .height(80.dp),
     ) {
-        Row {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(asset.iconUrl ?: "")
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(R.drawable.ic_sato_small),
-                error = painterResource(R.drawable.ic_sato_small),
-                contentDescription = (asset.name ?: asset.contract ?: ""),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .size(60.dp)
-                    .clip(
-                        RoundedCornerShape(50)
-                    ),
-            )
+        Row(
+            modifier = Modifier.fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            imageId?.let {
+                Image(
+                    painter = painterResource(id = imageId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(60.dp)
+                        .clip(
+                            RoundedCornerShape(50)
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+            } ?: run {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(asset.iconUrl ?: "")
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.ic_sato_small),
+                    error = painterResource(R.drawable.ic_sato_small),
+                    contentDescription = (asset.name ?: asset.contract ?: ""),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(60.dp)
+                        .clip(
+                            RoundedCornerShape(50)
+                        ),
+                )
+            }
 
             Column(modifier = Modifier.padding(10.dp)) {
                 Text(

@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -33,12 +35,15 @@ import org.satochip.satodimeapp.util.SatodimeScreen
 
 @Composable
 fun ResetCongratsView(navController: NavController, selectedVault: Int) {
+    val scrollState = rememberScrollState()
+
     DarkBlueGradientBackground()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
+            .verticalScroll(state = scrollState)
     ) {
         Text(
             modifier = Modifier
@@ -59,16 +64,6 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondary,
             text = stringResource(R.string.vaultSuccessfullyReset)
-
-//            buildAnnotatedString {
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.vault_cap))
-//                }
-//                append(stringResource(R.string.successfully))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.reset))
-//                }
-//            }
         )
         EmptyVaultCard(index = selectedVault, isFirstEmptyVault = true) {
             navController.navigate(SatodimeScreen.SelectBlockchain.name + "/$selectedVault")
@@ -88,22 +83,6 @@ fun ResetCongratsView(navController: NavController, selectedVault: Int) {
                 fontSize = 14.sp,
                 style = MaterialTheme.typography.body1,
                 text = stringResource(R.string.youCanNowCreateAndSeal)
-
-//                buildAnnotatedString {
-//                    append(stringResource(R.string.you_can_now))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.create))
-//                    }
-//                    append(stringResource(R.string.and))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.seal))
-//                    }
-//                    append(stringResource(R.string.a_new))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.vault))
-//                    }
-//                    append(".")
-//                }
             )
         }
         Spacer(Modifier.weight(1f))
