@@ -201,7 +201,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
         SatoLog.d(TAG, "fetchVaultBalance START")
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             val updatedVaults = cardSlots.map {
                 if (it.slotState == SlotState.UNINITIALIZED) {
                     SatoLog.d(TAG, "fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
