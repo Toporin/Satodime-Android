@@ -1,6 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,30 +63,7 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isBackupConfirmed = remember { mutableStateOf(false) }
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
     val scrollState = rememberScrollState()
-
     val vaults = sharedViewModel.cardVaults
-
-    // NfcDialog
-    if (showNfcDialog.value){
-        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
-    }
-
-    // auto-navigate when action is performed successfully
-    // todo improve?
-    LaunchedEffect(sharedViewModel.resultCodeLive, showNfcDialog, isReadyToNavigate) {
-        SatoLog.d(TAG, "ResetWarningView LaunchedEffect START ${sharedViewModel.resultCodeLive}")
-        while (sharedViewModel.resultCodeLive != NfcResultCode.ResetVaultSuccess
-            || isReadyToNavigate.value == false
-            || showNfcDialog.value) {
-            SatoLog.d(TAG, "ResetWarningView LaunchedEffect in while delay 1s ${sharedViewModel.resultCodeLive}")
-            delay(1.seconds)
-        }
-        // navigate
-        SatoLog.d(TAG, "ResetWarningView navigating to ResetCongratsView")
-        navController.navigate(SatodimeScreen.ResetCongratsView.name + "/$selectedVault") {
-            popUpTo(0)
-        }
-    }
 
     RedGradientBackground()
     Column(
@@ -183,9 +161,13 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                 onClick = {
                     // scan card
                     if (isBackupConfirmed.value) {
-                        SatoLog.d(TAG, "ResetWarningView: clicked on reset button for selectedVault $selectedVault")
+                        SatoLog.d(
+                            TAG,
+                            "ResetWarningView: clicked on reset button for selectedVault $selectedVault"
+                        )
                         showNfcDialog.value = true // NfcDialog
-                        isReadyToNavigate.value = true // ready to navigate to next view once action is done
+                        isReadyToNavigate.value =
+                            true // ready to navigate to next view once action is done
                         sharedViewModel.resetSlot(context as Activity, selectedVault - 1)
                     } else {
                         Toast.makeText(context, pleaseConfirmBackupText, Toast.LENGTH_SHORT).show()
@@ -217,6 +199,17 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                 Text(stringResource(R.string.cancel))
             }
         }
+    }
+
+    // NfcDialog
+    if (showNfcDialog.value){
+        NfcDialog(openDialogCustom = showNfcDialog, resultCodeLive = sharedViewModel.resultCodeLive, isConnected = sharedViewModel.isCardConnected)
+    }
+
+    if (isReadyToNavigate.value && sharedViewModel.resultCodeLive == NfcResultCode.ResetVaultSuccess && !showNfcDialog.value) {
+        SatoLog.d(TAG, "ResetWarningView navigating to ResetCongratsView")
+        navController.popBackStack()
+        navController.navigate(SatodimeScreen.ResetCongratsView.name + "/$selectedVault")
     }
 }
 

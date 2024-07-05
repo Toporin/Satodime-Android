@@ -86,9 +86,8 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
     ) {
         HeaderRow(
             onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
+                navController.popBackStack()
+                navController.navigateUp()
             },
             titleText = R.string.showPrivateKey,
         )

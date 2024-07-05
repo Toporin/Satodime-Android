@@ -70,9 +70,7 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
             Spacer(Modifier.weight(1f))
             BottomButton(
                 onClick = {
-                    navController.navigate(SatodimeScreen.Vaults.name) {
-                        popUpTo(0)
-                    }
+                    navController.navigateUp()
                 },
                 text = stringResource(R.string.showMyVault)
             )

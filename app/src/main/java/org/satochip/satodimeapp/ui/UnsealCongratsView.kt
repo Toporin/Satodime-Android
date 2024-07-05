@@ -93,9 +93,7 @@ fun UnsealCongratsView(
 
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.ShowPrivateKey.name + "/$selectedVault") {
-                    popUpTo(0)
-                }
+                navController.navigate(SatodimeScreen.ShowPrivateKey.name + "/$selectedVault")
             },
             width = 200.dp,
             text = stringResource(R.string.showThePrivateKey)
@@ -104,9 +102,7 @@ fun UnsealCongratsView(
         // BACK TO VAULT BUTTON
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
+                navController.navigateUp()
             },
             width = 240.dp,
             text = stringResource(R.string.backToMyVaults)
