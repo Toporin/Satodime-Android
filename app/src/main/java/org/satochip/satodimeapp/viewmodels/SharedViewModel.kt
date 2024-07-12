@@ -20,7 +20,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.CardPrivkey
@@ -70,6 +72,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     // dialogs
     val showOwnershipDialog = mutableStateOf(true) // for OwnershipDialog
     val showAuthenticityDialog = mutableStateOf(true) // for AuthenticityDialog
+    var updateVaultsJob: Job? = null
 
     init {
         NFCCardService.context = getApplication<Application>().applicationContext
@@ -87,7 +90,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         }
         // update balances
         NFCCardService.cardSlots.observeForever {
-            viewModelScope.launch {
+            updateVaultsJob?.cancel()
+            updateVaultsJob = viewModelScope.launch {
                 updateVaults(it)
             }
             cardSlots = it.toMutableList()
@@ -200,8 +204,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultInfoFromSlot(cardSlots: List<CardSlot>) {
         SatoLog.d(TAG, "fetchVaultBalance START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardSlots.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardSlots.map {
                 if (it.slotState == SlotState.UNINITIALIZED) {
                     SatoLog.d(TAG, "fetchVaultInfoFromSlot created uninitialized vault ${it.index}")
                     return@map null
@@ -211,18 +215,19 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultInfoFromSlot created vault ${cardVault.index}")
                 return@map cardVault
             }
-            if (cardVaults != updatedVaults) {
+        }
+        if (cardVaults != updatedVaults) {
+            runBlocking {
                 cardVaults.clear()
                 cardVaults.addAll(updatedVaults)
             }
         }
-
     }
 
     private suspend fun fetchVaultBalance() {
         SatoLog.d(TAG, "fetchVaultBalance START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultBalance uninitialized vault")
                     return@map null
@@ -232,7 +237,9 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultBalance updated vault ${it.index}")
                 return@map it
             }
-            if (cardVaults != updatedVaults) {
+        }
+        if (cardVaults != updatedVaults) {
+            runBlocking {
                 cardVaults.clear()
                 cardVaults.addAll(updatedVaults)
             }
@@ -241,8 +248,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultPrice() {
         SatoLog.d(TAG, "fetchVaultPrice START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultPrice uninitialized vault")
                     return@map null
@@ -253,7 +260,9 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultPrice updated vault ${it.index}")
                 return@map it
             }
-            if (cardVaults != updatedVaults) {
+        }
+        if (cardVaults != updatedVaults) {
+            runBlocking {
                 cardVaults.clear()
                 cardVaults.addAll(updatedVaults)
             }
@@ -262,8 +271,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultAssets() {
         SatoLog.d(TAG, "fetchVaultAssets START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultAssets uninitialized vault")
                     return@map null
@@ -274,8 +283,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultAssets updated vault ${it.index}")
                 return@map it
             }
-            updatedVaults.let {
-                if (cardVaults != updatedVaults) {
+        }
+        updatedVaults.let {
+            if (cardVaults != updatedVaults) {
+                runBlocking {
                     cardVaults.clear()
                     cardVaults.addAll(updatedVaults)
                 }
@@ -285,8 +296,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun fetchVaultAssetPrices() {
         SatoLog.d(TAG, "fetchVaultAssetPrices START")
-        withContext(Dispatchers.IO) {
-            val updatedVaults = cardVaults.map {
+        val updatedVaults = withContext(Dispatchers.IO) {
+            cardVaults.map {
                 if (it == null) {
                     SatoLog.d(TAG, "fetchVaultAssetPrices uninitialized vault")
                     return@map null
@@ -302,8 +313,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 SatoLog.d(TAG, "fetchVaultAssetPrices updated vault ${it.index}")
                 return@map it
             }
-            updatedVaults.let {
-                if (cardVaults != updatedVaults) {
+        }
+        updatedVaults.let {
+            if (cardVaults != updatedVaults) {
+                runBlocking {
                     cardVaults.clear()
                     cardVaults.addAll(updatedVaults)
                 }
@@ -350,5 +363,4 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 "App build: $versionCode\n\n" +
                 "Please describe your issue / feedback below\n"
     }
-
 }

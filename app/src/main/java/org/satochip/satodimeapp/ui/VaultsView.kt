@@ -125,13 +125,14 @@ fun VaultsView(
     }
 
     val vaults = sharedViewModel.cardVaults
-    val vaultsSize = vaults.size
-    val pagerState = rememberPagerState(pageCount = {
-        vaults.size
-    })
+    val pagerState = rememberPagerState(
+        pageCount = {
+            vaults.size
+        }
+    )
     sharedViewModel.selectedVault = findVaultToSelect(selectedVault = pagerState)
 
-    if (sharedViewModel.selectedVault > vaultsSize
+    if (sharedViewModel.selectedVault > vaults.size
         || vaults?.get(sharedViewModel.selectedVault - 1) == null
         || vaults[sharedViewModel.selectedVault - 1]?.state == SlotState.SEALED
     ) {
@@ -275,7 +276,7 @@ fun VaultsView(
             )
         }
         val onExplore = {
-            if (vaults != null && sharedViewModel.selectedVault <= vaultsSize && vaults[sharedViewModel.selectedVault - 1] != null) {
+            if (vaults != null && sharedViewModel.selectedVault <= vaults.size && vaults[sharedViewModel.selectedVault - 1] != null) {
                 val explorerLink =
                     vaults[sharedViewModel.selectedVault - 1]!!.nativeAsset.explorerLink
                 uriHandler.openUri(explorerLink)
@@ -428,7 +429,6 @@ fun DetailedVaultView(
     // ACTIONS ROW
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        //horizontalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .padding(10.dp)

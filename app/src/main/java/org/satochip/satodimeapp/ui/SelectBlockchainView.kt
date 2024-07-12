@@ -69,6 +69,7 @@ fun SelectBlockchainList(navController: NavController, selectedVault: Int) {
                     painter = painterResource(it.painterResourceId),
                     title = "${it.label} (${it.name})",
                     onSelect = {
+                        navController.popBackStack()
                         navController.navigate(
                             SatodimeScreen.CreateVault.name
                                     + "/${it.name}/$selectedVault"
