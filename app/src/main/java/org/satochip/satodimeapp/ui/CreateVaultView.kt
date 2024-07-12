@@ -43,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -67,6 +68,7 @@ fun CreateVaultView(
     val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
     val selectedCoin = Coin.valueOf(selectedCoinName)
     val scrollState = rememberScrollState()
+    val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
 
     // todo display vault index in view!
 
@@ -140,6 +142,10 @@ fun CreateVaultView(
             Spacer(Modifier.weight(1f))
             BottomButton(
                 onClick = {
+                    if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                        Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                        return@BottomButton
+                    }
                     // generate entropy based on current time
                     val random = SecureRandom()
                     var entropyBytes = ByteArray(32)

@@ -76,6 +76,7 @@
     <string name="pleaseConfirmYouHaveMadeBackup">Veuillez confirmer que vous avez fait une sauvegarde</string>
     <string name="vaultSuccessfullyReset">Votre coffre-fort a été réinitialisé</string>
     <string name="actionCancelled">Action annulée</string>
+    <string name="satodimeUnclaimed">Satodime n\'est pas réclamé</string>
     <string name="youCanNowCreateAndSeal">Vous pouvez maintenant créer et sceller un nouveau coffre-fort.</string>
     <string name="takeTheOwnershipTitle">Devenir propriétaire</string>
     <string name="takeTheOwnershipDescription">Pour effectuer des opérations sensibles sur la carte (sceller-desceller-réinitialiser), vous devez être le propriétaire.\n\nCe droit est révocable et transférable à tout moment dans les options de l\'application.\n\nCliquez sur Accepter pour obtenir ce droit.\nou Annuler pour y renoncer.</string>

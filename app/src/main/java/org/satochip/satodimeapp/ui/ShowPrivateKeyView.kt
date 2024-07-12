@@ -1,6 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -75,6 +77,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
     if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
     val requestedPrivkeyType = remember{ mutableStateOf(RequestedPrivkeyType.NONE) }
+    val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
 
     RedGradientBackground()
     Column(
@@ -98,7 +101,10 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showPrivateKeyLegacy,
             icon = R.drawable.arrow_right_circle
         ) {
-
+            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                return@PrivateKeyItem
+            }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
 
             if (privkey == null) {
@@ -126,6 +132,10 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showPrivateKeyWIF,
             icon = R.drawable.arrow_right_circle
         ) {
+            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                return@PrivateKeyItem
+            }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey
@@ -153,6 +163,10 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showEntropy,
             icon = R.drawable.arrow_right_circle
         ) {
+            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                return@PrivateKeyItem
+            }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
                 // recover privkey

@@ -1,6 +1,7 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -73,6 +75,7 @@ fun ExpertModeView(
     val focusRequester = remember { FocusRequester() }
     val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
+    val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
 
     Column(
         modifier = Modifier
@@ -170,6 +173,10 @@ fun ExpertModeView(
 //        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         BottomButton(
             onClick = {
+                if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                    Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                    return@BottomButton
+                }
                 // select network
                 var isTestnet = (selectedNetwork == Network.TestNet)
 
