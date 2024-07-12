@@ -19,6 +19,7 @@ enum class SatodimeScreen {
     MenuView,
     CardInfoView,
     TransferOwnershipView,
+    AcceptOwnershipView,
     SettingsView,
     ShowLogsView,
     AuthenticCardView,

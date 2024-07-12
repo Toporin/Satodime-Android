@@ -1,7 +1,6 @@
 package org.satochip.satodimeapp.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,9 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.EmptyVaultCard
@@ -52,7 +50,6 @@ import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
-import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "ResetWarningView"
 
@@ -63,6 +60,8 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
     val isBackupConfirmed = remember { mutableStateOf(false) }
     val isReadyToNavigate = remember{ mutableStateOf(false) }// for auto navigation to next view
     val scrollState = rememberScrollState()
+    val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
+
     val vaults = sharedViewModel.cardVaults
 
     RedGradientBackground()
@@ -159,6 +158,10 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
             val pleaseConfirmBackupText = stringResource(R.string.pleaseConfirmYouHaveMadeBackup)
             BottomButton(
                 onClick = {
+                    if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                        Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                        return@BottomButton
+                    }
                     // scan card
                     if (isBackupConfirmed.value) {
                         SatoLog.d(

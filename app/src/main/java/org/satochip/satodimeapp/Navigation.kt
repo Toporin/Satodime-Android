@@ -71,8 +71,8 @@ fun Navigation() {
 
     if (sharedViewModel.isAskingForCardOwnership) {
         SatoLog.d(TAG, "Navigation: Card needs ownership!")
-        AcceptOwnershipView(navController, sharedViewModel)
-        return
+        navController.navigate(SatodimeScreen.AcceptOwnershipView.name)
+
     }
 
     NavHost(
@@ -88,6 +88,9 @@ fun Navigation() {
         }
         composable(route = SatodimeScreen.ThirdWelcome.name) {
             ThirdWelcomeView(navController)
+        }
+        composable(route = SatodimeScreen.AcceptOwnershipView.name) {
+            AcceptOwnershipView(navController, sharedViewModel)
         }
 
         // SEAL

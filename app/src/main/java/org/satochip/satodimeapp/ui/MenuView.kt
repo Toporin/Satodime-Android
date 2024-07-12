@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
+import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.ui.components.InfoDialog
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.DarkBlue
@@ -110,7 +111,13 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                     LightGray,
                     R.drawable.users
                 ) {
-                    navController.navigate(SatodimeScreen.TransferOwnershipView.name)
+                    if (sharedViewModel.isCardDataAvailable && sharedViewModel.ownershipStatus == OwnershipStatus.Owner) {
+                        navController.navigate(SatodimeScreen.TransferOwnershipView.name)
+                    } else if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                        sharedViewModel.isAskingForCardOwnership = true
+                    } else {
+                        showNoCardScannedDialog.value = true
+                    }
                 }
             }
             Row(
@@ -177,14 +184,6 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                     )
                 }
             }
-
-//        Divider(
-//            modifier = Modifier
-//                .padding(20.dp)
-//                .height(2.dp)
-//                .width(150.dp),
-//            color = Color.DarkGray,
-//        )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -221,13 +220,17 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
         }
     }
 
-    if (showNoCardScannedDialog.value
-        && !sharedViewModel.isCardDataAvailable
-    ) {
+    if (showNoCardScannedDialog.value) {
+        var title = stringResource(id = R.string.cardNeedToBeScannedTitle)
+        var message = stringResource(id = R.string.cardNeedToBeScannedMessage)
+        if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner) {
+            title = stringResource(id = R.string.youAreNotTheCardOwner)
+            message = stringResource(id = R.string.nfcUnlockSecretNotFound)
+        }
         InfoDialog(
             openDialogCustom = showNoCardScannedDialog,
-            title = stringResource(R.string.cardNeedToBeScannedTitle),
-            message = stringResource(R.string.cardNeedToBeScannedMessage),
+            title = title,
+            message = message,
             isActionButtonVisible = false,
             buttonTitle = "",
             buttonAction = {},

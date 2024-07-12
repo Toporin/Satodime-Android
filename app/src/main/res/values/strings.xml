@@ -54,6 +54,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="resettingThisCryptoVaultWill">Reset this vault will completely and irrevocably delete the corresponding private key from your card.</string>
     <string name="resetBtn">Reset</string>
     <string name="actionCancelled">Action cancelled</string>
+    <string name="satodimeUnclaimed">Satodime is unclaimed</string>
     <!--    <string name="reset_cap">Reset</string>-->
 <!--    <string name="this_vault_will_completely_and_irrevocably">" this vault will completely and irrevocably "</string>-->
 <!--    <string name="delete">delete</string>-->
