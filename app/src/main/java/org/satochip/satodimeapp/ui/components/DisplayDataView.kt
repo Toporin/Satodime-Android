@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -53,7 +55,7 @@ fun DisplayDataView(
     //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
     val buyText = stringResource( id = R.string.buy)
     val buyInfo = stringResource( id = R.string.buyInfo)
-
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,7 +107,8 @@ fun DisplayDataView(
     Card(
         modifier = Modifier
             .padding(top = topBoxHeight - 50.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         shape = RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp)
     ) {
         Column(
