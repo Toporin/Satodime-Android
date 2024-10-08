@@ -29,6 +29,7 @@ android {
         buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
         buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
         buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
+        buildConfigField "String", "PARTNER_UUID", "\"${properties.getProperty("PARTNER_UUID")}\""
     }
 
     buildTypes {

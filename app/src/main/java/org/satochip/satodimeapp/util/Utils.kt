@@ -22,6 +22,7 @@ val apiKeys = hashMapOf(
     Pair("API_KEY_BSCSCAN", BuildConfig.API_KEY_BSCSCAN),
     Pair("API_KEY_RARIBLE", BuildConfig.API_KEY_RARIBLE),
     Pair("API_KEY_COVALENT", BuildConfig.API_KEY_COVALENT),
+    Pair("PARTNER_UUID", BuildConfig.PARTNER_UUID),
 )
 
 /** Convert an IPFS address to IPFS gateway (https) address */

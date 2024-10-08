@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +39,7 @@ import org.satochip.satodimeapp.ui.components.AcceptOwnershipView
 import org.satochip.satodimeapp.util.NavigationParam
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.apiKeys
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 private const val TAG = "Navigation"
@@ -160,7 +162,24 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            AddFundsView(navController, sharedViewModel, selectedVault)
+            val uriHandler = LocalUriHandler.current
+            AddFundsView(
+                navController,
+                sharedViewModel,
+                selectedVault,
+                onClick = {
+                    val cardVaults = sharedViewModel.cardVaults
+                    val cardVault = cardVaults[selectedVault - 1]!!
+                    val depositAddress = cardVault.nativeAsset.address
+                    val apiKey = apiKeys["PARTNER_UUID"]
+                    val uri = "https://widget.paybis.com/" +
+                            "?partnerId=$apiKey" +
+                            "&cryptoAddress=$depositAddress" +
+                            "&currencyCodeFrom=EUR" +
+                            "&currencyCodeTo=${cardVault.nativeAsset.symbol}"
+                    uriHandler.openUri(uri)
+                }
+            )
         }
 
         // UNSEAL

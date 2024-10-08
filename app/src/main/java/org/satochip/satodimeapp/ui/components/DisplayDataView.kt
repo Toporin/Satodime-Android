@@ -34,6 +34,7 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.SlotState
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
+import org.satochip.satodimeapp.ui.components.shared.SatoButton
 
 private val topBoxHeight = 225.dp
 
@@ -45,9 +46,13 @@ fun DisplayDataView(
     title: Int,
     label: String,
     subLabel: String = "",
-    data: String
+    data: String,
+    isBuyEnabled: Boolean = false,
+    onClick: () -> Unit,
 ) {
     //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
+    val buyText = stringResource( id = R.string.buy)
+    val buyInfo = stringResource( id = R.string.buyInfo)
 
     Box(
         modifier = Modifier
@@ -133,7 +138,25 @@ fun DisplayDataView(
                 text = data
             )
             DataAsQrCode(data)
+
             if(vault.state == SlotState.SEALED) {
+                if (isBuyEnabled) {
+                    Text(
+                        modifier = Modifier
+                            .padding(20.dp),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
+                        text = buyInfo
+                    )
+
+                    SatoButton(
+                        onClick = { onClick() },
+                        text = R.string.start,
+                        assetSymbol = buyText + " ${vault.nativeAsset.symbol}"
+                    )
+                }
                 Text(
                     modifier = Modifier
                         .padding(20.dp),

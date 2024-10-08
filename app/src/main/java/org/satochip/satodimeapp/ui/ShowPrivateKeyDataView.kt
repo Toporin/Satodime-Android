@@ -47,7 +47,8 @@ fun ShowPrivateKeyDataView(
         title = R.string.showPrivateKey,
         label = labelString,
         subLabel = subLabelString,
-        data = data
+        data = data,
+        onClick = {}
     )
 }
 

@@ -12,7 +12,12 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
-fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
+fun AddFundsView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    selectedVault: Int,
+    onClick: () -> Unit,
+) {
 //    val satodimeStore = SatodimeStore(LocalContext.current)
 //    val vaults = satodimeStore.vaultsFromDataStore.collectAsState(initial = emptyList()).value
 //
@@ -30,7 +35,9 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
         index = selectedVault,
         title = R.string.addFunds,
         label = stringResource(R.string.depositAddress),
-        data = cardVault.nativeAsset.address
+        data = cardVault.nativeAsset.address,
+        onClick = onClick,
+        isBuyEnabled = true
     )
 }
 
@@ -38,6 +45,6 @@ fun AddFundsView(navController: NavController, sharedViewModel: SharedViewModel,
 @Composable
 fun AddFundsViewPreview() {
     SatodimeTheme {
-        AddFundsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory), 1)
+        AddFundsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory), 1, onClick = {})
     }
 }
