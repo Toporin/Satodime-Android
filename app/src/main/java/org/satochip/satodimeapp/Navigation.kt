@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -41,9 +43,14 @@ import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.util.apiKeys
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
+import java.net.URLEncoder
+import java.util.Base64
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 private const val TAG = "Navigation"
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun Navigation() {
@@ -172,12 +179,21 @@ fun Navigation() {
                     val cardVault = cardVaults[selectedVault - 1]!!
                     val depositAddress = cardVault.nativeAsset.address
                     val apiKey = apiKeys["PARTNER_UUID"]
-                    val uri = "https://widget.paybis.com/" +
-                            "?partnerId=$apiKey" +
+                    val hmacKey = apiKeys["HMAC_KEY"]
+                    val uri = "https://widget.paybis.com/"
+                    val query = "?partnerId=$apiKey" +
                             "&cryptoAddress=$depositAddress" +
                             "&currencyCodeFrom=EUR" +
                             "&currencyCodeTo=${cardVault.nativeAsset.symbol}"
-                    uriHandler.openUri(uri)
+                    val decodedKey = Base64.getDecoder().decode(hmacKey)
+                    val mac = Mac.getInstance("HmacSHA256")
+                    val secretKeySpec = SecretKeySpec(decodedKey, "HmacSHA256")
+                    mac.init(secretKeySpec)
+                    val signatureBytes = mac.doFinal(query.toByteArray(Charsets.UTF_8))
+                    val signature = Base64.getEncoder().encodeToString(signatureBytes)
+                    val encodedSignature = URLEncoder.encode(signature, "UTF-8")
+
+                    uriHandler.openUri("$uri$query&signature=$encodedSignature")
                 }
             )
         }

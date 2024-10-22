@@ -30,6 +30,7 @@ android {
         buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
         buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
         buildConfigField "String", "PARTNER_UUID", "\"${properties.getProperty("PARTNER_UUID")}\""
+        buildConfigField "String", "HMAC_KEY", "\"${properties.getProperty("HMAC_KEY")}\""
     }
 
     buildTypes {
