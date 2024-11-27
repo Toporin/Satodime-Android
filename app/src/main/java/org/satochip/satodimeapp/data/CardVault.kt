@@ -54,8 +54,8 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     val coin: Coin = try {
         if (nativeAsset.symbol == "ROP")
             Coin.ETH
-        else if (nativeAsset.symbol == "MATIC") {
-            Coin.MATIC
+        else if (nativeAsset.symbol == "POL") {
+            Coin.POL
         }
         else
             Coin.valueOf(nativeAsset.symbol.take(3)) //todo: clean?

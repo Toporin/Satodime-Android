@@ -109,7 +109,7 @@ fun ThirdWelcomeViewContent() {
                 context = context
             )
         },
-        text = R.string.moreInfo,
+        text = stringResource(R.string.moreInfo),
         textColor = Color.White,
         buttonColor = LightGray
     )
@@ -133,7 +133,7 @@ fun ThirdWelcomeViewContent() {
                 )
             }
         },
-        text = R.string.videoInfo,
+        text = stringResource(R.string.videoInfo),
         textColor = Color.White,
         buttonColor = SatoGreen
     )

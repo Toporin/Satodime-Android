@@ -5,8 +5,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,10 +41,16 @@ import org.satochip.satodimeapp.ui.components.AcceptOwnershipView
 import org.satochip.satodimeapp.util.NavigationParam
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.apiKeys
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
+import java.net.URLEncoder
+import java.util.Base64
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 private const val TAG = "Navigation"
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun Navigation() {
@@ -160,7 +169,11 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            AddFundsView(navController, sharedViewModel, selectedVault)
+            AddFundsView(
+                navController,
+                sharedViewModel,
+                selectedVault,
+            )
         }
 
         // UNSEAL
