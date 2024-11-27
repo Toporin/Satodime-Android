@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -34,6 +37,7 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.SlotState
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
+import org.satochip.satodimeapp.ui.components.shared.SatoButton
 
 private val topBoxHeight = 225.dp
 
@@ -45,10 +49,12 @@ fun DisplayDataView(
     title: Int,
     label: String,
     subLabel: String = "",
-    data: String
+    data: String,
+    url: String? = null,
 ) {
     //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
-
+    val scrollState = rememberScrollState()
+    val uriHandler = LocalUriHandler.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,7 +106,8 @@ fun DisplayDataView(
     Card(
         modifier = Modifier
             .padding(top = topBoxHeight - 50.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         shape = RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp)
     ) {
         Column(
@@ -133,6 +140,7 @@ fun DisplayDataView(
                 text = data
             )
             DataAsQrCode(data)
+
             if(vault.state == SlotState.SEALED) {
                 Text(
                     modifier = Modifier
@@ -143,6 +151,22 @@ fun DisplayDataView(
                     style = MaterialTheme.typography.body1,
                     text = stringResource(R.string.youOrAnybodyCanDepositFunds)
                 )
+                
+                if (url != null) {
+                    SatoButton(
+                        onClick = { uriHandler.openUri(url) },
+                        text = stringResource( id = R.string.buy) + " ${vault.nativeAsset.symbol}",
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(20.dp),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
+                        text = stringResource( id = R.string.buyInfo)
+                    )
+                }
             } else {
                 Spacer(Modifier.weight(1f))
             }

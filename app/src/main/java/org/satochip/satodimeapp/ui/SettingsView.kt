@@ -278,7 +278,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                     SatodimeScreen.ShowLogsView.name
                 )
             },
-            text = R.string.showLogs,
+            text = stringResource(R.string.showLogs),
         )
         Spacer(modifier = Modifier.weight(1f))
 
@@ -291,7 +291,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                     senderEmail = "support@satochip.io"
                 )
             },
-            text = R.string.sendFeedback,
+            text = stringResource(R.string.sendFeedback),
             buttonColor = SatoGreen
         )
         Spacer(modifier = Modifier.weight(1f))

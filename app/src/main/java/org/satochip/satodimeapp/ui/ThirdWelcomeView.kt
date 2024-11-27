@@ -87,6 +87,7 @@ fun ThirdWelcomeView(navController: NavController) {
 @Composable
 fun ThirdWelcomeViewContent() {
     val context = LocalContext.current
+    val urlString = stringResource(id = R.string.onboardingVideo)
 
     Text(
         fontSize = 36.sp,
@@ -108,7 +109,7 @@ fun ThirdWelcomeViewContent() {
                 context = context
             )
         },
-        text = R.string.moreInfo,
+        text = stringResource(R.string.moreInfo),
         textColor = Color.White,
         buttonColor = LightGray
     )
@@ -118,7 +119,7 @@ fun ThirdWelcomeViewContent() {
         onClick = {
             val intent = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://www.youtube.com/watch?v=Z4vfEqtQleg&t=84s")
+                Uri.parse(urlString)
             )
             val packageManager = context.packageManager
             val chooserIntent = Intent.createChooser(intent, "Open with")
@@ -127,12 +128,12 @@ fun ThirdWelcomeViewContent() {
                 context.startActivity(chooserIntent)
             } else {
                 webviewActivityIntent(
-                    url = "https://www.youtube.com/watch?v=Z4vfEqtQleg&t=84s",
+                    url = urlString,
                     context = context
                 )
             }
         },
-        text = R.string.videoInfo,
+        text = stringResource(R.string.videoInfo),
         textColor = Color.White,
         buttonColor = SatoGreen
     )

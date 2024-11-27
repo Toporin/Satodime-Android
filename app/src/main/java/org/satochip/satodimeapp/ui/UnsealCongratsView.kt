@@ -1,21 +1,15 @@
 package org.satochip.satodimeapp.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,18 +23,21 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
-import org.satochip.satodimeapp.ui.theme.LightGray
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimeScreen
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
-fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedViewModel, selectedVault: Int) {
-
+fun UnsealCongratsView(
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    selectedVault: Int
+) {
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
-    if(selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
+    if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
+    val scrollState = rememberScrollState()
 
     RedGradientBackground()
     Column(
@@ -48,6 +45,7 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
+            .verticalScroll(state = scrollState)
     ) {
         Text(
             modifier = Modifier
@@ -68,15 +66,6 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondaryVariant,
             text = stringResource(R.string.vaultSuccessfullyUnseal)
-//            buildAnnotatedString {
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.vault_cap))
-//                }
-//                append(stringResource(R.string.successfully))
-//                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                    append(stringResource(R.string.unseal))
-//                }
-//            }
         )
         Text(
             modifier = Modifier
@@ -104,9 +93,7 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
 
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.ShowPrivateKey.name  + "/$selectedVault") {
-                    popUpTo(0)
-                }
+                navController.navigate(SatodimeScreen.ShowPrivateKey.name + "/$selectedVault")
             },
             width = 200.dp,
             text = stringResource(R.string.showThePrivateKey)
@@ -115,14 +102,11 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
         // BACK TO VAULT BUTTON
         BottomButton(
             onClick = {
-                navController.navigate(SatodimeScreen.Vaults.name) {
-                    popUpTo(0)
-                }
+                navController.navigateUp()
             },
             width = 240.dp,
             text = stringResource(R.string.backToMyVaults)
         )
-
     }
 }
 
@@ -130,6 +114,6 @@ fun UnsealCongratsView(navController: NavController, sharedViewModel: SharedView
 @Composable
 fun UnsealCongratsViewPreview() {
     SatodimeTheme {
-        UnsealCongratsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory),1)
+        UnsealCongratsView(rememberNavController(), viewModel(factory = SharedViewModel.Factory), 1)
     }
 }

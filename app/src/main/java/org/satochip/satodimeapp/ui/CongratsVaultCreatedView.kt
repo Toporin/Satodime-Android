@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +36,8 @@ import org.satochip.satodimeapp.util.SatodimeScreen
 @Composable
 fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: String) {
     val selectedCoin = Coin.valueOf(selectedCoinName)
+    val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,6 +48,7 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)
+                .verticalScroll(state = scrollState)
         ) {
             Spacer(Modifier.weight(1f))
             Title(
@@ -61,28 +66,11 @@ fun CongratsVaultCreatedView(navController: NavController, selectedCoinName: Str
                 style = MaterialTheme.typography.body1,
                 text = stringResource(R.string.rememberPrivateKeys)
                 // TODO support bold markdown
-//                buildAnnotatedString {
-//                    append(stringResource(R.string.remember_that_your))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.private_keys))
-//                    }
-//                    append(stringResource(R.string.will_be_accessible_once_you_ve))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.unsealed))
-//                    }
-//                    append(stringResource(R.string.your))
-//                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-//                        append(stringResource(R.string.vault))
-//                    }
-//                    append(".")
-//                }
             )
             Spacer(Modifier.weight(1f))
             BottomButton(
                 onClick = {
-                    navController.navigate(SatodimeScreen.Vaults.name) {
-                        popUpTo(0)
-                    }
+                    navController.navigateUp()
                 },
                 text = stringResource(R.string.showMyVault)
             )
