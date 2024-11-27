@@ -22,8 +22,8 @@ fun ShowPrivateKeyDataView(
     data: String,
 ) {
     val vaults = sharedViewModel.cardVaults
-    val vaultsSize = vaults?.size ?: 0
-    if (selectedVault > vaultsSize || vaults?.get(selectedVault - 1) == null) return
+    val vaultsSize = vaults.size
+    if (selectedVault > vaultsSize || vaults.get(selectedVault - 1) == null) return
     val vault = vaults[selectedVault - 1]!!
 
     // labels
@@ -48,7 +48,6 @@ fun ShowPrivateKeyDataView(
         label = labelString,
         subLabel = subLabelString,
         data = data,
-        onClick = {}
     )
 }
 

@@ -2,7 +2,6 @@ package org.satochip.satodimeapp.ui
 
 import android.app.Activity
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -139,9 +138,6 @@ fun ResetWarningView(navController: NavController, sharedViewModel: SharedViewMo
                     .padding(10.dp)
                     .width(400.dp)
                     .height(75.dp)
-                    .clickable {
-                        isBackupConfirmed.value = !isBackupConfirmed.value
-                    }
             ) {
                 Checkbox(
                     colors = CheckboxDefaults.colors(Color.LightGray, Color.LightGray),

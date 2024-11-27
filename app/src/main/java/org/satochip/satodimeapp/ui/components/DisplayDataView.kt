@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -49,13 +50,11 @@ fun DisplayDataView(
     label: String,
     subLabel: String = "",
     data: String,
-    isBuyEnabled: Boolean = false,
-    onClick: () -> Unit,
+    url: String? = null,
 ) {
     //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
-    val buyText = stringResource( id = R.string.buy)
-    val buyInfo = stringResource( id = R.string.buyInfo)
     val scrollState = rememberScrollState()
+    val uriHandler = LocalUriHandler.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,23 +142,6 @@ fun DisplayDataView(
             DataAsQrCode(data)
 
             if(vault.state == SlotState.SEALED) {
-                if (isBuyEnabled) {
-                    Text(
-                        modifier = Modifier
-                            .padding(20.dp),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colors.secondaryVariant,
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.body1,
-                        text = buyInfo
-                    )
-
-                    SatoButton(
-                        onClick = { onClick() },
-                        text = R.string.start,
-                        assetSymbol = buyText + " ${vault.nativeAsset.symbol}"
-                    )
-                }
                 Text(
                     modifier = Modifier
                         .padding(20.dp),
@@ -169,6 +151,22 @@ fun DisplayDataView(
                     style = MaterialTheme.typography.body1,
                     text = stringResource(R.string.youOrAnybodyCanDepositFunds)
                 )
+                
+                if (url != null) {
+                    SatoButton(
+                        onClick = { uriHandler.openUri(url) },
+                        text = stringResource( id = R.string.buy) + " ${vault.nativeAsset.symbol}",
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(20.dp),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
+                        text = stringResource( id = R.string.buyInfo)
+                    )
+                }
             } else {
                 Spacer(Modifier.weight(1f))
             }

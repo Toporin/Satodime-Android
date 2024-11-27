@@ -14,8 +14,8 @@ android {
         applicationId "org.satochip.satodimeapp"
         minSdk 24
         targetSdk 34
-        versionCode 300
-        versionName "0.3.0"
+        versionCode 301
+        versionName "0.3.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -29,8 +29,8 @@ android {
         buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
         buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
         buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
-        buildConfigField "String", "PARTNER_UUID", "\"${properties.getProperty("PARTNER_UUID")}\""
-        buildConfigField "String", "HMAC_KEY", "\"${properties.getProperty("HMAC_KEY")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${properties.getProperty("API_KEY_PAYBIS_ID")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${properties.getProperty("API_KEY_PAYBIS_HMAC")}\""
     }
 
     buildTypes {
@@ -90,7 +90,7 @@ dependencies {
     implementation files('libs/satochip-android-0.0.2.jar')
     //implementation files('libs/javacryptotools-0.1.0.jar')
     //implementation files('libs/javacryptotools-0.2.0.jar')
-    implementation files('libs/javacryptotools-0.3.0.jar')
+    implementation files('libs/javacryptotools-0.3.1.jar')
 
     //satochip-android & satochip-lib related dependencies
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")

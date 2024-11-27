@@ -169,32 +169,10 @@ fun Navigation() {
             )
         ) {
             val selectedVault = it.arguments?.getInt(NavigationParam.SelectedVault.name)!!
-            val uriHandler = LocalUriHandler.current
             AddFundsView(
                 navController,
                 sharedViewModel,
                 selectedVault,
-                onClick = {
-                    val cardVaults = sharedViewModel.cardVaults
-                    val cardVault = cardVaults[selectedVault - 1]!!
-                    val depositAddress = cardVault.nativeAsset.address
-                    val apiKey = apiKeys["PARTNER_UUID"]
-                    val hmacKey = apiKeys["HMAC_KEY"]
-                    val uri = "https://widget.paybis.com/"
-                    val query = "?partnerId=$apiKey" +
-                            "&cryptoAddress=$depositAddress" +
-                            "&currencyCodeFrom=EUR" +
-                            "&currencyCodeTo=${cardVault.nativeAsset.symbol}"
-                    val decodedKey = Base64.getDecoder().decode(hmacKey)
-                    val mac = Mac.getInstance("HmacSHA256")
-                    val secretKeySpec = SecretKeySpec(decodedKey, "HmacSHA256")
-                    mac.init(secretKeySpec)
-                    val signatureBytes = mac.doFinal(query.toByteArray(Charsets.UTF_8))
-                    val signature = Base64.getEncoder().encodeToString(signatureBytes)
-                    val encodedSignature = URLEncoder.encode(signature, "UTF-8")
-
-                    uriHandler.openUri("$uri$query&signature=$encodedSignature")
-                }
             )
         }
 

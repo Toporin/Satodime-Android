@@ -164,6 +164,6 @@
     <string name="bitcoinOnly">Bitcoin uniquement</string>
     <string name="debugMode">Mode débogage</string>
     <string name="buy">Acheter</string>
-    <string name="buyInfo">Ce service est fourni par PAYBIS POLAND Sp. z o.o. Vous serez redirigé vers Paybis.com pour acheter vos tokens.</string>
+    <string name="buyInfo">Ce service est fourni par PAYBIS POLAND Sp. z o.o. Vous serez redirigé vers Paybis.com pour acheter vos devises.</string>
     <string name="onboardingVideo">https://youtu.be/ToSah4y16Jc</string>
 </resources>

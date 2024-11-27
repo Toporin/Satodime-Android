@@ -189,6 +189,6 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="bitcoinOnly">Bitcoin only</string>
     <string name="debugMode">Debug mode</string>
     <string name="buy">Buy</string>
-    <string name="buyInfo">This service is provided by PAYBIS POLAND Sp. z o.o. You will be redirected to Paybis.com to purchase your tokens.</string>
+    <string name="buyInfo">This service is provided by PAYBIS POLAND Sp. z o.o. You will be redirected to Paybis.com to purchase your currencies.</string>
     <string name="onboardingVideo">https://youtu.be/lVrKgzak2Bc</string>
 </resources>

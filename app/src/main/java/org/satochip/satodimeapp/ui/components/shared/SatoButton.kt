@@ -10,16 +10,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.satochip.satodimeapp.R
 
 @Composable
 fun SatoButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: Int,
-    assetSymbol: String = "",
+    text: String,
     buttonColor: Color = MaterialTheme.colors.primary,
     textColor: Color = MaterialTheme.colors.secondary,
     shape: RoundedCornerShape = RoundedCornerShape(50)
@@ -36,16 +33,9 @@ fun SatoButton(
             backgroundColor = buttonColor,
         )
     ) {
-        if(text == R.string.start) {
-            Text(
-                text = assetSymbol,
-                color = textColor
-            )
-        } else {
-            Text(
-                text = stringResource(text) + assetSymbol,
-                color = textColor
-            )
-        }
+        Text(
+            text = text,
+            color = textColor
+        )
     }
 }
