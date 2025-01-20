@@ -866,7 +866,7 @@ fun VaultsViewNftRow(asset: Asset) {
                 .build(),
             placeholder = painterResource(R.drawable.ic_sato_small),
             error = painterResource(R.drawable.ic_sato_small),
-            contentDescription = (asset.nftName ?: asset.contract ?: "NFT"),
+            contentDescription = (asset.nftName ?: asset.name ?: asset.contract ?: "NFT"),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(60.dp)
@@ -889,7 +889,7 @@ fun VaultsViewNftRow(asset: Asset) {
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.body1,
                 color = MaterialTheme.colors.secondary,
-                text = "${asset.nftName ?: asset.contract ?: "NFT"}",
+                text = asset.nftName ?: asset.name ?: asset.contract ?: "NFT",
             )
             // NFT BALANCE
             Text(

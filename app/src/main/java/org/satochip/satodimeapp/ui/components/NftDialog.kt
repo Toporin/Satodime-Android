@@ -91,7 +91,7 @@ fun NftDialogUI(modifier: Modifier = Modifier,
 
             // TITLE
             Text(
-                text = asset.nftName ?: asset.contract ?: "NFT",
+                text = asset.nftName ?: asset.name ?: asset.contract ?: "NFT",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(top = 5.dp)
@@ -111,7 +111,7 @@ fun NftDialogUI(modifier: Modifier = Modifier,
                     .build(),
                 placeholder = painterResource(R.drawable.ic_sato_small),
                 error = painterResource(R.drawable.ic_sato_small),
-                contentDescription = (asset.nftName ?: asset.contract ?: "NFT"),
+                contentDescription = (asset.nftName ?: asset.name ?: asset.contract ?: "NFT"),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(250.dp)

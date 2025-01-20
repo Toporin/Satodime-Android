@@ -278,8 +278,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                     return@map null
                 }
 
-                it.fetchTokenList()
-                it.fetchNftList()
+                it.fetchAssetList()
                 SatoLog.d(TAG, "fetchVaultAssets updated vault ${it.index}")
                 return@map it
             }

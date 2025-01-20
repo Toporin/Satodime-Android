@@ -1,8 +1,8 @@
 package org.satochip.satodimeapp.data
 
-import android.util.Log
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.util.Log
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.javacryptotools.explorers.CoinCombined
@@ -13,7 +13,9 @@ import org.satochip.satodimeapp.util.apiKeys
 import org.satochip.satodimeapp.util.getBalanceDouble
 import org.satochip.satodimeapp.util.newBaseCoin
 import java.nio.ByteBuffer
+import java.util.Collections.emptyList
 import java.util.logging.Level
+
 
 private const val TAG = "CardVault"
 private const val DEBUG_EXPLORER = false
@@ -23,7 +25,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
     val debugMode = prefs.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)
-    val logLevel = if (debugMode) {Level.CONFIG} else {Level.WARNING}
+    val logLevel = if (debugMode) {Level.INFO} else {Level.WARNING}
 
     private val keySlip44: ByteArray = cardSlot.keySlip44
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
@@ -33,10 +35,12 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     val state = cardSlot.slotState // UNINITIALIZED, SEALED, UNSEALED;
     val index: Int = cardSlot.index
 
-    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys)
+    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys, logLevel)
+
     init {
         baseCoin.setLoggerLevel(logLevel)
-        SatoLog.d(TAG,"CardVault constructor $keySlip44Int")
+        SatoLog.d(TAG, "CardVault init2 ${baseCoin.coin_symbol}")
+        SatoLog.d(TAG,"CardVault init $keySlip44Int")
     }
 
     var nativeAsset: Asset = Asset()
@@ -48,7 +52,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         nativeAsset.explorerLink = baseCoin.getAddressWeburl(nativeAsset.address)
     }
 
-    val priceExplorer = CoinCombined( nativeAsset.symbol, apiKeys, logLevel)
+    val priceExplorer = CoinCombined( baseCoin, apiKeys, logLevel)
 
     // meta info such as icon
     val coin: Coin = try {
@@ -81,7 +85,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         }
 
         try {
-            var balance = baseCoin.getBalance(addressCopy)
+            val balance = baseCoin.getBalance(addressCopy)
             SatoLog.d(TAG, "fetchBalance balance: $balance")
             nativeAsset.balance = balance.toString()
             nativeAsset.decimals = "0" // no divisor
@@ -116,16 +120,13 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         if (!asset.rateAvailable) {
             if (asset.type == AssetType.Coin) {
                 // fetch exchange rate
-                val exchangeRate = priceExplorer.get_exchange_rate_between(asset.symbol, selectedSecondCurrency)
+                val exchangeRate = baseCoin.get_exchange_rate_with(selectedSecondCurrency)
                 SatoLog.d(TAG, "fetchAssetValue: exchange rate: ${asset.symbol} = $exchangeRate $selectedSecondCurrency")
                 if (exchangeRate != null && exchangeRate>=0){
                     asset.rate = exchangeRate
                     asset.rateCurrency = selectedSecondCurrency
                     asset.rateAvailable = true
                 }
-            } else {
-                // for token, rate is typically fetched when info is populated but with no guarantee
-                // TODO: try to fetch from priceExplorer?
             }
         }
 
@@ -147,7 +148,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
                 }
             } else {
                 // fetch exchange rate between available rateCurrency and desired selectedSecondCurrency
-                val exchangeRate = priceExplorer.get_exchange_rate_between(asset.rateCurrency, selectedSecondCurrency)
+                val exchangeRate = baseCoin.get_exchange_rate_between(asset.rateCurrency, selectedSecondCurrency)
                 SatoLog.d(TAG, "fetchAssetValue: exchange rate: ${asset.rateCurrency} = $exchangeRate $selectedSecondCurrency")
 
                 val balanceDouble = getBalanceDouble(asset.balance, asset.decimals)
@@ -169,7 +170,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         }
     }
 
-    fun fetchTokenList(): List<Asset> {
+    fun fetchAssetList() {
         SatoLog.d(TAG, "fetchTokenList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
@@ -179,44 +180,24 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         }
 
         try {
-            //TODO: check if token/NFT supported by blockchain
-            tokenList = baseCoin.getAssetList(addressCopy)
-            SatoLog.d(TAG, "fetchTokenList: tokenList: $tokenList")
-
-            if (tokenList != null) {
-                return tokenList
-            } else {
-                return emptyList()
+            val assetList = baseCoin.getAssetList(addressCopy)
+            if (assetList == null) {
+                return
             }
-        } catch (e: Exception) {
-            SatoLog.e(TAG, "fetchTokenList: exception for $addressCopy: $e")
-            SatoLog.e(TAG, Log.getStackTraceString(e))
-            return emptyList()
-        }
-    }
 
-    fun fetchNftList(): List<Asset> {
-        SatoLog.d(TAG, "fetchNftList: START ${nativeAsset.address}")
-
-        var addressCopy = nativeAsset.address
-        if (USE_MOCKUP_ADDRESSS) {
-            addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
-            SatoLog.w(TAG, "fetchNftList: using mockup address $addressCopy instead of ${nativeAsset.address}")
-        }
-
-        try {
-            nftList = baseCoin.getNftList(addressCopy)
-            SatoLog.d(TAG, "fetchNftList: nftList: $nftList")
-
-            if (nftList != null) {
-                return nftList
-            } else {
-                return emptyList()
+            // sort by type
+            for (asset in assetList) {
+                if (asset.type == AssetType.Token){
+                    tokenList += asset
+                } else if (asset.type == AssetType.NFT){
+                    nftList += asset
+                }
             }
+
         } catch (e: Exception) {
-            SatoLog.e(TAG, "fetchNftList: exception for $addressCopy + $e")
+            SatoLog.e(TAG, "fetchAssetList: exception for $addressCopy: $e")
             SatoLog.e(TAG, Log.getStackTraceString(e))
-            return emptyList()
+            return
         }
     }
 
@@ -242,7 +223,7 @@ private fun getMockupAddressForDebug(coin_symbol: String): String? {
         addressCopy = "bitcoincash:pqtdjp63swypep62kyfxzh2k6kpq5weydvfqs9wpk2"
     } else if (coin_symbol == "LTC") {
         addressCopy = "ltc1qr07zu594qf63xm7l7x6pu3a2v39m2z6hh5pp4t"
-    } else if (coin_symbol == "MATIC") {
+    } else if (coin_symbol == "POL") {
         //addressCopy = "0x8db853Aa2f01AF401e10dd77657434536735aC62"
         //addressCopy = "0x86d22A8219De3683CF188778CDAdEE62D1442033"
         addressCopy = "0xE976c3052Df18cc2Dc878b9bc3191Bba68Ef3d80" // DolZ nft
