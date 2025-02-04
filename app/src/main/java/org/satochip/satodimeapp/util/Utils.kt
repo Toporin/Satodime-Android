@@ -12,6 +12,7 @@ import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.satodimeapp.BuildConfig
 import org.satochip.satodimeapp.services.SatoLog
 import java.text.DecimalFormat
+import java.util.logging.Level
 import kotlin.math.pow
 
 private const val TAG = "Utils"
@@ -83,7 +84,7 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
     val decimalFormat: DecimalFormat = when(symbolString){
         "BTC" -> DecimalFormat("###.########")
         "ETH" -> DecimalFormat("###.######")
-        "MATIC" -> DecimalFormat("###.######")
+        "POL" -> DecimalFormat("###.######")
         "BCH" -> DecimalFormat("###.########")
         else -> {DecimalFormat("###.##")}
     }
@@ -96,16 +97,17 @@ fun formatBalance(balanceDouble: Double?, symbol: String?, maxFractionDigit: Int
 fun newBaseCoin(
     keySlip44Int: Int,
     isTestnet: Boolean,
-    apiKeys: Map<String, String>
+    apiKeys: Map<String, String>,
+    level: Level = Level.WARNING
 ): BaseCoin {
     return when (keySlip44Int or -0x80000000) { // switch first bit (ignore testnet or mainnet)
-        Constants.BTC -> Bitcoin(isTestnet, apiKeys)
-        Constants.LTC -> Litecoin(isTestnet, apiKeys)
-        Constants.BCH -> BitcoinCash(isTestnet, apiKeys)
-        Constants.ETH -> Ethereum(isTestnet, apiKeys)
-        Constants.MATIC -> Polygon(isTestnet, apiKeys)
-        Constants.XCP -> Counterparty(isTestnet, apiKeys)
-        else -> UnsupportedCoin(isTestnet, apiKeys)
+        Constants.BTC -> Bitcoin(isTestnet, apiKeys, level)
+        Constants.LTC -> Litecoin(isTestnet, apiKeys, level)
+        Constants.BCH -> BitcoinCash(isTestnet, apiKeys, level)
+        Constants.ETH -> Ethereum(isTestnet, apiKeys, level)
+        Constants.POL -> Polygon(isTestnet, apiKeys, level)
+        Constants.XCP -> Counterparty(isTestnet, apiKeys, level)
+        else -> UnsupportedCoin(isTestnet, apiKeys, level)
     }
 }
 
@@ -116,7 +118,7 @@ fun coinToSlip44Bytes(coinSymbol: String, isTestnet: Boolean): ByteArray {
         "BCH" -> Constants.BCH
         "ETH" -> Constants.ETH
         "XCP" -> Constants.XCP
-        "MATIC" -> Constants.MATIC
+        "POL" -> Constants.POL
         else -> Constants.BTC // should not happen
     }
 
