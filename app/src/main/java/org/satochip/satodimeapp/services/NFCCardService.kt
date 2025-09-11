@@ -1,5 +1,6 @@
 package org.satochip.satodimeapp.services
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -13,6 +14,7 @@ import org.satochip.client.SatochipCommandSet
 import org.satochip.client.SatochipParser
 import org.satochip.client.SatodimeKeyslotStatus
 import org.satochip.client.SatodimeStatus
+import org.satochip.io.APDUException
 import org.satochip.io.APDUResponse
 import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.CardPrivkey
@@ -27,14 +29,14 @@ import kotlin.concurrent.thread
 private const val TAG = "NFCCardService"
 
 // singleton
+@SuppressLint("StaticFieldLeak")
 object NFCCardService {
 
     lateinit var context: Context // initialized in sharedViewModel init() // = application.applicationContext
     var activity: Activity? = null
 
     //
-    var isConnected =
-        MutableLiveData(false) // the app is connected to a card // updated in SatodimeCardListener
+    var isConnected = MutableLiveData(false) // the app is connected to a card // updated in SatodimeCardListener
     var isCardDataAvailable = MutableLiveData(false)
 
     // Card state
@@ -204,6 +206,16 @@ object NFCCardService {
             }
             NFCCardService.isCardDataAvailable.postValue(true)
             SatoLog.d(TAG, "readCard: Card reading successful")
+
+        } catch (e: APDUException) {
+            SatoLog.e(TAG, "readCard APDUException: $e")
+            SatoLog.e(TAG, Log.getStackTraceString(e))
+            if (e.sw == 0x6A82){
+                resultCodeLive.postValue(NfcResultCode.FailedToSelectApplet)
+            } else {
+                resultCodeLive.postValue(NfcResultCode.FailedToListVaults)
+            }
+            resultMsg = "readCard exception: ${e.localizedMessage}"
         } catch (e: Exception) {
             SatoLog.e(TAG, "readCard exception: $e")
             SatoLog.e(TAG, Log.getStackTraceString(e))
