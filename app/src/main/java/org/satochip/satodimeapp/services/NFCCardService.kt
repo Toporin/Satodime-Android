@@ -146,10 +146,10 @@ object NFCCardService {
             cardAppletVersion = versionString
 
             // check version: v0.1-0.1 cannot proceed further without setup first
-            if (versionInt <= 0x00010001 && !cardStatus.isSetupDone) {
+            if (versionInt <= 0x00010001u && !cardStatus.isSetupDone) {
                 SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
                 ownershipStatus.postValue(OwnershipStatus.Unclaimed)
-                waitForSetup.postValue(true) // show accept ownership immediatly
+                waitForSetup.postValue(true) // show accept ownership immediately
                 resultCodeLive.postValue(NfcResultCode.RequireSetup)
                 resultMsg = "Satodime v0.1-0.1 requires user to claim ownership to continue!"
                 SatoLog.w(
@@ -199,7 +199,7 @@ object NFCCardService {
             resultCodeLive.postValue(NfcResultCode.ListVaultsSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card scan successful!"
             // check if setupDone
-            if (versionInt > 0x00010001 && !cardStatus.isSetupDone) {
+            if (versionInt > 0x00010001u && !cardStatus.isSetupDone) {
                 SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
                 ownershipStatus.postValue(OwnershipStatus.Unclaimed)
                 waitForSetup.postValue(true)
@@ -235,7 +235,7 @@ object NFCCardService {
             // check authentikey
             // for v0.1-0.1, authentikeyHex is not available until ownership is accepted, so this check cannot be done
             val versionInt = getCardVersionInt(rapduStatus)
-            if (versionInt > 0x00010001) {
+            if (versionInt > 0x00010001u) {
                 val rapduAuthkey = cmdSet.cardGetAuthentikey()
                 var authentikeyHex2 = cmdSet.authentikeyHex
                 // check that authentikey match with previous tap
@@ -756,25 +756,25 @@ object NFCCardService {
     }
 
     // util
-    fun getCardVersionInt(rapdu: APDUResponse): Int {
+    fun getCardVersionInt(rapdu: APDUResponse): UInt {
         var data = rapdu.data
         val protocol_major_version = data[0]
         val protocol_minor_version = data[1]
         val applet_major_version = data[2]
         val applet_minor_version = data[3]
-        val versionInt: Int = (protocol_major_version.toInt() shl 24) +
-                (protocol_minor_version.toInt() shl 16) +
-                (applet_major_version.toInt() shl 8) +
-                applet_minor_version
+        val versionInt: UInt = (protocol_major_version.toUByte().toUInt() shl 24) +
+                (protocol_minor_version.toUByte().toUInt() shl 16) +
+                (applet_major_version.toUByte().toUInt() shl 8) +
+                applet_minor_version.toUByte().toUInt()
         return versionInt
     }
 
     fun getCardVersionString(rapdu: APDUResponse): String {
         var data = rapdu.data
-        val protocol_major_version = data[0]
-        val protocol_minor_version = data[1]
-        val applet_major_version = data[2]
-        val applet_minor_version = data[3]
+        val protocol_major_version = data[0].toUByte().toInt()
+        val protocol_minor_version = data[1].toUByte().toInt()
+        val applet_major_version = data[2].toUByte().toInt()
+        val applet_minor_version = data[3].toUByte().toInt()
         val versionString =
             "$protocol_major_version.$protocol_minor_version-$applet_major_version.$applet_minor_version"
         return versionString
