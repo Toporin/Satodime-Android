@@ -35,8 +35,15 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="http" />
-                <data android:scheme="https" />
+                <!-- Match https://satodime.io/* and https://*.satodime.io/* -->
+                <data
+                    android:scheme="https"
+                    android:host="satodime.io"
+                    android:pathPattern=".*" />
+                <data
+                    android:scheme="https"
+                    android:host="*.satodime.io"
+                    android:pathPattern=".*" />
             </intent-filter>
 
             <!-- For non-NDEF or TECH fallback: Handles raw tags -->

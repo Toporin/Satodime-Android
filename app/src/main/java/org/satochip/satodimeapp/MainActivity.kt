@@ -128,6 +128,8 @@ class MainActivity : ComponentActivity() {
         val ndefFilter = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED).apply {
             addDataScheme("http")
             addDataScheme("https")
+            addDataAuthority("satodime.io", null)
+            addDataAuthority("*.satodime.io", null)
         }
         val techFilter = IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)
         intentFiltersArray = arrayOf(ndefFilter, techFilter)
