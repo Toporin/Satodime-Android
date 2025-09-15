@@ -1,5 +1,6 @@
 package org.satochip.satodimeapp
 
+import UnlockCodeDialog
 import android.app.PendingIntent
 import android.content.IntentFilter
 import android.content.Intent
@@ -28,6 +29,7 @@ import org.satochip.satodimeapp.util.internetconnection.ConnectionChecker
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import org.satochip.satodimeapp.services.SatoLog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.satochip.satodimeapp.services.NFCCardService
 
 private const val TAG = "MainActivity"
 
@@ -100,6 +102,41 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+
+                    // Unlock Code Dialog
+                    val showUnlockCodeDialog by sharedViewModel.showUnlockCodeDialog.collectAsState()
+                    if (showUnlockCodeDialog) {
+                        UnlockCodeDialog(
+                            onDismiss = { sharedViewModel.dismissUnlockCodeDialog() },
+                            onCodeEntered = { code ->
+                                // Handle the entered code here
+                                println("Code entered: $code")
+
+                                // convert to bytes
+                                val unlockCodeBytes = code.toByteArray()
+
+                                // pad/truncate with '00' bytes to reach 20 bytes
+                                val paddedUnlockCodeBytes = unlockCodeBytes.copyOf(20)
+
+                                // check validity, then update code
+                                NFCCardService.updateUnlockCode(paddedUnlockCodeBytes)
+
+                                // do something if code is invalid?
+
+                                // check code validity
+                                // TODO!
+                                // if valid, update cached value
+                                // TODO!
+                                // if valid, update preferences
+                                // TODO!
+
+
+                                sharedViewModel.dismissUnlockCodeDialog()
+                            }
+                        )
+                    }
+
+
                 }
             }
         }

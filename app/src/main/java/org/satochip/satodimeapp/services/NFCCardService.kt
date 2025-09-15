@@ -780,5 +780,38 @@ object NFCCardService {
         return versionString
     }
 
+    fun updateUnlockCode(codeBytes: ByteArray){
+        SatoLog.d(TAG, "updateUnlockCode ")
+        // TODO check code validity!?
+
+        // TODO throw in case of error?
+
+        // update cache
+        unlockSecretBytes = codeBytes
+        unlockSecretHex = SatochipParser.toHexString(codeBytes)
+        SatoLog.d(TAG, "updateUnlockCode unlockSecretHex: ${unlockSecretHex}")
+        cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
+
+        // save in prefs
+        SatoLog.d(TAG, "updateUnlockCode saving in prefs...")
+        val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
+        prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
+        SatoLog.d(TAG, "updateUnlockCode: Saved unlockSecret for card ${authentikeyHex}")
+        // update status
+        ownershipStatus.postValue(OwnershipStatus.Owner)
+        resultCodeLive.postValue(NfcResultCode.TakeOwnershipSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
+        resultMsg = "Card ownership claimed successfully for $authentikeyHex!"
+        SatoLog.d(TAG, resultMsg)
+    }
+
+    fun getUnlockCode(){
+
+
+
+
+    }
+
+
+
 }
 

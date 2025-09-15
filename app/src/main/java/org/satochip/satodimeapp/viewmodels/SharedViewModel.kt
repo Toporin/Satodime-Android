@@ -82,6 +82,9 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     private val _showNfcCheckDialog = MutableStateFlow(false)
     val showNfcCheckDialog: StateFlow<Boolean> = _showNfcCheckDialog.asStateFlow()
 
+    // Unlock Code dialog display
+    private val _showUnlockCodeDialog = MutableStateFlow(false)
+    val showUnlockCodeDialog: StateFlow<Boolean> = _showUnlockCodeDialog.asStateFlow()
 
     init {
         NFCCardService.context = getApplication<Application>().applicationContext
@@ -143,6 +146,23 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun dismissNfcDialog() {
         _showNfcCheckDialog.value = false
+    }
+
+    private fun checkUnlockCodeAvailability(): Boolean {
+
+        if (NFCCardService.unlockSecretBytes == null) {
+            _showUnlockCodeDialog.value = true
+            return false
+        }
+        return true
+    }
+
+    fun showUnlockCodeDialog() {
+        _showUnlockCodeDialog.value = true
+    }
+
+    fun dismissUnlockCodeDialog() {
+        _showUnlockCodeDialog.value = false
     }
 
     // Card actions

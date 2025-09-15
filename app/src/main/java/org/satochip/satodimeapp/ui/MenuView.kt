@@ -115,6 +115,8 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                         navController.navigate(SatodimeScreen.TransferOwnershipView.name)
                     } else if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
                         sharedViewModel.isAskingForCardOwnership = true
+                    } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner) {
+                        sharedViewModel.showUnlockCodeDialog()
                     } else {
                         showNoCardScannedDialog.value = true
                     }
