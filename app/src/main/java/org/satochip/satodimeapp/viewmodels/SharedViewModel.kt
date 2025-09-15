@@ -79,10 +79,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     var updateVaultsJob: Job? = null
 
     // NFC status tracking
-//    private val _isNfcAvailable = MutableStateFlow(false)
-//    val isNfcAvailable: StateFlow<Boolean> = _isNfcAvailable.asStateFlow()
-    private val _showNfcDialog = MutableStateFlow(false)
-    val showNfcDialog: StateFlow<Boolean> = _showNfcDialog.asStateFlow()
+    private val _showNfcCheckDialog = MutableStateFlow(false)
+    val showNfcCheckDialog: StateFlow<Boolean> = _showNfcCheckDialog.asStateFlow()
 
 
     init {
@@ -137,14 +135,14 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         val nfcAvailable = nfcAdapter != null && nfcAdapter.isEnabled
 
         if (!nfcAvailable) {
-            _showNfcDialog.value = true
+            _showNfcCheckDialog.value = true
             return false
         }
         return true
     }
 
     fun dismissNfcDialog() {
-        _showNfcDialog.value = false
+        _showNfcCheckDialog.value = false
     }
 
     // Card actions

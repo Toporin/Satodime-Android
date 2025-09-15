@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -22,19 +21,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.play.core.review.ReviewManagerFactory
 import org.satochip.satodimeapp.ui.components.shared.SatoToast
-import org.satochip.satodimeapp.ui.components.shared.NfcDialog
+import org.satochip.satodimeapp.ui.components.shared.NfcCheckDialog
 import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.internetconnection.ConnectionChecker
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import org.satochip.satodimeapp.services.SatoLog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.satochip.android.NFCCardChannel
-import org.satochip.android.NFCCardManager
-import org.satochip.client.SatochipCommandSet
-import org.satochip.satodimeapp.data.NfcActionType
-import org.satochip.satodimeapp.data.NfcResultCode
-import org.satochip.satodimeapp.services.NFCCardService
 
 private const val TAG = "MainActivity"
 
@@ -95,9 +88,9 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     // NFC Dialog
-                    val showNfcDialog by sharedViewModel.showNfcDialog.collectAsState()
-                    if (showNfcDialog) {
-                        NfcDialog(
+                    val showNfcCheckDialog by sharedViewModel.showNfcCheckDialog.collectAsState()
+                    if (showNfcCheckDialog) {
+                        NfcCheckDialog(
                             onDismiss = { sharedViewModel.dismissNfcDialog() },
                             onOpenSettings = {
                                 // Open NFC settings

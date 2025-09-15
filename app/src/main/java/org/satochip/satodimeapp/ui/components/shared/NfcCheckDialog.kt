@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import org.satochip.satodimeapp.R
 
 @Composable
-fun NfcDialog(
+fun NfcCheckDialog(
     onDismiss: () -> Unit,
     onOpenSettings: () -> Unit = {}
 ) {
