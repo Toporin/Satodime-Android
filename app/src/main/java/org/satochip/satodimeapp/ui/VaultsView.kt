@@ -81,6 +81,7 @@ import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.data.SlotState
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.DarkBlueGradientBackground
 import org.satochip.satodimeapp.ui.components.EmptyVaultCard
@@ -372,10 +373,12 @@ fun VaultsView(
         )
     }
 
-    // Ownership dialog
+    // Not owner dialog
+    // Not shown when using fixed cvc, since it's trivial to take ownership anytime in this case
     if (sharedViewModel.showOwnershipDialog.value
         && sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner
         && !showNfcDialog.value
+        && !NFCCardService.isFixedCvc
     ) {
         InfoDialog(
             openDialogCustom = sharedViewModel.showOwnershipDialog,

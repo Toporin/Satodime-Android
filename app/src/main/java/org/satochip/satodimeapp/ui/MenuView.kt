@@ -117,7 +117,8 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                     } else if(sharedViewModel.ownershipStatus == OwnershipStatus.Owner) {
                         navController.navigate(SatodimeScreen.TransferOwnershipView.name)
                     } else if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                        sharedViewModel.isAskingForCardOwnership = true
+                        //sharedViewModel.isAskingForCardOwnership = true
+                        navController.navigate(SatodimeScreen.AcceptOwnershipView.name)
                     } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner) {
                         if (NFCCardService.isFixedCvc) {
                             sharedViewModel.showUnlockCodeDialog()
