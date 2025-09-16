@@ -37,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.data.OwnershipStatus
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -61,6 +62,7 @@ fun UnsealWarningView(
     val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
     val scrollState = rememberScrollState()
     val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
+    val satodimeNotOwner = stringResource(R.string.nfcUnlockSecretNotFound)
 
     val vaults = sharedViewModel.cardVaults
     val vaultsSize = vaults?.size ?: 0
@@ -139,9 +141,14 @@ fun UnsealWarningView(
             Spacer(Modifier.weight(1f))
             BottomButton(
                 onClick = {
-                    if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                        Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
-                        return@BottomButton
+                    if (!NFCCardService.isFixedCvc){
+                        if(sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                            Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                            return@BottomButton
+                        } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner){
+                            Toast.makeText(context, satodimeNotOwner, Toast.LENGTH_SHORT).show()
+                            return@BottomButton
+                        }
                     }
                     // scan card
                     SatoLog.d(

@@ -37,6 +37,10 @@ import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.data.SlotState
 import org.satochip.satodimeapp.services.NFCCardService
+//import org.satochip.satodimeapp.services.NFCCardService.authentikeyHex
+//import org.satochip.satodimeapp.services.NFCCardService.cmdSet
+//import org.satochip.satodimeapp.services.NFCCardService.unlockSecretBytes
+//import org.satochip.satodimeapp.services.NFCCardService.unlockSecretHex
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.util.coinToSlip44Bytes
 
@@ -148,18 +152,39 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         _showNfcCheckDialog.value = false
     }
 
-    private fun checkUnlockCodeAvailability(): Boolean {
-
-        if (NFCCardService.unlockSecretBytes == null) {
-            _showUnlockCodeDialog.value = true
-            return false
-        }
-        return true
-    }
-
     fun showUnlockCodeDialog() {
-        _showUnlockCodeDialog.value = true
+        SatoLog.d(TAG, "checkUnlockCodeAvailability START ")
+        SatoLog.d(TAG, "checkUnlockCodeAvailability fixedCvc: ${NFCCardService.isFixedCvc} ")
+
+        // get unlockSecret
+//        val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
+//        if (NFCCardService.isFixedCvc && !prefs.contains(NFCCardService.authentikeyHex)) {
+//            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
+//            _showUnlockCodeDialog.value = true
+//        }
+
+        if (NFCCardService.isFixedCvc && ownershipStatus == OwnershipStatus.NotOwner) {
+            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
+            _showUnlockCodeDialog.value = true
+        }
+
+
+//        else {
+//            SatoLog.d(TAG, "checkUnlockCodeAvailability NOTHING TO DO")
+//        }
+
+//        SatoLog.d(TAG, "checkUnlockCodeAvailability unlockSecretBytes: ${NFCCardService.unlockSecretBytes} ")
+//        if (NFCCardService.fixedCvc && NFCCardService.unlockSecretBytes == null) {
+//            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
+//            _showUnlockCodeDialog.value = true
+//        } else {
+//            SatoLog.d(TAG, "checkUnlockCodeAvailability NOTHING TO DO")
+//        }
     }
+
+//    fun showUnlockCodeDialog() {
+//        _showUnlockCodeDialog.value = true
+//    }
 
     fun dismissUnlockCodeDialog() {
         _showUnlockCodeDialog.value = false
@@ -196,8 +221,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         isTestnet: Boolean,
         entropyBytes: ByteArray
     ) {
-        if (!checkNfcAvailability(activity)) return
         SatoLog.d(TAG, "sealSlot START slot: ${index}")
+
+        // check NFC available
+        if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
@@ -210,7 +240,11 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun unsealSlot(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.UnsealSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
@@ -218,14 +252,22 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun resetSlot(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.ResetSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
     }
 
     fun recoverSlotPrivkey(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         SatoLog.d(TAG, "recoverSlotPrivkey START slot: ${index}")
         NFCCardService.actionType = NfcActionType.GetPrivkey
         NFCCardService.actionIndex = index
