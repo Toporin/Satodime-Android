@@ -37,10 +37,6 @@ import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.data.SlotState
 import org.satochip.satodimeapp.services.NFCCardService
-//import org.satochip.satodimeapp.services.NFCCardService.authentikeyHex
-//import org.satochip.satodimeapp.services.NFCCardService.cmdSet
-//import org.satochip.satodimeapp.services.NFCCardService.unlockSecretBytes
-//import org.satochip.satodimeapp.services.NFCCardService.unlockSecretHex
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.util.coinToSlip44Bytes
 
@@ -156,35 +152,11 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         SatoLog.d(TAG, "checkUnlockCodeAvailability START ")
         SatoLog.d(TAG, "checkUnlockCodeAvailability fixedCvc: ${NFCCardService.isFixedCvc} ")
 
-        // get unlockSecret
-//        val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-//        if (NFCCardService.isFixedCvc && !prefs.contains(NFCCardService.authentikeyHex)) {
-//            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
-//            _showUnlockCodeDialog.value = true
-//        }
-
         if (NFCCardService.isFixedCvc && ownershipStatus == OwnershipStatus.NotOwner) {
             SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
             _showUnlockCodeDialog.value = true
         }
-
-
-//        else {
-//            SatoLog.d(TAG, "checkUnlockCodeAvailability NOTHING TO DO")
-//        }
-
-//        SatoLog.d(TAG, "checkUnlockCodeAvailability unlockSecretBytes: ${NFCCardService.unlockSecretBytes} ")
-//        if (NFCCardService.fixedCvc && NFCCardService.unlockSecretBytes == null) {
-//            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
-//            _showUnlockCodeDialog.value = true
-//        } else {
-//            SatoLog.d(TAG, "checkUnlockCodeAvailability NOTHING TO DO")
-//        }
     }
-
-//    fun showUnlockCodeDialog() {
-//        _showUnlockCodeDialog.value = true
-//    }
 
     fun dismissUnlockCodeDialog() {
         _showUnlockCodeDialog.value = false
