@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3]:
+
+* Intercept NDEF tag when app is in the foreground: this avoids the android system to manage the NDEF tag and disrupting usage by opening the web browser when the app is active.
+* When app is closed or in the background, intercept NDEF link only if related to Satodime
+* Add specific error message when scanning an unsupported NFC card (i.e. not a Satodime applet)
+* (minor) Patch version display as unsigned integers
+* Support for Satodime v0.2+ with fixed CVC:
+  * add unlockCodeDialog to get cvc code from user
+  * simplified handling of unclaimed/not owned cards: when CVC is fixed, ownership for unclaimed/not owned card can be taken seamlessly just before performing an action requiring ownership,
+    either by taking ownership automatically or prompting user for the CVC code when needed. For non fixed cvc, behavior is unchanged.
+  * Remove ownership dialogs when scanning a card for Satodime v0.2+ with fixed cvc code
+
 ## [0.3.2]:
 
 * Update javacryptotools to v0.4.0 (simplified API + Blockscout explorer)
