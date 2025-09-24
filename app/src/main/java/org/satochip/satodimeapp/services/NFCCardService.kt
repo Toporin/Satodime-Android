@@ -43,7 +43,7 @@ object NFCCardService {
     // Card state
     var waitForSetup = MutableLiveData(false) // card requires setup // TODO: rename to isSetupDone?
     var cardSlots = MutableLiveData<List<CardSlot>>()
-    var isFixedCvc: Boolean = true
+    var isFixedCvc: Boolean = false
 
     var ownershipStatus = MutableLiveData<OwnershipStatus>(OwnershipStatus.Unknown)
     var authenticityStatus = MutableLiveData<AuthenticityStatus>(AuthenticityStatus.Unknown)
@@ -181,11 +181,11 @@ object NFCCardService {
             authentikeyHex = cmdSet.authentikeyHex
             SatoLog.d(TAG, "readCard authentikey: $authentikeyHex");
 
-            // check for ownership
+            // check ownership status
             try {
-                getUnlockCodeOrThrow()
+                manageOwnership(cardStatus)
             } catch (e: Exception){
-                SatoLog.d(TAG, "readCard found no unlockSecret for card $authentikeyHex");
+                // not owner or card has no owner, nothing to do here
             }
 
             // Fetch Vaults info
@@ -194,11 +194,11 @@ object NFCCardService {
             resultCodeLive.postValue(NfcResultCode.ListVaultsSuccess) //resultCodeLive.postValue(NfcResultCode.Ok)
             resultMsg = "Card scan successful!"
             // check if setupDone
-            if (versionInt > 0x00010001u && !cardStatus.isSetupDone) {
+            if (versionInt > 0x00010001u && ownershipStatus.value == OwnershipStatus.Unclaimed) {
                 SatoLog.d(TAG, "readCard card needs setup (it has no owner)")
-                ownershipStatus.postValue(OwnershipStatus.Unclaimed)
                 waitForSetup.postValue(true)
             }
+
             isCardDataAvailable.postValue(true)
             SatoLog.d(TAG, "readCard: Card reading successful")
 
@@ -324,8 +324,9 @@ object NFCCardService {
             satodimeStatus = cmdSet.satodimeStatus
             SatoLog.d(TAG, "releaseOwnership: satodimeStatus: $satodimeStatus");
 
-            // get unlockSecret if available
-            getUnlockCodeOrThrow()
+            // get unlockSecret if available or throws
+            // a side effect of this method is to automatically take ownership if available for card with fixed CVC.
+            manageOwnership(cardStatus)
 
             // releaseOwnership
             rapdu = cmdSet.satodimeInitiateOwnershipTransfer().checkOK()
@@ -401,11 +402,8 @@ object NFCCardService {
             satodimeStatus = cmdSet.satodimeStatus
             SatoLog.d(TAG, "seal: satodimeStatus: $satodimeStatus");
 
-            // if unlockCode is fixed, take ownership automatically if available
-            takeOwnershipForFixedCvcIfAvailable(cardStatus)
-
-            // get unlockSecret if available
-            getUnlockCodeOrThrow()
+            // check or take ownership if possible, throws otherwise
+            manageOwnership(cardStatus)
 
             // seal vault
             val rapduSeal = cmdSet.satodimeSealKey(slot, entropyBytes).checkOK()
@@ -492,15 +490,11 @@ object NFCCardService {
             satodimeStatus = cmdSet.satodimeStatus
             SatoLog.d(TAG, "unseal: satodimeStatus: $satodimeStatus");
 
-            // if unlockCode is fixed, take ownership automatically if available
-            takeOwnershipForFixedCvcIfAvailable(cardStatus)
-
-            // get unlockSecret if available
-            getUnlockCodeOrThrow()
-
-            // TODO: check slot is sealed!
+            // check or take ownership if possible, throws otherwise
+            manageOwnership(cardStatus)
 
             // unseal vault
+            // TODO: check slot is sealed!
             val rapduUnseal = cmdSet.satodimeUnsealKey(slotIndex).checkOK()
 
             // partially update status
@@ -575,15 +569,11 @@ object NFCCardService {
             satodimeStatus = cmdSet.satodimeStatus
             SatoLog.d(TAG, "reset: satodimeStatus: $satodimeStatus");
 
-            // todo: check slot is unsealed!
-
-            // if unlockCode is fixed, take ownership automatically if available
-            takeOwnershipForFixedCvcIfAvailable(cardStatus)
-
-            // get unlockSecret if available
-            getUnlockCodeOrThrow()
+            // check or take ownership if possible, throws otherwise
+            manageOwnership(cardStatus)
 
             // reset vault
+            // todo: check slot is unsealed!
             val rapduReset = cmdSet.satodimeResetKey(slotIndex).checkOK()
 
             // update just cardSlot for specific vault
@@ -668,11 +658,8 @@ object NFCCardService {
                 return // throw?
             }
 
-            // if unlockCode is fixed, take ownership automatically if available
-            takeOwnershipForFixedCvcIfAvailable(cardStatus)
-
-            // get unlockSecret if available
-            getUnlockCodeOrThrow()
+            // check or take ownership if possible, throws otherwise
+            manageOwnership(cardStatus)
 
             // get privkey
             val rapduPrivkey = cmdSet.satodimeGetPrivkey(slot).checkOK()
@@ -811,7 +798,6 @@ object NFCCardService {
         return versionString
     }
 
-
     fun updateUnlockCode(codeBytes: ByteArray){
         SatoLog.d(TAG, "updateUnlockCode ")
         // TODO check code validity!?
@@ -831,51 +817,51 @@ object NFCCardService {
         ownershipStatus.postValue(OwnershipStatus.Owner)
     }
 
-    fun getUnlockCodeOrThrow(){
-        val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-        if (prefs.contains(authentikeyHex)) {
-            SatoLog.d(TAG, "getUnlockCodeOrThrow: found an unlockSecret for card $authentikeyHex")
-            val unlockSecretHex = prefs.getString(authentikeyHex, "")
-            val unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
-            cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
-            ownershipStatus.postValue(OwnershipStatus.Owner)
-        } else {
-            SatoLog.d(TAG, "getUnlockCodeOrThrow: found no unlockSecret for card $authentikeyHex")
-            ownershipStatus.postValue(OwnershipStatus.NotOwner)
-            throw UnlockCodeUnavailableException("found no unlockSecret for card $authentikeyHex")
-        }
-    }
-
-    fun takeOwnershipForFixedCvcIfAvailable(cardStatus: ApplicationStatus) {
-        // if unlockCode is fixed, take ownership automatically if available
-        if (isFixedCvc && !cardStatus.isSetupDone){
-            try {
-                val random = SecureRandom()
-                val pinTries0 = 5.toByte()
-                val pin0 = ByteArray(8)
-                random.nextBytes(pin0)
-                val rapduSetup: APDUResponse = cmdSet.cardSetup(pinTries0, pin0).checkOK()
-                val unlockSecretHex = SatochipParser.toHexString(cmdSet.satodimeUnlockSecret)
-
-                // save in prefs
-                val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-                prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
-                SatoLog.d(TAG, "takeOwnership: Saved unlockSecret for card ${authentikeyHex}")
-                // update status
+    private fun manageOwnership(cardStatus: ApplicationStatus){
+        // check if card is setup (has owner) or not
+        if (cardStatus.isSetupDone){
+            // if setup: get unlock code from preferences, otherwise throw
+            val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
+            if (prefs.contains(authentikeyHex)) {
+                SatoLog.d(TAG, "manageOwnership: found an unlockSecret for card $authentikeyHex")
+                val unlockSecretHex = prefs.getString(authentikeyHex, "")
+                val unlockSecretBytes = SatochipParser.fromHexString(unlockSecretHex)
+                cmdSet.setSatodimeUnlockSecret(unlockSecretBytes)
                 ownershipStatus.postValue(OwnershipStatus.Owner)
-                SatoLog.d(
-                    TAG,
-                    "takeOwnership: ownership claimed successfully for ${authentikeyHex}"
-                )
-            } catch (e: Exception) {
-                SatoLog.e(TAG, "takeOwnership: failed to take ownership: ${e.localizedMessage}")
-                SatoLog.e(TAG, Log.getStackTraceString(e))
+            } else {
+                SatoLog.d(TAG, "manageOwnership: found no unlockSecret for card $authentikeyHex")
                 ownershipStatus.postValue(OwnershipStatus.NotOwner)
+                throw UnlockCodeUnavailableException("found no unlockSecret for card $authentikeyHex")
+            }
+        } else {
+            // if not setup: if fixed CVC, do setup automatically, otherwise throw
+            if (isFixedCvc){
+                try {
+                    val random = SecureRandom()
+                    val pinTries0 = 5.toByte()
+                    val pin0 = ByteArray(8)
+                    random.nextBytes(pin0)
+                    val rapduSetup: APDUResponse = cmdSet.cardSetup(pinTries0, pin0).checkOK()
+                    val unlockSecretHex = SatochipParser.toHexString(cmdSet.satodimeUnlockSecret)
+
+                    // save in prefs
+                    val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
+                    prefs.edit().putString(authentikeyHex, unlockSecretHex).apply();
+                    // update status
+                    ownershipStatus.postValue(OwnershipStatus.Owner)
+                    SatoLog.d(TAG,"manageOwnership: ownership claimed successfully for ${authentikeyHex}")
+                } catch (e: Exception) {
+                    SatoLog.e(TAG, "manageOwnership: failed to take ownership for ${e.localizedMessage}")
+                    SatoLog.e(TAG, Log.getStackTraceString(e))
+                    ownershipStatus.postValue(OwnershipStatus.Unclaimed)
+                }
+            } else {
+                ownershipStatus.postValue(OwnershipStatus.Unclaimed)
+                SatoLog.d(TAG, "manageOwnership: no ownership for card $authentikeyHex")
+                throw UnlockCodeUnavailableException("found no unlockSecret for card $authentikeyHex")
             }
         }
     }
-
-
 }
 
 class UnlockCodeUnavailableException(message: String = "") : Exception(message)
