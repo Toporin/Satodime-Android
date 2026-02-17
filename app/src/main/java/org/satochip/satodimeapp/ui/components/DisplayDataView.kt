@@ -152,21 +152,21 @@ fun DisplayDataView(
                     text = stringResource(R.string.youOrAnybodyCanDepositFunds)
                 )
                 
-                if (url != null) {
-                    SatoButton(
-                        onClick = { uriHandler.openUri(url) },
-                        text = stringResource( id = R.string.buy) + " ${vault.nativeAsset.symbol}",
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(20.dp),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colors.secondaryVariant,
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.body1,
-                        text = stringResource( id = R.string.buyInfo)
-                    )
-                }
+//                if (url != null) {
+//                    SatoButton(
+//                        onClick = { uriHandler.openUri(url) },
+//                        text = stringResource( id = R.string.buy) + " ${vault.nativeAsset.symbol}",
+//                    )
+//                    Text(
+//                        modifier = Modifier
+//                            .padding(20.dp),
+//                        textAlign = TextAlign.Center,
+//                        color = MaterialTheme.colors.secondaryVariant,
+//                        fontSize = 16.sp,
+//                        style = MaterialTheme.typography.body1,
+//                        text = stringResource( id = R.string.buyInfo)
+//                    )
+//                }
             } else {
                 Spacer(Modifier.weight(1f))
             }

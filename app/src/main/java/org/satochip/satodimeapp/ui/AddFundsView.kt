@@ -54,27 +54,27 @@ fun AddFundsView(
     val cardVault = cardVaults[selectedVault - 1]!!
 
     // for crypto purchase using paybis
-    val depositAddress = getAddressForPaybis(cardVault= cardVault) //cardVault.nativeAsset.address
-    val currencyCodeTo = getCurrencyCodeForPaybis(cardVault= cardVault)
     var paybisUrl: String? = null
-    if (currencyCodeTo != null) {
-        val apiKey = apiKeys["API_KEY_PAYBIS_ID"]
-        val hmacKey = apiKeys["API_KEY_PAYBIS_HMAC"]
-        val uri = "https://widget.paybis.com/"
-        val query = "?partnerId=$apiKey" +
-                "&cryptoAddress=$depositAddress" +
-                "&currencyCodeFrom=EUR" +
-                "&currencyCodeTo=$currencyCodeTo" //${cardVault.nativeAsset.symbol}"
-        val decodedKey = Base64.getDecoder().decode(hmacKey)
-        val mac = Mac.getInstance("HmacSHA256")
-        val secretKeySpec = SecretKeySpec(decodedKey, "HmacSHA256")
-        mac.init(secretKeySpec)
-        val signatureBytes = mac.doFinal(query.toByteArray(Charsets.UTF_8))
-        val signature = Base64.getEncoder().encodeToString(signatureBytes)
-        val encodedSignature = URLEncoder.encode(signature, "UTF-8")
-
-        paybisUrl = "$uri$query&signature=$encodedSignature"
-    }
+//    val depositAddress = getAddressForPaybis(cardVault= cardVault) //cardVault.nativeAsset.address
+//    val currencyCodeTo = getCurrencyCodeForPaybis(cardVault= cardVault)
+//    if (currencyCodeTo != null) {
+//        val apiKey = apiKeys["API_KEY_PAYBIS_ID"]
+//        val hmacKey = apiKeys["API_KEY_PAYBIS_HMAC"]
+//        val uri = "https://widget.paybis.com/"
+//        val query = "?partnerId=$apiKey" +
+//                "&cryptoAddress=$depositAddress" +
+//                "&currencyCodeFrom=EUR" +
+//                "&currencyCodeTo=$currencyCodeTo" //${cardVault.nativeAsset.symbol}"
+//        val decodedKey = Base64.getDecoder().decode(hmacKey)
+//        val mac = Mac.getInstance("HmacSHA256")
+//        val secretKeySpec = SecretKeySpec(decodedKey, "HmacSHA256")
+//        mac.init(secretKeySpec)
+//        val signatureBytes = mac.doFinal(query.toByteArray(Charsets.UTF_8))
+//        val signature = Base64.getEncoder().encodeToString(signatureBytes)
+//        val encodedSignature = URLEncoder.encode(signature, "UTF-8")
+//
+//        paybisUrl = "$uri$query&signature=$encodedSignature"
+//    }
 
     DisplayDataView(
         navController = navController,
