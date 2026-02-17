@@ -18,25 +18,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,8 +39,8 @@ import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.data.OwnershipStatus
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
-import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
 import org.satochip.satodimeapp.ui.components.RedGradientBackground
 import org.satochip.satodimeapp.ui.components.VaultCard
@@ -78,6 +70,7 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
     val vault = vaults[selectedVault - 1]!!
     val requestedPrivkeyType = remember{ mutableStateOf(RequestedPrivkeyType.NONE) }
     val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
+    val satodimeNotOwner = stringResource(R.string.nfcUnlockSecretNotFound)
 
     RedGradientBackground()
     Column(
@@ -101,9 +94,14 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showPrivateKeyLegacy,
             icon = R.drawable.arrow_right_circle
         ) {
-            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
-                return@PrivateKeyItem
+            if (!NFCCardService.isFixedCvc){
+                if(sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                    Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner){
+                    Toast.makeText(context, satodimeNotOwner, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                }
             }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
 
@@ -132,9 +130,14 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showPrivateKeyWIF,
             icon = R.drawable.arrow_right_circle
         ) {
-            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
-                return@PrivateKeyItem
+            if (!NFCCardService.isFixedCvc){
+                if(sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                    Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner){
+                    Toast.makeText(context, satodimeNotOwner, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                }
             }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {
@@ -163,9 +166,14 @@ fun ShowPrivateKeyView(navController: NavController, sharedViewModel: SharedView
             title = R.string.showEntropy,
             icon = R.drawable.arrow_right_circle
         ) {
-            if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
-                return@PrivateKeyItem
+            if (!NFCCardService.isFixedCvc){
+                if(sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                    Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner){
+                    Toast.makeText(context, satodimeNotOwner, Toast.LENGTH_SHORT).show()
+                    return@PrivateKeyItem
+                }
             }
             var privkey = sharedViewModel.cardPrivkeys[selectedVault - 1]
             if (privkey == null) {

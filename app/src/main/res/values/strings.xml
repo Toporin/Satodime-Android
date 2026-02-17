@@ -155,6 +155,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="nfcOwnershipTransferSuccess">Ownership transfer initiated successfully!</string>
     <string name="nfcOwnershiptTransferFailed">Failed to transfer ownership</string>
     <string name="nfcErrorOccured">An error occured, please try again</string>
+    <string name="nfcSelectAppletFailed">Unsupported card, please use a valid card</string>
     <string name="nfcPrivkeyRecoverSuccess">Vault privkey recovered successfully!</string>
     <string name="nfcPrivkeyRecoverFailed">Failed to recover vault private key</string>
     <string name="nfcNeedsFirstVaults">This card needs to setup a first vault</string>

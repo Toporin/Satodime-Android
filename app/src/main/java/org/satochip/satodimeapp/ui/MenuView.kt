@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.OwnershipStatus
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.ui.components.InfoDialog
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.theme.DarkBlue
@@ -111,10 +112,19 @@ fun MenuView(navController: NavController, sharedViewModel: SharedViewModel) {
                     LightGray,
                     R.drawable.users
                 ) {
-                    if (sharedViewModel.isCardDataAvailable && sharedViewModel.ownershipStatus == OwnershipStatus.Owner) {
+                    if (!sharedViewModel.isCardDataAvailable){
+                        showNoCardScannedDialog.value = true
+                    } else if(sharedViewModel.ownershipStatus == OwnershipStatus.Owner) {
                         navController.navigate(SatodimeScreen.TransferOwnershipView.name)
                     } else if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                        sharedViewModel.isAskingForCardOwnership = true
+                        //sharedViewModel.isAskingForCardOwnership = true
+                        navController.navigate(SatodimeScreen.AcceptOwnershipView.name)
+                    } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner) {
+                        if (NFCCardService.isFixedCvc) {
+                            sharedViewModel.showUnlockCodeDialog()
+                        } else {
+                            showNoCardScannedDialog.value = true
+                        }
                     } else {
                         showNoCardScannedDialog.value = true
                     }

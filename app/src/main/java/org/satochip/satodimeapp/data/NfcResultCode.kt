@@ -10,6 +10,7 @@ enum class  NfcResultCode(val resTitle : Int, val resMsg : Int, val resImage : I
     OwnershipAlreadyClaimed(R.string.nfcTitleWarning, R.string.nfcTransferAlreadyDone, R.drawable.error_24px),
     NotOwner(R.string.nfcTitleWarning, R.string.nfcUnlockSecretNotFound, R.drawable.error_24px),
     UnknownError(R.string.nfcTitleWarning, R.string.nfcErrorOccured, R.drawable.error_24px),
+    FailedToSelectApplet(R.string.nfcTitleWarning, R.string.nfcSelectAppletFailed, R.drawable.error_24px),
 
     FailedToListVaults(R.string.nfcTitleWarning, R.string.nfcVaultsListFailed, R.drawable.error_24px),
     FailedToTakeOwnership(R.string.nfcTitleWarning, R.string.nfcOwnershipAcceptFailed, R.drawable.error_24px),

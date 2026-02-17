@@ -1,5 +1,12 @@
 package org.satochip.satodimeapp
 
+import UnlockCodeDialog
+import android.app.PendingIntent
+import android.content.IntentFilter
+import android.content.Intent
+import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.nfc.tech.IsoDep
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,14 +22,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.play.core.review.ReviewManagerFactory
 import org.satochip.satodimeapp.ui.components.shared.SatoToast
-import org.satochip.satodimeapp.ui.components.shared.NfcDialog
+import org.satochip.satodimeapp.ui.components.shared.NfcCheckDialog
 import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.internetconnection.ConnectionChecker
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
+import org.satochip.satodimeapp.services.SatoLog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.satochip.satodimeapp.services.NFCCardService
+
+private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
+
+    private var nfcAdapter: NfcAdapter? = null
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var intentFiltersArray: Array<IntentFilter>
+    private lateinit var techListsArray: Array<Array<String>>
 
     private lateinit var connectionChecker: ConnectionChecker
     private fun showFeedbackDialog() {
@@ -74,9 +90,9 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     // NFC Dialog
-                    val showNfcDialog by sharedViewModel.showNfcDialog.collectAsState()
-                    if (showNfcDialog) {
-                        NfcDialog(
+                    val showNfcCheckDialog by sharedViewModel.showNfcCheckDialog.collectAsState()
+                    if (showNfcCheckDialog) {
+                        NfcCheckDialog(
                             onDismiss = { sharedViewModel.dismissNfcDialog() },
                             onOpenSettings = {
                                 // Open NFC settings
@@ -86,8 +102,133 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+
+                    // Unlock Code Dialog
+                    val showUnlockCodeDialog by sharedViewModel.showUnlockCodeDialog.collectAsState()
+                    if (showUnlockCodeDialog) {
+                        UnlockCodeDialog(
+                            onDismiss = { sharedViewModel.dismissUnlockCodeDialog() },
+                            onCodeEntered = { code ->
+                                // Handle the entered code here
+                                println("Code entered: $code")
+
+                                // convert to bytes
+                                val unlockCodeBytes = code.toByteArray()
+
+                                // pad/truncate with '00' bytes to reach 20 bytes
+                                val paddedUnlockCodeBytes = unlockCodeBytes.copyOf(20)
+
+                                // check validity, then update code
+                                NFCCardService.updateUnlockCode(paddedUnlockCodeBytes)
+
+                                // do something if code is invalid?
+
+                                // check code validity
+                                // TODO!
+                                // if valid, update cached value
+                                // TODO!
+                                // if valid, update preferences
+                                // TODO!
+
+
+                                sharedViewModel.dismissUnlockCodeDialog()
+                            }
+                        )
+                    }
+
+
                 }
             }
         }
+
+        // intercept NDEF tag
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        if (nfcAdapter == null) {
+            //SatoLog.e(TAG, "NFC not supported on this device")
+            return
+        }
+
+        // PendingIntent for NFC intents
+        pendingIntent = PendingIntent.getActivity(
+            this, 0, Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_MUTABLE
+        )
+
+        // Intent filters for NDEF and TECH
+        val ndefFilter = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED).apply {
+            addDataScheme("http")
+            addDataScheme("https")
+            addDataAuthority("satodime.io", null)
+            addDataAuthority("*.satodime.io", null)
+        }
+        val techFilter = IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)
+        intentFiltersArray = arrayOf(ndefFilter, techFilter)
+
+        // Tech list for IsoDep
+        techListsArray = arrayOf(arrayOf(IsoDep::class.java.name))
+
     }
+
+    override fun onResume() {
+        super.onResume()
+        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, techListsArray)
+        // If you want to start scanning immediately, call scanCardForAction here
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(this)
+        // Ensure reader mode is disabled to avoid conflicts
+        nfcAdapter?.disableReaderMode(this)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
+            intent?.action == NfcAdapter.ACTION_TECH_DISCOVERED) {
+            val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            if (tag != null) {
+                // Handle tag (e.g., for APDU or ignore NDEF)
+                handleNfcTag(tag)
+            }
+        }
+    }
+
+    private fun handleNfcTag(tag: Tag) {
+        SatoLog.d(TAG, "Tag detected: ${tag.techList.joinToString()}")
+        // Ignore NDEF tags entirely
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent?.action) {
+            SatoLog.d(TAG, "Ignoring NDEF tag to prevent browser launch")
+            return
+        }
+
+//        // Handle IsoDep for APDU (if needed outside reader mode
+//        // Disabled currently, as it interferes with nfc scan for action
+//        Thread {
+//            try {
+//                val isoDep = IsoDep.get(tag)
+//                if (isoDep != null) {
+//                    isoDep.connect()
+//                    val cardManager = NFCCardManager() // force loading of BouncyCastle, avoid
+//                    val cardChannel = NFCCardChannel(isoDep)
+//                    NFCCardService.isConnected.postValue(true)
+//                    SatoLog.d(TAG, "handleNfcTag: Card is connected")
+//                    val cmdSet = SatochipCommandSet(cardChannel)
+//                    // start to interact with card
+//                    SatoLog.d(TAG, "handleNfcTag: before initialize()")
+//                    NFCCardService.actionType = NfcActionType.ScanCard
+//                    NFCCardService.initialize(cmdSet)
+//                    SatoLog.d(TAG, "handleNfcTag: after initialize()")
+//                } else {
+//                    NFCCardService.resultCodeLive.postValue(NfcResultCode.UnknownError)
+//                    SatoLog.e(TAG, "Tag is not IsoDep")
+//                }
+//            } catch (e: Exception) {
+//                NFCCardService.resultCodeLive.postValue(NfcResultCode.UnknownError)
+//                SatoLog.e(TAG, "Error handling tag: $e")
+//                SatoLog.e(TAG, Log.getStackTraceString(e))
+//            }
+//        }.start()
+    }
+
 }

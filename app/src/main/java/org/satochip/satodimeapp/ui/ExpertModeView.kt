@@ -48,6 +48,7 @@ import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Coin
 import org.satochip.satodimeapp.data.NfcResultCode
 import org.satochip.satodimeapp.data.OwnershipStatus
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.BottomButton
 import org.satochip.satodimeapp.ui.components.NfcDialog
@@ -76,6 +77,7 @@ fun ExpertModeView(
     val showNfcDialog = remember { mutableStateOf(false) } // for NfcDialog
     val isReadyToNavigate = remember { mutableStateOf(false) }// for auto navigation to next view
     val satodimeUnclaimed = stringResource(R.string.satodimeUnclaimed)
+    val satodimeNotOwner = stringResource(R.string.nfcUnlockSecretNotFound)
 
     Column(
         modifier = Modifier
@@ -173,9 +175,14 @@ fun ExpertModeView(
 //        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
         BottomButton(
             onClick = {
-                if (sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
-                    Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
-                    return@BottomButton
+                if (!NFCCardService.isFixedCvc){
+                    if(sharedViewModel.ownershipStatus == OwnershipStatus.Unclaimed) {
+                        Toast.makeText(context, satodimeUnclaimed, Toast.LENGTH_SHORT).show()
+                        return@BottomButton
+                    } else if (sharedViewModel.ownershipStatus == OwnershipStatus.NotOwner){
+                        Toast.makeText(context, satodimeNotOwner, Toast.LENGTH_SHORT).show()
+                        return@BottomButton
+                    }
                 }
                 // select network
                 var isTestnet = (selectedNetwork == Network.TestNet)

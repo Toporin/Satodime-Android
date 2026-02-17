@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.AddFundsView
 import org.satochip.satodimeapp.ui.AuthenticCardView
@@ -78,10 +79,10 @@ fun Navigation() {
     val navController = rememberNavController()
     val sharedViewModel: SharedViewModel = viewModel(factory = SharedViewModel.Factory)
 
-    if (sharedViewModel.isAskingForCardOwnership) {
+    // take ownership dialog
+    if (sharedViewModel.isAskingForCardOwnership && !NFCCardService.isFixedCvc) {
         SatoLog.d(TAG, "Navigation: Card needs ownership!")
         navController.navigate(SatodimeScreen.AcceptOwnershipView.name)
-
     }
 
     NavHost(

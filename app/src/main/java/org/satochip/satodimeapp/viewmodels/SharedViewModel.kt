@@ -79,11 +79,12 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     var updateVaultsJob: Job? = null
 
     // NFC status tracking
-//    private val _isNfcAvailable = MutableStateFlow(false)
-//    val isNfcAvailable: StateFlow<Boolean> = _isNfcAvailable.asStateFlow()
-    private val _showNfcDialog = MutableStateFlow(false)
-    val showNfcDialog: StateFlow<Boolean> = _showNfcDialog.asStateFlow()
+    private val _showNfcCheckDialog = MutableStateFlow(false)
+    val showNfcCheckDialog: StateFlow<Boolean> = _showNfcCheckDialog.asStateFlow()
 
+    // Unlock Code dialog display
+    private val _showUnlockCodeDialog = MutableStateFlow(false)
+    val showUnlockCodeDialog: StateFlow<Boolean> = _showUnlockCodeDialog.asStateFlow()
 
     init {
         NFCCardService.context = getApplication<Application>().applicationContext
@@ -137,14 +138,28 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         val nfcAvailable = nfcAdapter != null && nfcAdapter.isEnabled
 
         if (!nfcAvailable) {
-            _showNfcDialog.value = true
+            _showNfcCheckDialog.value = true
             return false
         }
         return true
     }
 
     fun dismissNfcDialog() {
-        _showNfcDialog.value = false
+        _showNfcCheckDialog.value = false
+    }
+
+    fun showUnlockCodeDialog() {
+        SatoLog.d(TAG, "checkUnlockCodeAvailability START ")
+        SatoLog.d(TAG, "checkUnlockCodeAvailability fixedCvc: ${NFCCardService.isFixedCvc} ")
+
+        if (NFCCardService.isFixedCvc && ownershipStatus == OwnershipStatus.NotOwner) {
+            SatoLog.d(TAG, "checkUnlockCodeAvailability SHOW UNLOCK CODE DIALOG!")
+            _showUnlockCodeDialog.value = true
+        }
+    }
+
+    fun dismissUnlockCodeDialog() {
+        _showUnlockCodeDialog.value = false
     }
 
     // Card actions
@@ -178,8 +193,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         isTestnet: Boolean,
         entropyBytes: ByteArray
     ) {
-        if (!checkNfcAvailability(activity)) return
         SatoLog.d(TAG, "sealSlot START slot: ${index}")
+
+        // check NFC available
+        if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
@@ -192,7 +212,11 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun unsealSlot(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.UnsealSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
@@ -200,14 +224,22 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     // assert 0 <= index < cardSlots.size
     fun resetSlot(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         NFCCardService.actionType = NfcActionType.ResetSlot
         NFCCardService.actionIndex = index
         scanCardForAction(activity)
     }
 
     fun recoverSlotPrivkey(activity: Activity, index: Int) {
+        // check NFC available
         if (!checkNfcAvailability(activity)) return
+        // prompt for cvc code for Satodime v0.2+ if cvc is fixed
+        showUnlockCodeDialog()
+
         SatoLog.d(TAG, "recoverSlotPrivkey START slot: ${index}")
         NFCCardService.actionType = NfcActionType.GetPrivkey
         NFCCardService.actionIndex = index
