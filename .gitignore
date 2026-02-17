@@ -6,3 +6,6 @@ app/google-services.json
 /build
 /local.properties
 /satodime-android
+
+# Android release build outputs
+/app/release/

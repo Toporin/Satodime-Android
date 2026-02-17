@@ -417,7 +417,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         var versionCode = 0
         try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            versionName = packageInfo.versionName
+            versionName = packageInfo.versionName.toString()
             versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 packageInfo.longVersionCode.toInt()
             } else {
