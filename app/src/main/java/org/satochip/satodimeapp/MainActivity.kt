@@ -1,11 +1,17 @@
 package org.satochip.satodimeapp
 
 import UnlockCodeDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import org.satochip.satodimeapp.ui.components.shared.SatoToast
 import org.satochip.satodimeapp.ui.components.shared.NfcCheckDialog
@@ -25,7 +32,6 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.internetconnection.ConnectionChecker
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 import org.satochip.satodimeapp.services.SatoLog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.satochip.satodimeapp.services.NFCCardService
 
 private const val TAG = "MainActivity"
@@ -33,6 +39,19 @@ private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
 
     private lateinit var connectionChecker: ConnectionChecker
+
+    // same instance as the one used in Navigation (same ViewModelStoreOwner and key)
+    private val sharedViewModel: SharedViewModel by viewModels { SharedViewModel.Factory }
+
+    // shows/hides the NFC disabled dialog when NFC is turned off/on while the app is open
+    private val nfcStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val state = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
+            if (state == NfcAdapter.STATE_ON || state == NfcAdapter.STATE_OFF) {
+                sharedViewModel.refreshNfcState()
+            }
+        }
+    }
     private fun showFeedbackDialog() {
         val reviewManager = ReviewManagerFactory.create(applicationContext)
         reviewManager.requestReviewFlow().addOnCompleteListener {
@@ -54,7 +73,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SatodimeTheme {
-                val sharedViewModel: SharedViewModel = viewModel()
                 val status by connectionChecker.observe().collectAsState(
                     initial = ConnectionChecker.InternetStatus.Available
                 )
@@ -151,10 +169,19 @@ class MainActivity : ComponentActivity() {
         // keep NFC reader mode enabled while the app is in the foreground, so that tapping a card
         // does not launch other NFC apps or the browser (tags are ignored when no action is pending)
         NFCCardService.enableReaderMode(this)
+        // NFC may have been turned on/off while the app was in background (e.g. from the NFC settings)
+        sharedViewModel.refreshNfcState()
+        ContextCompat.registerReceiver(
+            this,
+            nfcStateReceiver,
+            IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onPause() {
         super.onPause()
+        unregisterReceiver(nfcStateReceiver)
         NFCCardService.disableReaderMode(this)
     }
 }

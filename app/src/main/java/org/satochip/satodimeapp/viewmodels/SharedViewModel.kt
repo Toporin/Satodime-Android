@@ -152,6 +152,25 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         _showNfcCheckDialog.value = false
     }
 
+    // NFC state seen by the last refreshNfcState() call (null before the first call)
+    private var lastNfcEnabled: Boolean? = null
+
+    /**
+     * Updates the NFC disabled dialog when the app returns to the foreground or the NFC state changes:
+     * hides it once NFC is enabled, shows it when NFC gets disabled (not again on each resume
+     * if the user already dismissed it while NFC was off).
+     */
+    fun refreshNfcState() {
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+        val nfcEnabled = nfcAdapter != null && nfcAdapter.isEnabled
+        if (nfcEnabled) {
+            _showNfcCheckDialog.value = false
+        } else if (lastNfcEnabled != false) {
+            _showNfcCheckDialog.value = true
+        }
+        lastNfcEnabled = nfcEnabled
+    }
+
     fun showUnlockCodeDialog() {
         SatoLog.d(TAG, "checkUnlockCodeAvailability START ")
         SatoLog.d(TAG, "checkUnlockCodeAvailability fixedCvc: ${NFCCardService.isFixedCvc} ")
