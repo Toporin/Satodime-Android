@@ -126,9 +126,7 @@ class MainActivity : ComponentActivity() {
                         UnlockCodeDialog(
                             onDismiss = { sharedViewModel.dismissUnlockCodeDialog() },
                             onCodeEntered = { code ->
-                                // Handle the entered code here
-                                println("Code entered: $code")
-
+                                // Handle the entered code here (never log it: it is the card unlock code)
                                 // convert to bytes
                                 val unlockCodeBytes = code.toByteArray()
 

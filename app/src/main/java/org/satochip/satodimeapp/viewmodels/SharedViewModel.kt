@@ -404,7 +404,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         try {
             activity.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            println("Could not start Google mail, error: $e")
+            SatoLog.e(TAG, "Could not start Google mail, error: $e")
         }
     }
 
@@ -424,7 +424,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 packageInfo.versionCode
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            SatoLog.e(TAG, "getMailText: package not found: $e")
         }
         return "Application name: Satodime\n" +
                 "Android version: $version\n" +

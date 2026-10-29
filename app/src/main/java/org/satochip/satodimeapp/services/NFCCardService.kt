@@ -174,6 +174,7 @@ object NFCCardService {
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
             isFixedCvc = satodimeStatus?.isFixedCvc?:false
+            SatoLog.d(TAG, "readCard isFixedCvc: $isFixedCvc");
             SatoLog.d(TAG, "readCard satodimeStatus: $satodimeStatus");
 
             // get authentikey
@@ -768,7 +769,7 @@ object NFCCardService {
         )
         //SatoLog.d(TAG, "getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
         SatoLog.d(TAG, "getCardSlot keyStatus: ${cardSlot.slotState}")
-        SatoLog.d(TAG, "getCardSlot pubKey: ${pubKey}")
+        SatoLog.d(TAG, "getCardSlot pubKey: ${SatochipParser.toHexString(pubKey)}")
         return cardSlot
     }
 
