@@ -9,10 +9,13 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,6 +53,12 @@ class MainActivity : ComponentActivity() {
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Draw behind system bars on all API levels (enforced from API 35).
+        // System bar icons follow the system dark mode, like SatodimeTheme.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
         connectionChecker = ConnectionChecker(applicationContext)
         showFeedbackDialog()
@@ -69,7 +78,15 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colors.primaryVariant),
                 ) {
-                    Navigation()
+                    // Keep content clear of status/navigation bars, display cutout and keyboard,
+                    // while the background above stays full screen.
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding()
+                    ) {
+                        Navigation()
+                    }
                     if (prevStatus == ConnectionChecker.InternetStatus.Lost && status == ConnectionChecker.InternetStatus.Available) {
                         SatoToast(
                             title = R.string.networkConnected,
@@ -182,10 +199,10 @@ class MainActivity : ComponentActivity() {
         nfcAdapter?.disableReaderMode(this)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent?.action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
-            intent?.action == NfcAdapter.ACTION_TECH_DISCOVERED) {
+        if (intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
+            intent.action == NfcAdapter.ACTION_TECH_DISCOVERED) {
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
             if (tag != null) {
                 // Handle tag (e.g., for APDU or ignore NDEF)

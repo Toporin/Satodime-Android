@@ -6,7 +6,6 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val darkColorPalette = darkColors(
     primary = LightDarkBlue,
@@ -38,18 +37,7 @@ fun SatodimeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
-    val colors = if (darkTheme) {
-        systemUiController.setSystemBarsColor(
-            color = darkColorPalette.primary
-        )
-        darkColorPalette
-    } else {
-        systemUiController.setSystemBarsColor(
-            color = lightColorPalette.primary
-        )
-        lightColorPalette
-    }
+    val colors = if (darkTheme) darkColorPalette else lightColorPalette
 
     MaterialTheme(
         colors = colors,

@@ -20,6 +20,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Satodime">
 
             <intent-filter>
@@ -59,6 +60,7 @@
         </activity>
         <activity
             android:name=".WebviewActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"
             android:label="Webview Activity"
             android:theme="@style/Theme.Satodime"
