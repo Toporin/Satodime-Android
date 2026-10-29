@@ -2,6 +2,7 @@ package org.satochip.satodimeapp.ui
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.openAppLanguageSettings
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
@@ -281,6 +283,17 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
             text = stringResource(R.string.showLogs),
         )
         Spacer(modifier = Modifier.weight(1f))
+
+        // APP LANGUAGE: per-app language is selected in system settings (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            SatoButton(
+                onClick = {
+                    openAppLanguageSettings(context)
+                },
+                text = stringResource(R.string.appLanguage),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
 
         // SEND FEEDBACK
         SatoButton(

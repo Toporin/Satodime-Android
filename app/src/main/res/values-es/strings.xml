@@ -113,6 +113,7 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="activateTheExpertMode">Activar el modo experto</string>
     <string name="showLogs">Mostrar registros</string>
     <string name="sendFeedback">Enviar comentarios</string>
+    <string name="appLanguage">Idioma de la aplicación</string>
     <string name="LogsTitle">Registros</string>
     <string name="apply">Aplicar</string>
     <string name="toUseItText">Para usarla, coloque la tarjeta encima de su teléfono cuando se le solicite y manténgala en el lector durante toda la operación.</string>

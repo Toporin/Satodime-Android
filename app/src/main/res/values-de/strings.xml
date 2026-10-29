@@ -72,6 +72,7 @@
     <string name="activateTheExpertMode">Expertenmodus aktivieren</string>
     <string name="showLogs">Logs anzeigen</string>
     <string name="sendFeedback">Feedback senden</string>
+    <string name="appLanguage">App-Sprache</string>
     <string name="LogsTitle">Logs</string>
     <string name="apply">Anwenden</string>
     <string name="toUseItText">Lege die Karte bei Aufforderung oben auf dein Smartphone und halte sie während der gesamten Aktion am Leser.</string>

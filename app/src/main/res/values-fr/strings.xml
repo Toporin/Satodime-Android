@@ -99,6 +99,7 @@
     <string name="starterIntro">Intro de démarrage</string>
     <string name="showLogs">Afficher les logs</string>
     <string name="sendFeedback">Envoyer des commentaires</string>
+    <string name="appLanguage">Langue de l\'application</string>
     <string name="LogsTitle">Logs</string>
 <!--    <string name="resetTheVault">Réinitialiser le coffre</string>-->
     <string name="showKey">Afficher la clé</string>
