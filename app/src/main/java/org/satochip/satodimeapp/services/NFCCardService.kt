@@ -73,7 +73,6 @@ object NFCCardService {
         this.activity = activity
         val cardManager = NFCCardManager()
         cardManager.setCardListener(SatodimeCardListenerForAction)
-        cardManager.start()
 
         resultCodeLive.postValue(NfcResultCode.Busy)
 

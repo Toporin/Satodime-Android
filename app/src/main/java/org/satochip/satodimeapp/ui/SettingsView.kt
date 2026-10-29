@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
+import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.components.shared.SatoButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
@@ -322,6 +323,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                 settings.edit()
                     .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode)
                     .apply()
+                SatoLog.setVerboseMode(debugMode) // also applies to Satochip-Java logs on next card tap
                 settings.edit()
                     .putString(
                         SatodimePreferences.SELECTED_CURRENCY.name,

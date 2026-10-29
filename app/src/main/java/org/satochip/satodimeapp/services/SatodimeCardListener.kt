@@ -15,13 +15,12 @@ object SatodimeCardListenerForAction : CardListener {
         NFCCardService.isConnected.postValue(true)
         SatoLog.d(TAG, "onConnected: Card is connected")
         try {
+            SatoLog.configureLibraryLogging()
             val cmdSet = SatochipCommandSet(cardChannel)
             // start to interact with card
             NFCCardService.initialize(cmdSet)
 
-            // TODO: disconnect?
-            SatoLog.d(TAG, "onConnected: trigger disconnection!")
-            onDisconnected()
+            // NFCCardManager closes the connection and calls onDisconnected() after this method returns
             SatoLog.d(TAG, "onConnected: resultAfterConnection: ${NFCCardService.resultCodeLive.value}")
 
             // disable scanning once finished
@@ -35,7 +34,6 @@ object SatodimeCardListenerForAction : CardListener {
         } catch (e: Exception) {
             SatoLog.e(TAG, "onConnected: an exception has been thrown during card init.")
             SatoLog.e(TAG, Log.getStackTraceString(e))
-            onDisconnected()
         }
     }
 

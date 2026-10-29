@@ -89,18 +89,14 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.4.0"
 
     //satochip libraries
-    //implementation files('libs/satochip-lib-0.0.4.jar')
-    implementation files('libs/satochip-lib-0.2.5.jar')
-    implementation files('libs/satochip-android-0.0.2.jar')
+    // satochip-android depends on satochip-lib, which brings BouncyCastle (bcprov-jdk15to18)
+    implementation 'com.github.Toporin.Satochip-Java:satochip-android:0.3.6'
     //implementation files('libs/javacryptotools-0.1.0.jar')
     //implementation files('libs/javacryptotools-0.2.0.jar')
     //implementation files('libs/javacryptotools-0.3.1.jar')
     implementation files('libs/javacryptotools-0.4.0.jar')
 
-    //satochip-android & satochip-lib related dependencies
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-
-    //javacryptotools related dependencies
+    //javacryptotools related dependencies (BouncyCastle comes with satochip-lib)
     implementation("com.google.guava:guava:32.1.2-jre")
 
     //App review
