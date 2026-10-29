@@ -139,6 +139,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
         if (!nfcAvailable) {
             _showNfcCheckDialog.value = true
+            if (activity != null) {
+                // a card action was requested: show the warning in the NFC dialog instead of waiting for a card
+                NFCCardService.resultCodeLive.postValue(NfcResultCode.NfcDisabled)
+            }
             return false
         }
         return true
@@ -165,13 +169,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     // Card actions
     fun scanCard(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.ScanCard
+        NFCCardService.requestAction(NfcActionType.ScanCard)
         scanCardForAction(activity)
     }
 
     fun takeOwnership(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.TakeOwnership
+        NFCCardService.requestAction(NfcActionType.TakeOwnership)
         scanCardForAction(activity)
     }
 
@@ -181,7 +185,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun releaseOwnership(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.ReleaseOwnership
+        NFCCardService.requestAction(NfcActionType.ReleaseOwnership)
         scanCardForAction(activity)
     }
 
@@ -200,13 +204,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
         NFCCardService.actionEntropy = entropyBytes
         // convert to slip44Bytes
         NFCCardService.actionSlip44 =
             coinToSlip44Bytes(coinSymbol = coinSymbol, isTestnet = isTestnet)
+        NFCCardService.requestAction(NfcActionType.SealSlot)
         scanCardForAction(activity)
     }
 
@@ -217,8 +221,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.UnsealSlot
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.UnsealSlot)
         scanCardForAction(activity)
     }
 
@@ -229,8 +233,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.ResetSlot
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.ResetSlot)
         scanCardForAction(activity)
     }
 
@@ -241,8 +245,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         showUnlockCodeDialog()
 
         SatoLog.d(TAG, "recoverSlotPrivkey START slot: ${index}")
-        NFCCardService.actionType = NfcActionType.GetPrivkey
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.GetPrivkey)
         scanCardForAction(activity)
     }
 

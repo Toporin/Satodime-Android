@@ -4,7 +4,7 @@ import android.util.Log
 import org.satochip.client.SatochipCommandSet
 import org.satochip.io.CardChannel
 import org.satochip.io.CardListener
-import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.data.NfcActionType
 
 private const val TAG = "SatodimeCardListener"
 
@@ -23,17 +23,15 @@ object SatodimeCardListenerForAction : CardListener {
             // NFCCardManager closes the connection and calls onDisconnected() after this method returns
             SatoLog.d(TAG, "onConnected: resultAfterConnection: ${NFCCardService.resultCodeLive.value}")
 
-            // disable scanning once finished
             Thread.sleep(100) // delay to let resultCodeLive update (avoid race condition?)
             SatoLog.d(TAG, "onConnected: resultAfterConnection delay: ${NFCCardService.resultCodeLive.value}")
-            if (NFCCardService.resultCodeLive.value != NfcResultCode.UnknownError) { //todo: refine condition?
-                // if result is OK, or failed with an known reason, we stop polling for the card
-                NFCCardService.disableScanForAction()
-            }
-
         } catch (e: Exception) {
             SatoLog.e(TAG, "onConnected: an exception has been thrown during card init.")
             SatoLog.e(TAG, Log.getStackTraceString(e))
+        } finally {
+            // action done: ignore further taps until a new action is requested
+            // (reader mode stays enabled so that other NFC apps are not launched)
+            NFCCardService.actionType = NfcActionType.DoNothing
         }
     }
 
