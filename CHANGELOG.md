@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6]:
+
+* Target Android 16 (API level 36), as required by Google Play
+* Support edge-to-edge display: content no longer overlaps the status and navigation bars
+* Upgrade Gradle to 8.13 and Android Gradle Plugin to 8.13.2
+* Support per-app language preferences (Android 13+): select the app language in system settings or from the app Settings screen
+* Keep NFC reader mode active while the app is open, so other NFC apps no longer open when tapping the card
+* Cancelling the NFC dialog cancels the pending card action
+* Show a notification if NFC is disabled on the phone (also when NFC is turned off while the app is open), and fix the dialog colors
+* For an unsealed vault, clear private keys copied to the clipboard after 30 seconds (only if the clipboard still contains the copied secret, when it can be checked)
+* Update Satochip-Java library to v0.3.6 (from JitPack): no sensitive data in logs, BouncyCastle 1.86, more reliable secure channel (detailed library logs available in debug mode)
+* Remove secret/sensitive data from app logs: Satochip-Java library logs disabled unless debug mode is on, unlock code no longer printed
+
 ## [0.3.5]:
 
 * Increase Android targetSdk from 34 to 35

@@ -46,10 +46,10 @@ These keys are loaded via BuildConfig at compile time and used by the Javacrypto
 **NFCCardService** (`services/NFCCardService.kt`)
 - Singleton managing all NFC card operations
 - Uses `SatochipCommandSet` for hardware communication
-- Implements action-based pattern: set `actionType`, `actionIndex`, then `scanCardForAction()`
-- Actions: DoNothing, GetStatus, SealSlot, UnsealSlot, ResetSlot, TransferSlot
+- Implements action-based pattern: set `actionIndex` (and seal parameters), then `requestAction(type)`, then `scanCardForAction()`
+- Actions (`NfcActionType`): ScanCard, TakeOwnership, ReleaseOwnership, SealSlot, UnsealSlot, ResetSlot, GetPrivkey, DoNothing
 - Maintains card state: slots, ownership status, authenticity status
-- Must call `disableScanForAction()` to release NFC reader
+- NFC reader mode stays enabled while `MainActivity` is in the foreground (`enableReaderMode`/`disableReaderMode`); tags are ignored when no action is pending (`actionType == DoNothing`). Closing `NfcDialog` cancels the pending action (`cancelPendingAction`)
 
 **SharedViewModel** (`viewmodels/SharedViewModel.kt`)
 - Single AndroidViewModel for entire app lifecycle
@@ -73,14 +73,14 @@ These keys are loaded via BuildConfig at compile time and used by the Javacrypto
 
 ### External Library Dependencies
 
-The app depends on two JAR libraries placed in `app/libs/`:
-- `satochip-android-0.0.2.jar`: NFC communication wrapper for Android
-- `satochip-lib-0.2.5.jar`: Core Satochip protocol implementation
-- `javacryptotools-0.4.0.jar`: Blockchain explorers and crypto utilities
+- Satochip-Java (https://github.com/Toporin/Satochip-Java), published on JitPack (repository declared in `settings.gradle`): `com.github.Toporin.Satochip-Java:satochip-android` (`org.satochip.android.NFCCardManager`) depends on `satochip-lib` (`org.satochip.client.*`: `SatochipCommandSet`, `SatodimeStatus`, etc.), which brings BouncyCastle (`bcprov-jdk15to18`). Do not add another BouncyCastle artifact (duplicate classes).
+- `app/libs/javacryptotools-0.4.0.jar`: blockchain explorers and crypto utilities, built separately from https://github.com/Toporin/Javacryptotools (local jar, no POM: it uses the BouncyCastle brought by satochip-lib). Older javacryptotools jars in that folder are not used.
 
-These libraries are not in Maven/Gradle repos and must be built separately from:
-- https://github.com/Toporin/Satochip-Java
-- https://github.com/Toporin/Javacryptotools
+### Logging
+
+- Use `SatoLog` (never `println`/`Log.*` directly): logcat only in debug builds, in-app log list (Settings > Show logs) for errors/warnings, and debug messages when debug mode (`VERBOSE_MODE`) is on.
+- Satochip-Java logs (java.util.logging, `org.satochip.*` loggers) are routed to `SatoLog` by `SatoLog.configureLibraryLogging()` on each card connection: FINE level in debug mode, disabled otherwise.
+- Never log secrets: private keys, entropy, card unlock secret / CVC.
 
 ### Data Flow for NFC Operations
 
@@ -127,7 +127,9 @@ User preferences stored via SharedPreferences with key "satodime":
 ## Important Notes
 
 - App requires NFC hardware; check `NfcAdapter.getDefaultAdapter()` availability
-- Screen orientation locked to portrait throughout app
+- targetSdk 36, edge-to-edge display: `MainActivity` applies `safeDrawingPadding()` around `Navigation`
+- Screen orientation locked to portrait on phones (ignored by Android 16+ on large screens; `configChanges` in the manifest keeps state on rotation)
+- Private keys copied to the clipboard go through `util/SecretClipboard` (cleared after 30s)
 - Some blockchain operations can be slow (balance fetching); handle in coroutines
 - SLIP-44 standard determines blockchain type from 4-byte key
 - Card slots have states: UNINITIALIZED, SEALED, UNSEALED
