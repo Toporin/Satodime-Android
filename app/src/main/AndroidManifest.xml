@@ -65,6 +65,10 @@
             android:label="Webview Activity"
             android:theme="@style/Theme.Satodime"
             />
+        <!-- clears private keys copied to clipboard after a delay -->
+        <receiver
+            android:name=".util.ClipboardClearReceiver"
+            android:exported="false" />
 
     </application>
     <queries>

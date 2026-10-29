@@ -35,9 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.g0dkar.qrcode.QRCode
 import org.satochip.satodimeapp.R
+import org.satochip.satodimeapp.util.SecretClipboard
 
 @Composable
-fun DataAsQrCode(data: String) {
+fun DataAsQrCode(
+    data: String,
+    isSensitive: Boolean = false, // sensitive data (private key) is cleared from clipboard after 30s
+) {
     val context = LocalContext.current
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     Column(
@@ -66,7 +70,11 @@ fun DataAsQrCode(data: String) {
                 modifier = Modifier
                     .size(25.dp)
                     .clickable {
-                        clipboardManager.setText(AnnotatedString(data))
+                        if (isSensitive) {
+                            SecretClipboard.copySecret(context, data)
+                        } else {
+                            clipboardManager.setText(AnnotatedString(data))
+                        }
                         Toast.makeText(context, copiedToClipboardText, Toast.LENGTH_SHORT).show()
                     },
                 imageVector = Icons.Outlined.ContentCopy,

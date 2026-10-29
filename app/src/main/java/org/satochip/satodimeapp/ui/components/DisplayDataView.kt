@@ -51,6 +51,7 @@ fun DisplayDataView(
     subLabel: String = "",
     data: String,
     url: String? = null,
+    isSensitive: Boolean = false, // sensitive data (private key) is cleared from clipboard after 30s
 ) {
     //TODO: in entropy, show utf8 if possible, and sha256 of entropy should match privkey?
     val scrollState = rememberScrollState()
@@ -139,7 +140,7 @@ fun DisplayDataView(
                 style = MaterialTheme.typography.body1,
                 text = data
             )
-            DataAsQrCode(data)
+            DataAsQrCode(data, isSensitive = isSensitive)
 
             if(vault.state == SlotState.SEALED) {
                 Text(
