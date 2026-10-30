@@ -12,7 +12,6 @@ import org.satochip.javacryptotools.coins.UnsupportedCoin
 import org.satochip.satodimeapp.BuildConfig
 import org.satochip.satodimeapp.services.SatoLog
 import java.text.DecimalFormat
-import java.util.logging.Level
 import kotlin.math.pow
 
 private const val TAG = "Utils"
@@ -23,6 +22,7 @@ val apiKeys = hashMapOf(
     Pair("API_KEY_BSCSCAN", BuildConfig.API_KEY_BSCSCAN),
     Pair("API_KEY_RARIBLE", BuildConfig.API_KEY_RARIBLE),
     Pair("API_KEY_COVALENT", BuildConfig.API_KEY_COVALENT),
+    Pair("API_KEY_ALCHEMY", BuildConfig.API_KEY_ALCHEMY),
     Pair("API_KEY_PAYBIS_ID", BuildConfig.API_KEY_PAYBIS_ID),
     Pair("API_KEY_PAYBIS_HMAC", BuildConfig.API_KEY_PAYBIS_HMAC),
 )
@@ -98,16 +98,15 @@ fun newBaseCoin(
     keySlip44Int: Int,
     isTestnet: Boolean,
     apiKeys: Map<String, String>,
-    level: Level = Level.WARNING
 ): BaseCoin {
     return when (keySlip44Int or -0x80000000) { // switch first bit (ignore testnet or mainnet)
-        Constants.BTC -> Bitcoin(isTestnet, apiKeys, level)
-        Constants.LTC -> Litecoin(isTestnet, apiKeys, level)
-        Constants.BCH -> BitcoinCash(isTestnet, apiKeys, level)
-        Constants.ETH -> Ethereum(isTestnet, apiKeys, level)
-        Constants.POL -> Polygon(isTestnet, apiKeys, level)
-        Constants.XCP -> Counterparty(isTestnet, apiKeys, level)
-        else -> UnsupportedCoin(isTestnet, apiKeys, level)
+        Constants.BTC -> Bitcoin(isTestnet, apiKeys)
+        Constants.LTC -> Litecoin(isTestnet, apiKeys)
+        Constants.BCH -> BitcoinCash(isTestnet, apiKeys)
+        Constants.ETH -> Ethereum(isTestnet, apiKeys)
+        Constants.POL -> Polygon(isTestnet, apiKeys)
+        Constants.XCP -> Counterparty(isTestnet, apiKeys)
+        else -> UnsupportedCoin(isTestnet, apiKeys)
     }
 }
 

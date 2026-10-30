@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * For an unsealed vault, clear private keys copied to the clipboard after 30 seconds (only if the clipboard still contains the copied secret, when it can be checked)
 * Update Satochip-Java library to v0.3.6 (from JitPack): no sensitive data in logs, BouncyCastle 1.86, more reliable secure channel (detailed library logs available in debug mode)
 * Remove secret/sensitive data from app logs: Satochip-Java library logs disabled unless debug mode is on, unlock code no longer printed
+* Update Javacryptotools library to v0.4.1 (from JitPack, replaces the local jar): Ethereum testnet is now Sepolia, Polygon testnet is now Amoy, Polygon uses the Alchemy API (new API key), Bitcoin Cash balances use Fulcrum servers, Litecoin testnet support, more reliable explorers
+* Javacryptotools library logs are controlled by the app debug mode, like Satochip-Java logs
 
 ## [0.3.5]:
 

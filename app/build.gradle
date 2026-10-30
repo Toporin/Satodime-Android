@@ -29,6 +29,7 @@ android {
         buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
         buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
         buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
+        buildConfigField "String", "API_KEY_ALCHEMY", "\"${properties.getProperty("API_KEY_ALCHEMY")}\""
         buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${properties.getProperty("API_KEY_PAYBIS_ID")}\""
         buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${properties.getProperty("API_KEY_PAYBIS_HMAC")}\""
     }
@@ -91,13 +92,11 @@ dependencies {
     //satochip libraries
     // satochip-android depends on satochip-lib, which brings BouncyCastle (bcprov-jdk15to18)
     implementation 'com.github.Toporin.Satochip-Java:satochip-android:0.3.6'
-    //implementation files('libs/javacryptotools-0.1.0.jar')
-    //implementation files('libs/javacryptotools-0.2.0.jar')
-    //implementation files('libs/javacryptotools-0.3.1.jar')
-    implementation files('libs/javacryptotools-0.4.0.jar')
-
-    //javacryptotools related dependencies (BouncyCastle comes with satochip-lib)
-    implementation("com.google.guava:guava:32.1.2-jre")
+    // javacryptotools brings guava; its BouncyCastle dependency resolves to the version from satochip-lib.
+    // org.json is excluded: Android provides it (a bundled copy would duplicate platform classes)
+    implementation('com.github.Toporin:Javacryptotools:v0.4.1') {
+        exclude group: 'org.json', module: 'json'
+    }
 
     //App review
     implementation ('com.google.android.play:review-ktx:2.0.1')

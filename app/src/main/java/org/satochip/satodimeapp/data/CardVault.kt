@@ -14,7 +14,6 @@ import org.satochip.satodimeapp.util.getBalanceDouble
 import org.satochip.satodimeapp.util.newBaseCoin
 import java.nio.ByteBuffer
 import java.util.Collections.emptyList
-import java.util.logging.Level
 
 
 private const val TAG = "CardVault"
@@ -24,8 +23,6 @@ private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup addres
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-    val debugMode = prefs.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)
-    val logLevel = if (debugMode) {Level.INFO} else {Level.WARNING}
 
     private val keySlip44: ByteArray = cardSlot.keySlip44
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
@@ -35,10 +32,9 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     val state = cardSlot.slotState // UNINITIALIZED, SEALED, UNSEALED;
     val index: Int = cardSlot.index
 
-    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys, logLevel)
+    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys)
 
     init {
-        baseCoin.setLoggerLevel(logLevel)
         SatoLog.d(TAG, "CardVault init2 ${baseCoin.coin_symbol}")
         SatoLog.d(TAG,"CardVault init $keySlip44Int")
     }
@@ -52,13 +48,13 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         nativeAsset.explorerLink = baseCoin.getAddressWeburl(nativeAsset.address)
     }
 
-    val priceExplorer = CoinCombined( baseCoin, apiKeys, logLevel)
+    val priceExplorer = CoinCombined(baseCoin, apiKeys)
 
     // meta info such as icon
     val coin: Coin = try {
-        if (nativeAsset.symbol == "ROP")
+        if (nativeAsset.symbol == "ETHTEST") // Sepolia testnet
             Coin.ETH
-        else if (nativeAsset.symbol == "POL") {
+        else if (nativeAsset.symbol == "POL" || nativeAsset.symbol == "POLTEST") { // POLTEST: Amoy testnet
             Coin.POL
         }
         else

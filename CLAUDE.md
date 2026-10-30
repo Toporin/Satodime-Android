@@ -26,11 +26,12 @@ API_KEY_ETHPLORER=your_ethplorer_key
 API_KEY_BSCSCAN=your_bscscan_key
 API_KEY_RARIBLE=your_rarible_key
 API_KEY_COVALENT=your_covalent_key
+API_KEY_ALCHEMY=your_alchemy_key
 API_KEY_PAYBIS_ID=your_paybis_id
 API_KEY_PAYBIS_HMAC=your_paybis_hmac
 ```
 
-These keys are loaded via BuildConfig at compile time and used by the Javacryptotools library for fetching balances, NFT metadata, and exchange rates.
+These keys are loaded via BuildConfig at compile time and passed to the Javacryptotools library (`util/Utils.kt` `apiKeys`) for fetching balances, NFT metadata, and exchange rates. `API_KEY_ALCHEMY` is required for Polygon (mainnet and Amoy testnet).
 
 ## Architecture
 
@@ -74,12 +75,12 @@ These keys are loaded via BuildConfig at compile time and used by the Javacrypto
 ### External Library Dependencies
 
 - Satochip-Java (https://github.com/Toporin/Satochip-Java), published on JitPack (repository declared in `settings.gradle`): `com.github.Toporin.Satochip-Java:satochip-android` (`org.satochip.android.NFCCardManager`) depends on `satochip-lib` (`org.satochip.client.*`: `SatochipCommandSet`, `SatodimeStatus`, etc.), which brings BouncyCastle (`bcprov-jdk15to18`). Do not add another BouncyCastle artifact (duplicate classes).
-- `app/libs/javacryptotools-0.4.0.jar`: blockchain explorers and crypto utilities, built separately from https://github.com/Toporin/Javacryptotools (local jar, no POM: it uses the BouncyCastle brought by satochip-lib). Older javacryptotools jars in that folder are not used.
+- Javacryptotools (https://github.com/Toporin/Javacryptotools), also on JitPack: `com.github.Toporin:Javacryptotools:v0.4.1` (blockchain explorers and crypto utilities). Its `org.json` dependency is excluded (Android provides it); its BouncyCastle dependency resolves to the satochip-lib version. Testnet symbols: `ETHTEST` (Sepolia), `POLTEST` (Amoy).
 
 ### Logging
 
 - Use `SatoLog` (never `println`/`Log.*` directly): logcat only in debug builds, in-app log list (Settings > Show logs) for errors/warnings, and debug messages when debug mode (`VERBOSE_MODE`) is on.
-- Satochip-Java logs (java.util.logging, `org.satochip.*` loggers) are routed to `SatoLog` by `SatoLog.configureLibraryLogging()` on each card connection: FINE level in debug mode, disabled otherwise.
+- Satochip-Java and Javacryptotools logs (java.util.logging, `org.satochip.*` loggers) are routed to `SatoLog` by `SatoLog.configureLibraryLogging()` on each card connection: FINE level in debug mode, disabled otherwise. Never set the level on the library loggers elsewhere (e.g. no `setLoggerLevel`).
 - Never log secrets: private keys, entropy, card unlock secret / CVC.
 
 ### Data Flow for NFC Operations
