@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Remove secret/sensitive data from app logs: Satochip-Java library logs disabled unless debug mode is on, unlock code no longer printed
 * Update Javacryptotools library to v0.4.1 (from JitPack, replaces the local jar): Ethereum testnet is now Sepolia, Polygon testnet is now Amoy, Polygon uses the Alchemy API (new API key), Bitcoin Cash balances use Fulcrum servers, Litecoin testnet support, more reliable explorers
 * Javacryptotools library logs are controlled by the app debug mode, like Satochip-Java logs
+* Expert mode: the entropy field stays visible above the keyboard (the screen content can now scroll)
 
 ## [0.3.5]:
 
