@@ -31,6 +31,8 @@ API_KEY_PAYBIS_ID=your_paybis_id
 API_KEY_PAYBIS_HMAC=your_paybis_hmac
 ```
 
+Debug builds can also set `USE_MOCKUP_ADDRESSES=true` (default false, always false in release builds): balances and assets are fetched for mockup addresses with non-zero balances (`getMockupAddressForDebug` in `CardVault.kt`), and a red warning is shown at the bottom of the vaults screen.
+
 These keys are loaded via BuildConfig at compile time and passed to the Javacryptotools library (`util/Utils.kt` `apiKeys`) for fetching balances, NFT metadata, and exchange rates. `API_KEY_ALCHEMY` is required for Polygon (mainnet and Amoy testnet).
 
 ## Architecture

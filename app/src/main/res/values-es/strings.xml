@@ -195,5 +195,6 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="nfc_disabled_title">NFC está desactivado</string>
     <string name="nfc_disabled_message">NFC no está habilitado en su dispositivo. Por favor habilite NFC para usar esta función.</string>
     <string name="open_settings">Abrir configuración</string>
+    <string name="mockupAddressWarning">Depuración: se usan direcciones ficticias, ¡los saldos no son reales!</string>
 </resources>
 

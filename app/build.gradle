@@ -6,6 +6,10 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+// local.properties (not in git): API keys and local debug options
+Properties localProperties = new Properties()
+localProperties.load(project.rootProject.file("local.properties").newDataInputStream())
+
 android {
     namespace 'org.satochip.satodimeapp'
     compileSdk 36
@@ -22,25 +26,27 @@ android {
             useSupportLibrary true
         }
 
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-        buildConfigField "String", "API_KEY_ETHERSCAN", "\"${properties.getProperty("API_KEY_ETHERSCAN")}\""
-        buildConfigField "String", "API_KEY_ETHPLORER", "\"${properties.getProperty("API_KEY_ETHPLORER")}\""
-        buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
-        buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
-        buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
-        buildConfigField "String", "API_KEY_ALCHEMY", "\"${properties.getProperty("API_KEY_ALCHEMY")}\""
-        buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${properties.getProperty("API_KEY_PAYBIS_ID")}\""
-        buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${properties.getProperty("API_KEY_PAYBIS_HMAC")}\""
+        buildConfigField "String", "API_KEY_ETHERSCAN", "\"${localProperties.getProperty("API_KEY_ETHERSCAN")}\""
+        buildConfigField "String", "API_KEY_ETHPLORER", "\"${localProperties.getProperty("API_KEY_ETHPLORER")}\""
+        buildConfigField "String", "API_KEY_BSCSCAN", "\"${localProperties.getProperty("API_KEY_BSCSCAN")}\""
+        buildConfigField "String", "API_KEY_RARIBLE", "\"${localProperties.getProperty("API_KEY_RARIBLE")}\""
+        buildConfigField "String", "API_KEY_COVALENT", "\"${localProperties.getProperty("API_KEY_COVALENT")}\""
+        buildConfigField "String", "API_KEY_ALCHEMY", "\"${localProperties.getProperty("API_KEY_ALCHEMY")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${localProperties.getProperty("API_KEY_PAYBIS_ID")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${localProperties.getProperty("API_KEY_PAYBIS_HMAC")}\""
     }
 
     buildTypes {
         release {
+            buildConfigField "boolean", "USE_MOCKUP_ADDRESSES", "false" // never in release builds
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            // debug only: fetch balances & assets for mockup addresses instead of the vault addresses (see CardVault.kt),
+            // enabled with USE_MOCKUP_ADDRESSES=true in local.properties
+            buildConfigField "boolean", "USE_MOCKUP_ADDRESSES", localProperties.getProperty("USE_MOCKUP_ADDRESSES", "false").trim().toBoolean().toString()
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

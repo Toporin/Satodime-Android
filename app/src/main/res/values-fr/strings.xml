@@ -171,4 +171,5 @@
     <string name="nfc_disabled_title">NFC désactivé</string>
     <string name="nfc_disabled_message">Le NFC est désactivé sur votre appareil. Veuillez activer le NFC pour utiliser cette fonctionnalité.</string>
     <string name="open_settings">Paramètres</string>
+    <string name="mockupAddressWarning">Debug : des adresses fictives sont utilisées, les soldes ne sont pas réels !</string>
 </resources>

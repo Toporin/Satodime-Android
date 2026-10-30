@@ -6,7 +6,7 @@ import android.util.Log
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.javacryptotools.explorers.CoinCombined
-import org.satochip.satodimeapp.BuildConfig.DEBUG
+import org.satochip.satodimeapp.BuildConfig.USE_MOCKUP_ADDRESSES
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.apiKeys
@@ -17,8 +17,6 @@ import java.util.Collections.emptyList
 
 
 private const val TAG = "CardVault"
-private const val DEBUG_EXPLORER = false
-private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup address, only available in DEBUG mode!
 
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
@@ -75,7 +73,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchBalance: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (USE_MOCKUP_ADDRESSS) {
+        if (USE_MOCKUP_ADDRESSES) { // debug builds only, warning shown in VaultsView
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchBalance: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
@@ -170,7 +168,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchTokenList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (USE_MOCKUP_ADDRESSS) {
+        if (USE_MOCKUP_ADDRESSES) { // debug builds only, warning shown in VaultsView
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchTokenList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }

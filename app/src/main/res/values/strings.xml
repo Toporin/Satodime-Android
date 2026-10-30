@@ -196,4 +196,5 @@ To facilitate maintenance, keep same key name whenever possible
     <string name="nfc_disabled_title">NFC is Disabled</string>
     <string name="nfc_disabled_message">NFC is not enabled on your device. Please enable NFC to use this feature.</string>
     <string name="open_settings">Open Settings</string>
+    <string name="mockupAddressWarning">Debug: mockup addresses are used, balances are not real!</string>
 </resources>
