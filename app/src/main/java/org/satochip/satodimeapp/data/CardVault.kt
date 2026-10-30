@@ -205,10 +205,10 @@ private fun getMockupAddressForDebug(coin_symbol: String): String? {
     } else if (coin_symbol == "ETH") {
         //addressCopy = "0xd5b06c8c83e78e92747d12a11fcd0b03002d48cf"
         //addressCopy = "0x86b4d38e451c707e4914ffceab9479e3a8685f98"
-        //addressCopy = "0xE71a126D41d167Ce3CA048cCce3F61Fa83274535" // cryptopunk
+        addressCopy = "0xE71a126D41d167Ce3CA048cCce3F61Fa83274535" // cryptopunk
         //addressCopy = "0xed1bf53Ea7fD8a290A3172B6c00F1Fb3657D538F" // usdt
         //addressCopy = "0x2c4ebd4b21736e992f3efeb55de37ae66457199d" // grolex nft
-        addressCopy = "0x15a9300158A7fd97CF50eF54E976185e0e1F2771" // nod.i
+        //addressCopy = "0x15a9300158A7fd97CF50eF54E976185e0e1F2771" // nod.i
     } else if (coin_symbol == "BTC") {
         addressCopy = "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2" // whale
     } else if (coin_symbol == "BNB") {
