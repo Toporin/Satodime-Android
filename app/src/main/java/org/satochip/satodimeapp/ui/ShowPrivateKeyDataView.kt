@@ -48,6 +48,7 @@ fun ShowPrivateKeyDataView(
         label = labelString,
         subLabel = subLabelString,
         data = data,
+        isSensitive = true,
     )
 }
 

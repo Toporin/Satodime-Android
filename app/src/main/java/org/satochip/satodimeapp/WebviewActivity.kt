@@ -2,7 +2,9 @@ package org.satochip.satodimeapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +36,10 @@ import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 class WebviewActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -56,11 +65,12 @@ class WebviewActivity : ComponentActivity() {
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
                             .background(
                                 color = InfoDialogBackgroundColor
                             )
+                            .statusBarsPadding()
+                            .fillMaxWidth()
+                            .height(64.dp)
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -80,7 +90,10 @@ class WebviewActivity : ComponentActivity() {
                         }
                     }
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .navigationBarsPadding()
+                            .imePadding()
                     ) {
                         WebViewComponent(
                             url = url,

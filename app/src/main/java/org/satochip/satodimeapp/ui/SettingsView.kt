@@ -2,6 +2,7 @@ package org.satochip.satodimeapp.ui
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.Currency
+import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.shared.HeaderRow
 import org.satochip.satodimeapp.ui.components.shared.SatoButton
 import org.satochip.satodimeapp.ui.theme.LightGreen
@@ -57,6 +59,7 @@ import org.satochip.satodimeapp.ui.theme.SatoGreen
 import org.satochip.satodimeapp.ui.theme.SatodimeTheme
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.SatodimeScreen
+import org.satochip.satodimeapp.util.openAppLanguageSettings
 import org.satochip.satodimeapp.viewmodels.SharedViewModel
 
 @Composable
@@ -282,6 +285,17 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
         )
         Spacer(modifier = Modifier.weight(1f))
 
+        // APP LANGUAGE: per-app language is selected in system settings (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            SatoButton(
+                onClick = {
+                    openAppLanguageSettings(context)
+                },
+                text = stringResource(R.string.appLanguage),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
         // SEND FEEDBACK
         SatoButton(
             onClick = {
@@ -309,6 +323,7 @@ fun SettingsView(navController: NavController, viewModel: SharedViewModel) {
                 settings.edit()
                     .putBoolean(SatodimePreferences.VERBOSE_MODE.name, debugMode)
                     .apply()
+                SatoLog.setVerboseMode(debugMode) // also applies to Satochip-Java logs on next card tap
                 settings.edit()
                     .putString(
                         SatodimePreferences.SELECTED_CURRENCY.name,

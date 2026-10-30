@@ -6,7 +6,7 @@ import android.util.Log
 import org.satochip.javacryptotools.coins.Asset
 import org.satochip.javacryptotools.coins.AssetType
 import org.satochip.javacryptotools.explorers.CoinCombined
-import org.satochip.satodimeapp.BuildConfig.DEBUG
+import org.satochip.satodimeapp.BuildConfig.USE_MOCKUP_ADDRESSES
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.util.SatodimePreferences
 import org.satochip.satodimeapp.util.apiKeys
@@ -14,18 +14,13 @@ import org.satochip.satodimeapp.util.getBalanceDouble
 import org.satochip.satodimeapp.util.newBaseCoin
 import java.nio.ByteBuffer
 import java.util.Collections.emptyList
-import java.util.logging.Level
 
 
 private const val TAG = "CardVault"
-private const val DEBUG_EXPLORER = false
-private val USE_MOCKUP_ADDRESSS = (DEBUG && DEBUG_EXPLORER) // use mockup address, only available in DEBUG mode!
 
 final class CardVault (val cardSlot: CardSlot, val context: Context) {
     // preferences
     val prefs = context.getSharedPreferences("satodime", MODE_PRIVATE)
-    val debugMode = prefs.getBoolean(SatodimePreferences.VERBOSE_MODE.name,false)
-    val logLevel = if (debugMode) {Level.INFO} else {Level.WARNING}
 
     private val keySlip44: ByteArray = cardSlot.keySlip44
     private val wrappedKeySlip44: ByteBuffer = ByteBuffer.wrap(keySlip44)//TODO platform specific
@@ -35,10 +30,9 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
     val state = cardSlot.slotState // UNINITIALIZED, SEALED, UNSEALED;
     val index: Int = cardSlot.index
 
-    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys, logLevel)
+    val baseCoin = newBaseCoin(keySlip44Int, isTestnet, apiKeys)
 
     init {
-        baseCoin.setLoggerLevel(logLevel)
         SatoLog.d(TAG, "CardVault init2 ${baseCoin.coin_symbol}")
         SatoLog.d(TAG,"CardVault init $keySlip44Int")
     }
@@ -52,13 +46,13 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         nativeAsset.explorerLink = baseCoin.getAddressWeburl(nativeAsset.address)
     }
 
-    val priceExplorer = CoinCombined( baseCoin, apiKeys, logLevel)
+    val priceExplorer = CoinCombined(baseCoin, apiKeys)
 
     // meta info such as icon
     val coin: Coin = try {
-        if (nativeAsset.symbol == "ROP")
+        if (nativeAsset.symbol == "ETHTEST") // Sepolia testnet
             Coin.ETH
-        else if (nativeAsset.symbol == "POL") {
+        else if (nativeAsset.symbol == "POL" || nativeAsset.symbol == "POLTEST") { // POLTEST: Amoy testnet
             Coin.POL
         }
         else
@@ -79,7 +73,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchBalance: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (USE_MOCKUP_ADDRESSS) {
+        if (USE_MOCKUP_ADDRESSES) { // debug builds only, warning shown in VaultsView
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchBalance: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
@@ -174,7 +168,7 @@ final class CardVault (val cardSlot: CardSlot, val context: Context) {
         SatoLog.d(TAG, "fetchTokenList: START ${nativeAsset.address}")
 
         var addressCopy = nativeAsset.address
-        if (USE_MOCKUP_ADDRESSS) {
+        if (USE_MOCKUP_ADDRESSES) { // debug builds only, warning shown in VaultsView
             addressCopy = getMockupAddressForDebug(baseCoin.coin_symbol) ?: nativeAsset.address
             SatoLog.w(TAG, "fetchTokenList: using mockup address $addressCopy instead of ${nativeAsset.address}")
         }
@@ -211,10 +205,10 @@ private fun getMockupAddressForDebug(coin_symbol: String): String? {
     } else if (coin_symbol == "ETH") {
         //addressCopy = "0xd5b06c8c83e78e92747d12a11fcd0b03002d48cf"
         //addressCopy = "0x86b4d38e451c707e4914ffceab9479e3a8685f98"
-        //addressCopy = "0xE71a126D41d167Ce3CA048cCce3F61Fa83274535" // cryptopunk
+        addressCopy = "0xE71a126D41d167Ce3CA048cCce3F61Fa83274535" // cryptopunk
         //addressCopy = "0xed1bf53Ea7fD8a290A3172B6c00F1Fb3657D538F" // usdt
         //addressCopy = "0x2c4ebd4b21736e992f3efeb55de37ae66457199d" // grolex nft
-        addressCopy = "0x15a9300158A7fd97CF50eF54E976185e0e1F2771" // nod.i
+        //addressCopy = "0x15a9300158A7fd97CF50eF54E976185e0e1F2771" // nod.i
     } else if (coin_symbol == "BTC") {
         addressCopy = "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2" // whale
     } else if (coin_symbol == "BNB") {

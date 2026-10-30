@@ -34,7 +34,6 @@ private const val TAG = "NFCCardService"
 object NFCCardService {
 
     lateinit var context: Context // initialized in sharedViewModel init() // = application.applicationContext
-    var activity: Activity? = null
 
     //
     var isConnected = MutableLiveData(false) // the app is connected to a card // updated in SatodimeCardListener
@@ -60,7 +59,8 @@ object NFCCardService {
     private var satodimeStatus: SatodimeStatus? = null
 
     // to define action to perform
-    var actionType: NfcActionType = NfcActionType.DoNothing
+    var actionType: NfcActionType = NfcActionType.DoNothing // action performed on next card tap, DoNothing if none
+    private var actionRequestId = 0
     var actionIndex: Int = 0
     var actionEntropy: ByteArray = byteArrayOf() // for seal
     var actionSlip44: ByteArray = byteArrayOf() // for seal
@@ -68,36 +68,89 @@ object NFCCardService {
     var resultCodeLive =
         MutableLiveData<NfcResultCode>(NfcResultCode.Busy) //NfcResultCode = NfcResultCode.Ok
 
-    fun scanCardForAction(activity: Activity) {
-        SatoLog.d(TAG, "scanCardForAction thread START")
-        this.activity = activity
-        val cardManager = NFCCardManager()
-        cardManager.setCardListener(SatodimeCardListenerForAction)
-        cardManager.start()
+    /**
+     * Single card manager: card sessions run from onTagDiscovered (on the NFC reader thread).
+     */
+    private val cardManager: NFCCardManager by lazy {
+        NFCCardManager().apply {
+            setCardListener(SatodimeCardListenerForAction)
+        }
+    }
 
-        resultCodeLive.postValue(NfcResultCode.Busy)
+    /**
+     * Forwards tags to the card manager only when an action is pending, other tags are ignored.
+     */
+    private val readerCallback = NfcAdapter.ReaderCallback { tag ->
+        if (actionType != NfcActionType.DoNothing) {
+            cardManager.onTagDiscovered(tag)
+        } else {
+            SatoLog.d(TAG, "readerCallback: tag ignored, no pending action")
+        }
+    }
 
-        val nfcAdapter = NfcAdapter.getDefaultAdapter(activity) //context)
-        nfcAdapter?.enableReaderMode(
+    /**
+     * Enables NFC reader mode for the activity.
+     * Called while MainActivity is in the foreground, so that tapping a card does not open other NFC apps
+     * (or the browser for the NDEF link stored on the card).
+     */
+    fun enableReaderMode(activity: Activity) {
+        SatoLog.d(TAG, "enableReaderMode")
+        NfcAdapter.getDefaultAdapter(activity)?.enableReaderMode(
             activity,
-            cardManager,
+            readerCallback,
             NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
             null
         )
-        SatoLog.d(TAG, "scanCardForAction thread END")
     }
 
-    fun disableScanForAction() {
-        SatoLog.d(TAG, "disableScanForAction Start")
-        if (activity != null) {
-            if (activity?.isFinishing() == true) {
-                SatoLog.e(TAG, "NFCCardService disableScanForAction activity isFinishing()")
-                return;
-            }
-            val nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
-            nfcAdapter?.disableReaderMode(activity)
-            SatoLog.d(TAG, "disableScanForAction disableReaderMode!")
+    /**
+     * Disables NFC reader mode for the activity (when it goes to background).
+     */
+    fun disableReaderMode(activity: Activity) {
+        SatoLog.d(TAG, "disableReaderMode")
+        NfcAdapter.getDefaultAdapter(activity)?.disableReaderMode(activity)
+    }
+
+    /**
+     * Sets the action to perform when the next card is tapped.
+     * Action parameters (actionIndex, actionEntropy, actionSlip44) must be set before.
+     *
+     * @return an id for this request, used to cancel it with `cancelPendingAction`.
+     */
+    fun requestAction(nfcActionType: NfcActionType): Int {
+        actionType = nfcActionType
+        actionRequestId++
+        return actionRequestId
+    }
+
+    fun currentActionRequestId(): Int = actionRequestId
+
+    /**
+     * Cancels the pending action (e.g. when the NFC dialog is closed before a card is tapped),
+     * unless a card is connected or another action was requested since.
+     */
+    fun cancelPendingAction(requestId: Int) {
+        if (requestId == actionRequestId && isConnected.value != true && actionType != NfcActionType.DoNothing) {
+            SatoLog.d(TAG, "cancelPendingAction: ${actionType.name} cancelled")
+            actionType = NfcActionType.DoNothing
         }
+    }
+
+    /**
+     * Starts waiting for a card for the pending action.
+     */
+    fun scanCardForAction(activity: Activity) {
+        SatoLog.d(TAG, "scanCardForAction START")
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(activity)
+        if (nfcAdapter == null || !nfcAdapter.isEnabled) {
+            SatoLog.e(TAG, "scanCardForAction: NFC not available or disabled")
+            resultCodeLive.postValue(NfcResultCode.NfcDisabled)
+            return
+        }
+        resultCodeLive.postValue(NfcResultCode.Busy) // indicate that the NFC scanning process is ongoing
+        // reader mode is already enabled by MainActivity, enable it again in case NFC was turned on in the meantime
+        enableReaderMode(activity)
+        SatoLog.d(TAG, "scanCardForAction END")
     }
 
     fun initialize(cmdSet: SatochipCommandSet) {
@@ -175,6 +228,7 @@ object NFCCardService {
             // satodimeStatus
             satodimeStatus = cmdSet.satodimeStatus
             isFixedCvc = satodimeStatus?.isFixedCvc?:false
+            SatoLog.d(TAG, "readCard isFixedCvc: $isFixedCvc");
             SatoLog.d(TAG, "readCard satodimeStatus: $satodimeStatus");
 
             // get authentikey
@@ -769,7 +823,7 @@ object NFCCardService {
         )
         //SatoLog.d(TAG, "getCardSlot keySlip44: ${cardSlot.keySlip44Int}")
         SatoLog.d(TAG, "getCardSlot keyStatus: ${cardSlot.slotState}")
-        SatoLog.d(TAG, "getCardSlot pubKey: ${pubKey}")
+        SatoLog.d(TAG, "getCardSlot pubKey: ${SatochipParser.toHexString(pubKey)}")
         return cardSlot
     }
 

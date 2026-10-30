@@ -1,12 +1,15 @@
 package org.satochip.satodimeapp.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ColorFilter
 import kotlinx.coroutines.delay
 import org.satochip.satodimeapp.R
 import org.satochip.satodimeapp.data.NfcResultCode
+import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.vaults.VaultDrawerScreen
 import org.satochip.satodimeapp.ui.components.vaults.VaultsBottomDrawer
@@ -21,6 +24,15 @@ fun NfcDialog(
     resultCodeLive: NfcResultCode,
     isConnected: Boolean
 ) {
+    // closing the dialog before a card is tapped cancels the pending card action
+    // (the dialog is always shown right after the action is requested)
+    val actionRequestId = remember { NFCCardService.currentActionRequestId() }
+    DisposableEffect(Unit) {
+        onDispose {
+            NFCCardService.cancelPendingAction(actionRequestId)
+        }
+    }
+
     VaultsBottomDrawer(
         showSheet = openDialogCustom
     ) {

@@ -81,6 +81,7 @@ import org.satochip.satodimeapp.data.AuthenticityStatus
 import org.satochip.satodimeapp.data.CardVault
 import org.satochip.satodimeapp.data.OwnershipStatus
 import org.satochip.satodimeapp.data.SlotState
+import org.satochip.satodimeapp.BuildConfig.USE_MOCKUP_ADDRESSES
 import org.satochip.satodimeapp.services.NFCCardService
 import org.satochip.satodimeapp.services.SatoLog
 import org.satochip.satodimeapp.ui.components.DarkBlueGradientBackground
@@ -286,56 +287,67 @@ fun VaultsView(
             }
         }
 
-        if (sharedViewModel.isCardDataAvailable) {
-            if (showVaultsOnly) {
-                VaultsListView(
-                    vaults,
-                    sharedViewModel.selectedVault,
-                    onAddVault
-                )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            if (sharedViewModel.isCardDataAvailable) {
+                if (showVaultsOnly) {
+                    VaultsListView(
+                        vaults,
+                        sharedViewModel.selectedVault,
+                        onAddVault
+                    )
+                } else {
+                    DetailedVaultView(
+                        vaults,
+                        pagerState,
+                        sharedViewModel.selectedVault,
+                        onAddFunds,
+                        onExplore,
+                        onUnseal,
+                        onAddVault,
+                        onShowKey,
+                        onReset
+                    )
+                }
             } else {
-                DetailedVaultView(
-                    vaults,
-                    pagerState,
-                    sharedViewModel.selectedVault,
-                    onAddFunds,
-                    onExplore,
-                    onUnseal,
-                    onAddVault,
-                    onShowKey,
-                    onReset
-                )
+                // SCAN BUTTON
+                //Todo improve UI
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Spacer(Modifier.weight(1f))
+                    SatoRoundButton(
+                        modifier = Modifier,
+                        text = R.string.clickAndScan,
+                        onClick = {
+                            SatoLog.d("VaultsView", "Clicked on Scan button!")
+                            // scan card
+                            showNfcDialog.value = true // NfcDialog
+                            sharedViewModel.scanCard(activity)
+                        }
+                    )
+                    Spacer(Modifier.weight(1f))
+                    SatoGradientButton(
+                        modifier = Modifier,
+                        text = R.string.dontHaveASatodime,
+                        onClick = {
+                            webviewActivityIntent(
+                                url = "https://satochip.io/product/satodime/",
+                                context = activity
+                            )
+                        }
+                    )
+                }
             }
-        } else {
-            // SCAN BUTTON
-            //Todo improve UI
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(Modifier.weight(1f))
-                SatoRoundButton(
-                    modifier = Modifier,
-                    text = R.string.clickAndScan,
-                    onClick = {
-                        SatoLog.d("VaultsView", "Clicked on Scan button!")
-                        // scan card
-                        showNfcDialog.value = true // NfcDialog
-                        sharedViewModel.scanCard(activity)
-                    }
-                )
-                Spacer(Modifier.weight(1f))
-                SatoGradientButton(
-                    modifier = Modifier,
-                    text = R.string.dontHaveASatodime,
-                    onClick = {
-                        webviewActivityIntent(
-                            url = "https://satochip.io/product/satodime/",
-                            context = activity
-                        )
-                    }
-                )
-            }
+        }
+
+        // debug builds only: balances & assets are fetched for mockup addresses (see CardVault.kt)
+        if (USE_MOCKUP_ADDRESSES) {
+            MockupAddressWarning()
         }
 
     }
@@ -395,6 +407,22 @@ fun VaultsView(
             },
         )
     }
+}
+
+@Composable
+fun MockupAddressWarning() {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .background(Color.Red, RoundedCornerShape(10.dp))
+            .padding(10.dp),
+        textAlign = TextAlign.Center,
+        color = Color.White,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        text = stringResource(R.string.mockupAddressWarning),
+    )
 }
 
 /// LIST VIEW

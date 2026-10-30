@@ -6,40 +6,47 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+// local.properties (not in git): API keys and local debug options
+Properties localProperties = new Properties()
+localProperties.load(project.rootProject.file("local.properties").newDataInputStream())
+
 android {
     namespace 'org.satochip.satodimeapp'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "org.satochip.satodimeapp"
         minSdk 24
-        targetSdk 35
-        versionCode 305
-        versionName "0.3.5"
+        targetSdk 36
+        versionCode 306
+        versionName "0.3.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
         }
 
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-        buildConfigField "String", "API_KEY_ETHERSCAN", "\"${properties.getProperty("API_KEY_ETHERSCAN")}\""
-        buildConfigField "String", "API_KEY_ETHPLORER", "\"${properties.getProperty("API_KEY_ETHPLORER")}\""
-        buildConfigField "String", "API_KEY_BSCSCAN", "\"${properties.getProperty("API_KEY_BSCSCAN")}\""
-        buildConfigField "String", "API_KEY_RARIBLE", "\"${properties.getProperty("API_KEY_RARIBLE")}\""
-        buildConfigField "String", "API_KEY_COVALENT", "\"${properties.getProperty("API_KEY_COVALENT")}\""
-        buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${properties.getProperty("API_KEY_PAYBIS_ID")}\""
-        buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${properties.getProperty("API_KEY_PAYBIS_HMAC")}\""
+        buildConfigField "String", "API_KEY_ETHERSCAN", "\"${localProperties.getProperty("API_KEY_ETHERSCAN")}\""
+        buildConfigField "String", "API_KEY_ETHPLORER", "\"${localProperties.getProperty("API_KEY_ETHPLORER")}\""
+        buildConfigField "String", "API_KEY_BSCSCAN", "\"${localProperties.getProperty("API_KEY_BSCSCAN")}\""
+        buildConfigField "String", "API_KEY_RARIBLE", "\"${localProperties.getProperty("API_KEY_RARIBLE")}\""
+        buildConfigField "String", "API_KEY_COVALENT", "\"${localProperties.getProperty("API_KEY_COVALENT")}\""
+        buildConfigField "String", "API_KEY_ALCHEMY", "\"${localProperties.getProperty("API_KEY_ALCHEMY")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_ID", "\"${localProperties.getProperty("API_KEY_PAYBIS_ID")}\""
+        buildConfigField "String", "API_KEY_PAYBIS_HMAC", "\"${localProperties.getProperty("API_KEY_PAYBIS_HMAC")}\""
     }
 
     buildTypes {
         release {
+            buildConfigField "boolean", "USE_MOCKUP_ADDRESSES", "false" // never in release builds
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            // debug only: fetch balances & assets for mockup addresses instead of the vault addresses (see CardVault.kt),
+            // enabled with USE_MOCKUP_ADDRESSES=true in local.properties
+            buildConfigField "boolean", "USE_MOCKUP_ADDRESSES", localProperties.getProperty("USE_MOCKUP_ADDRESSES", "false").trim().toBoolean().toString()
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -57,6 +64,10 @@ android {
         compose true
         buildConfig true
     }
+    androidResources {
+        // per-app language support (Android 13+): locale list generated from res/values-XX folders
+        generateLocaleConfig true
+    }
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.2'
     }
@@ -71,14 +82,13 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation 'androidx.activity:activity-compose:1.9.3'
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
     implementation 'androidx.compose.material:material:1.6.8'
     implementation("androidx.navigation:navigation-compose:2.7.3")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("io.github.g0dkar:qrcode-kotlin-android:3.3.0")
@@ -86,19 +96,13 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.4.0"
 
     //satochip libraries
-    //implementation files('libs/satochip-lib-0.0.4.jar')
-    implementation files('libs/satochip-lib-0.2.5.jar')
-    implementation files('libs/satochip-android-0.0.2.jar')
-    //implementation files('libs/javacryptotools-0.1.0.jar')
-    //implementation files('libs/javacryptotools-0.2.0.jar')
-    //implementation files('libs/javacryptotools-0.3.1.jar')
-    implementation files('libs/javacryptotools-0.4.0.jar')
-
-    //satochip-android & satochip-lib related dependencies
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-
-    //javacryptotools related dependencies
-    implementation("com.google.guava:guava:32.1.2-jre")
+    // satochip-android depends on satochip-lib, which brings BouncyCastle (bcprov-jdk15to18)
+    implementation 'com.github.Toporin.Satochip-Java:satochip-android:0.3.6'
+    // javacryptotools brings guava; its BouncyCastle dependency resolves to the version from satochip-lib.
+    // org.json is excluded: Android provides it (a bundled copy would duplicate platform classes)
+    implementation('com.github.Toporin:Javacryptotools:v0.4.1') {
+        exclude group: 'org.json', module: 'json'
+    }
 
     //App review
     implementation ('com.google.android.play:review-ktx:2.0.1')

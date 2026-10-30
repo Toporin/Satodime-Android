@@ -139,6 +139,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
         if (!nfcAvailable) {
             _showNfcCheckDialog.value = true
+            if (activity != null) {
+                // a card action was requested: show the warning in the NFC dialog instead of waiting for a card
+                NFCCardService.resultCodeLive.postValue(NfcResultCode.NfcDisabled)
+            }
             return false
         }
         return true
@@ -146,6 +150,25 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun dismissNfcDialog() {
         _showNfcCheckDialog.value = false
+    }
+
+    // NFC state seen by the last refreshNfcState() call (null before the first call)
+    private var lastNfcEnabled: Boolean? = null
+
+    /**
+     * Updates the NFC disabled dialog when the app returns to the foreground or the NFC state changes:
+     * hides it once NFC is enabled, shows it when NFC gets disabled (not again on each resume
+     * if the user already dismissed it while NFC was off).
+     */
+    fun refreshNfcState() {
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+        val nfcEnabled = nfcAdapter != null && nfcAdapter.isEnabled
+        if (nfcEnabled) {
+            _showNfcCheckDialog.value = false
+        } else if (lastNfcEnabled != false) {
+            _showNfcCheckDialog.value = true
+        }
+        lastNfcEnabled = nfcEnabled
     }
 
     fun showUnlockCodeDialog() {
@@ -165,13 +188,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     // Card actions
     fun scanCard(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.ScanCard
+        NFCCardService.requestAction(NfcActionType.ScanCard)
         scanCardForAction(activity)
     }
 
     fun takeOwnership(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.TakeOwnership
+        NFCCardService.requestAction(NfcActionType.TakeOwnership)
         scanCardForAction(activity)
     }
 
@@ -181,7 +204,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun releaseOwnership(activity: Activity) {
         if (!checkNfcAvailability(activity)) return
-        NFCCardService.actionType = NfcActionType.ReleaseOwnership
+        NFCCardService.requestAction(NfcActionType.ReleaseOwnership)
         scanCardForAction(activity)
     }
 
@@ -200,13 +223,13 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.SealSlot
         NFCCardService.actionIndex = index
         // check entropy (32bytes)
         NFCCardService.actionEntropy = entropyBytes
         // convert to slip44Bytes
         NFCCardService.actionSlip44 =
             coinToSlip44Bytes(coinSymbol = coinSymbol, isTestnet = isTestnet)
+        NFCCardService.requestAction(NfcActionType.SealSlot)
         scanCardForAction(activity)
     }
 
@@ -217,8 +240,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.UnsealSlot
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.UnsealSlot)
         scanCardForAction(activity)
     }
 
@@ -229,8 +252,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         // prompt for cvc code for Satodime v0.2+ if cvc is fixed
         showUnlockCodeDialog()
 
-        NFCCardService.actionType = NfcActionType.ResetSlot
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.ResetSlot)
         scanCardForAction(activity)
     }
 
@@ -241,8 +264,8 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         showUnlockCodeDialog()
 
         SatoLog.d(TAG, "recoverSlotPrivkey START slot: ${index}")
-        NFCCardService.actionType = NfcActionType.GetPrivkey
         NFCCardService.actionIndex = index
+        NFCCardService.requestAction(NfcActionType.GetPrivkey)
         scanCardForAction(activity)
     }
 
@@ -404,7 +427,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         try {
             activity.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            println("Could not start Google mail, error: $e")
+            SatoLog.e(TAG, "Could not start Google mail, error: $e")
         }
     }
 
@@ -424,7 +447,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
                 packageInfo.versionCode
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            SatoLog.e(TAG, "getMailText: package not found: $e")
         }
         return "Application name: Satodime\n" +
                 "Android version: $version\n" +

@@ -9,6 +9,7 @@ enum class  NfcResultCode(val resTitle : Int, val resMsg : Int, val resImage : I
     CardMismatch(R.string.nfcTitleWarning, R.string.nfcCardMismatch, R.drawable.error_24px),
     OwnershipAlreadyClaimed(R.string.nfcTitleWarning, R.string.nfcTransferAlreadyDone, R.drawable.error_24px),
     NotOwner(R.string.nfcTitleWarning, R.string.nfcUnlockSecretNotFound, R.drawable.error_24px),
+    NfcDisabled(R.string.nfcTitleWarning, R.string.nfc_disabled_message, R.drawable.error_24px),
     UnknownError(R.string.nfcTitleWarning, R.string.nfcErrorOccured, R.drawable.error_24px),
     FailedToSelectApplet(R.string.nfcTitleWarning, R.string.nfcSelectAppletFailed, R.drawable.error_24px),
 

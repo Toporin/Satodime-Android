@@ -6,13 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -92,84 +93,93 @@ fun ExpertModeView(
             },
             titleText = R.string.expertMode,
         )
+        // scrollable content between the header and the bottom button: when the keyboard is open,
+        // the screen shrinks (safeDrawingPadding in MainActivity) and the entropy field is scrolled into view
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
-            Card(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
-                shape = RoundedCornerShape(15.dp)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    shape = RoundedCornerShape(15.dp)
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.primary)
+                            .padding(20.dp),
+                        //textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
+                        color = MaterialTheme.colors.secondary,
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
+                        text = stringResource(R.string.theExpertModeAllowsYou)
+                    )
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 Text(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.primary)
-                        .padding(20.dp),
-                    //textAlign = TextAlign.Center,
-                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(10.dp),
                     color = MaterialTheme.colors.secondary,
                     fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.body1,
-                    text = stringResource(R.string.theExpertModeAllowsYou)
+                    text = stringResource(R.string.network)
                 )
+                NetworkDivider()
+                NetworkRadioButton(
+                    Network.MainNet.name,
+                    isSelected = { selectedNetwork == Network.MainNet }) {
+                    selectedNetwork = Network.MainNet
+                }
+                NetworkRadioButton(
+                    Network.TestNet.name,
+                    isSelected = { selectedNetwork == Network.TestNet }) {
+                    selectedNetwork = Network.TestNet
+                }
+                NetworkDivider()
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    color = MaterialTheme.colors.secondary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    text = stringResource(R.string.entropy)
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    shape = RoundedCornerShape(25.dp),
+                    value = entropy,
+                    textStyle = MaterialTheme.typography.body2,
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = MaterialTheme.colors.secondary,
+                        backgroundColor = MaterialTheme.colors.primary
+                    ),
+                    onValueChange = { entropy = it },
+                )
+                LaunchedEffect(focusRequester) {
+                    awaitFrame()
+                    focusRequester.requestFocus()
+                }
             }
         }
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(10.dp),
-                color = MaterialTheme.colors.secondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.network)
-            )
-            NetworkDivider()
-            NetworkRadioButton(
-                Network.MainNet.name,
-                isSelected = { selectedNetwork == Network.MainNet }) {
-                selectedNetwork = Network.MainNet
-            }
-            NetworkRadioButton(
-                Network.TestNet.name,
-                isSelected = { selectedNetwork == Network.TestNet }) {
-                selectedNetwork = Network.TestNet
-            }
-            NetworkDivider()
-            Text(
-                modifier = Modifier.padding(10.dp),
-                color = MaterialTheme.colors.secondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
-                text = stringResource(R.string.entropy)
-            )
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                shape = RoundedCornerShape(25.dp),
-                value = entropy,
-                textStyle = MaterialTheme.typography.body2,
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = MaterialTheme.colors.secondary,
-                    backgroundColor = MaterialTheme.colors.primary
-                ),
-                onValueChange = { entropy = it },
-            )
-            LaunchedEffect(focusRequester) {
-                awaitFrame()
-                focusRequester.requestFocus()
-            }
-        }
-        Spacer(Modifier.weight(1f))
 //        val sealFailureText = stringResource(R.string.seal_failure)
 //        val youreNotTheOwnerText = stringResource(R.string.you_re_not_the_owner)
 //        val pleaseConnectTheCardText = stringResource(R.string.please_connect_the_card)
